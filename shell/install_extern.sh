@@ -1,6 +1,6 @@
 #!/bin/bash
 
-$BINDIR=$1
+BINDIR=$1
 
 source $BINDIR/bin/activate
 

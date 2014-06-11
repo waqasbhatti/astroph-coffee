@@ -1,5 +1,5 @@
 # set this to the directory where you want lcserver modules installed
-BINDIR=./run
+BINDIR=run
 
 ACTIVATE_SCRIPT=$(BINDIR)/bin/activate
 DEACTIVATE_SCRIPT=$(BINDIR)/bin/deactivate
@@ -34,7 +34,7 @@ install:
 
 uninstall:
 	# remove stuff from the run directory
-	rm -rf $(BINDIR)*
+	rm -rf $(BINDIR)
 
 compile:
 
