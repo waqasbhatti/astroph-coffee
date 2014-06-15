@@ -1,0 +1,36 @@
+use URL: http://arxiv.org/list/astro-ph/new
+
+
+<div id "dlpage">
+first dl is new papers
+second dl is cross lists
+
+for each dl in first two dls:
+
+list of titles <div class="list-title">
+list of authors <div class="list-authors">
+list of comments <div class="list-comments">
+list of comments <div class="list-subjects">
+abstracts: <div class="meta"> <p>
+
+
+possible start:
+
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+driver = webdriver.Firefox()
+driver.get("http://arxiv.org/list/astro-ph/new")
+html = driver.get_html_source()
+
+elem = driver.find_element_by_name('p')
+npagedowns = int(random.random()*15.0)
+
+for x in range(npagedowns):
+    elem.send_keys(Keys.PAGE_DOWN)
+    time.sleep(10.0 + rand.random()*10.0)
+
+# then throw the html into BeautifulSoup to be parsed
+
+
+# then quit
+driver.quit()
