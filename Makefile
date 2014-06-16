@@ -18,9 +18,11 @@ install:
 	mkdir -p $(BINDIR)/pids
 	mkdir -p $(BINDIR)/cache
 
-
 	# copy over our files
 	rsync -au ./src/* $(BINDIR)
+
+	# make the database using the sqlite3 command
+	sqlite3 $(BINDIR)/data/astroph.sqlite < src/data/astroph-sqlite.sql
 
 	# install our python dependencies
 	./shell/install_extern.sh $(BINDIR)
