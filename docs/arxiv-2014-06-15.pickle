@@ -1,0 +1,1754 @@
+(dp1
+S'npapers'
+p2
+I49
+sS'utc'
+p3
+cdatetime
+datetime
+p4
+(S'\x07\xde\x06\x10\x00\x1b"\x002\xbf'
+tRp5
+sS'crosslists'
+p6
+(dp7
+I1
+(dp8
+S'title'
+p9
+VLarge tensor-to-scalar ratio and running of the scalar spectral index with Instep Inflation
+p10
+sS'abstract'
+p11
+VIf a sizeable tensor-to-scalar ratio ~0.1 turns out to be detected and a negative running of the scalar spectral index ~0.01 is significantly required by the data, the vast majority of single field models of inflation will be ruled out. We show that a flat tree-level effective potential, lifted by radiative corrections and by the imprints of a high energy scale (in the form of non-renormalizable operators) can explain those features and produce enough inflation in the slow-roll regime.
+p12
+sS'arxiv'
+p13
+VarXiv:1406.3342
+p14
+sS'comments'
+p15
+S'1+15 pages, 2 figures'
+p16
+sS'link'
+p17
+S'/abs/1406.3342'
+p18
+sS'authors'
+p19
+(lp20
+VGuillermo Ballesteros
+p21
+aVJ. Alberto Casas
+p22
+asS'pdf'
+p23
+S'/pdf/1406.3342'
+p24
+ssI2
+(dp25
+g9
+VModified Theories of Gravity
+p26
+sg11
+VThe recent observational data in cosmology seem to indicate that the universe is currently expanding in an accelerated way. An intriguing interpretation of these data is that they may just be signalling that Einstein's General Relativity is not the correct description of gravity when we consider distances of the order of the present horizon of the universe. In this thesis we consider two models which modify General Relativity at very large distances, the Cascading DGP and the dRGT massive gravity, and investigate their phenomenological viability. We start with a general introduction to standard cosmology and we introduce the late time acceleration problem and the cosmological constant problem. We then provide a pedagogical introduction to the DGP model, of which the Cascading DGP is an extension, and to the dRGT massive gravity. Concerning the Cascading DGP, we show that the thin limit of the 4D brane inside the (already thin) 5D brane is well defined, at least for the class of configurations that we consider, and confirm that gravity is regularized in these set-ups. We give a geometrical interpretation of the presence of the critical tension, and comment on the difference between the results in the literature and our results, which we support with a numerical calculation. Regarding the dRGT massive gravity, we focus on the branch of solutions in which the Vainshtein mechanism can occur. We determine analytically the number and properties of local solutions which exist asymptotically on large scales (but still below the gravitational Compton wavelength), and of local (inner) solutions which exist on small scales. We characterize exactly the properties of global solutions in every point of the phase space, and characterize precisely in which regions the Vainshtein mechanism takes place. We also provide numerical solutions which confirm our analysis.
+p27
+sg13
+VarXiv:1406.3384
+p28
+sg15
+S'PhD Thesis, 363 pages, PDFLateX'
+p29
+sg17
+S'/abs/1406.3384'
+p30
+sg19
+(lp31
+VFulvio Sbisà
+p32
+asg23
+S'/pdf/1406.3384'
+p33
+ssI3
+(dp34
+g9
+VFrom the lightest nuclei to the equation of state of asymmetric nuclear matter with realistic nuclear interactions
+p35
+sg11
+VWe present microscopic calculations of light and medium mass nuclei and the equation of state of symmetric and asymmetric nuclear matter using different nucleon-nucleon forces, including a new Argonne version that has the same spin/isospin structure as local chiral forces at next-to-next-to-leading order (N2LO). The calculations are performed using Auxiliary Field Diffusion Monte Carlo (AFDMC) combined with an improved variational wave function. We show that the AFDMC method can now be used to successfully calculate the energies of very light to medium mass nuclei as well as the energy of isospin-asymmetric nuclear matter, demonstrating microscopically the quadratic dependence of the energy on the symmetry energy.
+p36
+sg13
+VarXiv:1406.3388
+p37
+sg15
+S'6 pages, 2 figures'
+p38
+sg17
+S'/abs/1406.3388'
+p39
+sg19
+(lp40
+VS. Gandolfi
+p41
+aVA. Lovato
+p42
+aVJ. Carlson
+p43
+aVKevin E. Schmidt
+p44
+asg23
+S'/pdf/1406.3388'
+p45
+ssI4
+(dp46
+g9
+VShear-free axially symmetric dissipative fluids
+p47
+sg11
+VWe study the general properties of axially symmetric dissipative configurations under the shear-free condition. The link between the magnetic part of the Weyl tensor and the vorticity, as well as the role of the dissipative fluxes, are clearly exhibited. As a particular case we examine the geodesic fluid. In this latter case, the magnetic part of the Weyl tensor always vanishes, suggesting that no gravitational radiation is produced during the evolution. Also (for the geodesic case), in the absence of dissipation, the system evolves towards a FRW spacetime if the expansion scalar is positive.
+p48
+sg13
+VarXiv:1406.3452
+p49
+sg15
+S'5 pages Revtex4-1. To appear in Phys. Rev. D'
+p50
+sg17
+S'/abs/1406.3452'
+p51
+sg19
+(lp52
+VL. Herrera
+p53
+aVA. Di Prisco
+p54
+aVJ. Ospino
+p55
+asg23
+S'/pdf/1406.3452'
+p56
+ssI5
+(dp57
+g9
+VA simplified 2HDM with a scalar dark matter and the galactic center gamma-ray excess
+p58
+sg11
+VDue to the strong constrain from the LUX experiment, the scalar portal dark matter can not generally explain a gamma-ray excess in the galactic center by the annihilation of dark matter into $b\u005cbar{b}$. With the motivation of eliminating the tension, we add a scalar dark matter to the aligned two-Higgs-doublet model, and focus on a simplified scenario, which has two main characteristics: (i) The heavy CP-even Higgs is the discovered 125 GeV Higgs boson, which has the same couplings to the gauge bosons and fermions as the SM Higgs. (ii) Only the light CP-even Higgs mediates the dark matter interactions with SM particles, which has no couplings to $WW$ and $ZZ$, but the independent couplings to the up-type quarks, down-type quarks and charged leptons. We find that the tension between $<\u005csigma v>_{SS\u005cto b\u005cbar{b}}$ and the constraint from LUX induced by the scalar portal dark matter can go away for the isospin-violating dark matter-nucleon coupling with $-1.0< f^n/f^p<0.7$, and the constraints from the Higgs search experiments and the relic density of Planck are also satisfied.
+p59
+sg13
+VarXiv:1406.3598
+p60
+sg15
+S'9 pages, 3 figures, 1 table'
+p61
+sg17
+S'/abs/1406.3598'
+p62
+sg19
+(lp63
+VLei Wang
+p64
+asg23
+S'/pdf/1406.3598'
+p65
+sssS'ncrosslists'
+p66
+I5
+sS'papers'
+p67
+(dp68
+I1
+(dp69
+g9
+VSaturn Ring Seismology: Evidence for Stable Stratification in the Deep Interior of Saturn
+p70
+sg11
+VSeismology allows for direct observational constraints on the interior structures of stars and planets. Recent observations of Saturn's ring system have revealed the presence of density waves within the rings excited by oscillation modes within Saturn, allowing for precise measurements of a limited set of the planet's mode frequencies. We construct interior structure models of Saturn, compute the corresponding mode frequencies, and compare them with the observed mode frequencies. The fundamental mode frequencies of our models match the observed frequencies (of the largest amplitude waves) to an accuracy of $\u005csim 1 %$, confirming that these waves are indeed excited by Saturn's f-modes. The presence of the lower amplitude waves (finely split in frequency from the f-modes) can only be reproduced in models containing gravity modes that propagate in a stably stratified region of the planet. The stable stratification must exist deep within the planet near the large density gradients between the core and envelope. Our models cannot easily reproduce the observed fine splitting of the $m=-3$ modes, suggesting that additional effects (e.g., significant latitudinal differential rotation) may be important.
+p71
+sg13
+VarXiv:1406.3343
+p72
+sg15
+S'25 pages, 8 figures, submitted to Icarus. Comments welcome'
+p73
+sg17
+S'/abs/1406.3343'
+p74
+sg19
+(lp75
+VJim Fuller
+p76
+asg23
+S'/pdf/1406.3343'
+p77
+ssI2
+(dp78
+g9
+VSatellite Dwarf Galaxies in a Hierarchical Universe: The Prevalence of Dwarf-Dwarf Major Mergers
+p79
+sg11
+VMergers are a common phenomenon in hierarchical structure formation, especially for massive galaxies and clusters, but their importance for dwarf galaxies in the Local Group remains poorly understood. We investigate the frequency of major mergers between dwarf galaxies in the Local Group using the ELVIS suite of cosmological zoom-in dissipationless simulations of Milky Way- and M31-like host halos. We find that ~10% of satellite dwarf galaxies with M_star > 10^6 M_sun that are within the host virial radius experienced a major merger of stellar mass ratio closer than 0.1 since z = 1, with a lower fraction for lower mass dwarf galaxies. Recent merger remnants are biased towards larger radial distance and more recent virial infall times, because most recent mergers occurred shortly before crossing within the virial radius of the host halo. Satellite-satellite mergers also occur within the host halo after virial infall, catalyzed by the large fraction of dwarf galaxies that fell in as part of a group. The merger fraction doubles for dwarf galaxies outside of the host virial radius, so the most distant dwarf galaxies in the Local Group are the most likely to have experienced a recent major merger. We discuss the implications of these results on observable dwarf merger remnants, their star formation histories, the gas content of mergers, and massive black holes in dwarf galaxies.
+p80
+sg13
+VarXiv:1406.3344
+p81
+sg15
+S'8 pages, 4 figures. Submitted to ApJ'
+p82
+sg17
+S'/abs/1406.3344'
+p83
+sg19
+(lp84
+VAlis Deason
+p85
+aVAndrew Wetzel
+p86
+aVShea Garrison-Kimmel
+p87
+asg23
+S'/pdf/1406.3344'
+p88
+ssI3
+(dp89
+g9
+Vhe 2-79 keV X-ray Spectrum of the Circinus Galaxy with NuSTAR, XMM-Newton and Chandra: a Fully Compton-Thick AGN
+p90
+sg11
+VThe Circinus galaxy is one of the nearest obscured AGN, making it an ideal target for detailed study. Combining archival Chandra and XMM-Newton data with new NuSTAR observations, we model the 2-79 keV spectrum to constrain the primary AGN continuum and to derive physical parameters for the obscuring material. Chandra's high angular resolution allows a separation of nuclear and off-nuclear galactic emission. In the off-nuclear diffuse emission we find signatures of strong cold reflection, including high equivalent-width neutral Fe lines. This Compton-scattered off-nuclear emission amounts to 18% of the nuclear flux in the Fe line region, but becomes comparable to the nuclear emission above 30 keV. The new analysis no longer supports a prominent transmitted AGN component in the observed band. We find that the nuclear spectrum is consistent with Compton-scattering by an optically-thick torus, where the intrinsic spectrum is a powerlaw of photon index $\u005cGamma = 2.2-2.4$, the torus has an equatorial column density of $N_{\u005crm H} = (6-10)\u005ctimes10^{24}$cm$^{-2}$ and the intrinsic AGN $2-10$ keV luminosity is $(2.3-5.1)\u005ctimes 10^{42}$ erg/s. These values place Circinus along the same relations as unobscured AGN in accretion rate-vs-$\u005cGamma$ and $L_X$-vs-$L_{IR}$ phase space. NuSTAR's high sensitivity and low background allow us to study the short time-scale variability of Circinus at X-ray energies above 10 keV for the first time. The lack of detected variability favors a Compton-thick absorber, in line with the the spectral fitting results.
+p91
+sg13
+VarXiv:1406.3345
+p92
+sg15
+S'Accepted for publication in ApJ'
+p93
+sg17
+S'/abs/1406.3345'
+p94
+sg19
+(lp95
+VP. Arévalo
+p96
+aVF. E. Bauer
+p97
+aVS. Puccetti
+p98
+aVD. J. Walton
+p99
+aVM. Koss
+p100
+aVS. E. Boggs
+p101
+aVW. N. Brandt
+p102
+aVM. Brightman
+p103
+aVF. E. Christensen
+p104
+aVA. Comastri
+p105
+aVW. W. Craig
+p106
+aVF. Fuerst
+p107
+aVP. Gandhi
+p108
+aVB. W. Grefenstette
+p109
+aVC. J. Hailey
+p110
+aVF. A. Harrison
+p111
+aVB. Luo
+p112
+aVG. Madejski
+p113
+aVK. K. Madsen
+p114
+aVA. Marinucci
+p115
+aVG. Matt
+p116
+aVC. Saez
+p117
+aVD. Stern
+p118
+aVM. Stuhlinger
+p119
+aVE. Treister
+p120
+aVC. M. Urry
+p121
+aVW. W.Zhang
+p122
+asg23
+S'/pdf/1406.3345'
+p123
+ssI4
+(dp124
+g9
+VA New Gravitational Wave Verification Source
+p125
+sg11
+VWe report the discovery of a detached 20 min orbital period binary white dwarf. WD0931+444 (SDSS J093506.93+441106.9) was previously classified as a WD + M dwarf system based on its optical spectrum. Our time-resolved optical spectroscopy observations obtained at the 8m Gemini and 6.5m MMT reveal peak-to-peak radial velocity variations of 400 km/s every 20 min for the WD, but no velocity variations for the M dwarf. In addition, high-speed photometry from the McDonald 2.1m telescope shows no evidence of variability nor evidence of a reflection effect. An M dwarf companion is physically too large to fit into a 20 min orbit. Thus, the orbital motion of the WD is almost certainly due to an invisible WD companion. The M dwarf must be either an unrelated background object or the tertiary component of a hiearchical triple system. WD0931+444 contains a pair of WDs, a 0.32 Msol primary and a >0.14 Msol secondary, at a separation of >0.19 Rsol. After J0651+2844, WD0931+444 becomes the second-shortest period detached binary WD currently known. The two WDs will lose angular momentum through gravitational wave radiation and merge in <9 Myr. The log h ~ -22 gravitational wave strain from WD0931+444 is strong enough to make it a verification source for gravitational wave missions in the milli-Hertz frequency range, e.g. the evolved Laser Interferometer Space Antenna (eLISA), bringing the total number of known eLISA verification sources to nine.
+p126
+sg13
+VarXiv:1406.3346
+p127
+sg15
+S'MNRAS Letters, in press'
+p128
+sg17
+S'/abs/1406.3346'
+p129
+sg19
+(lp130
+VMukremin Kilic
+p131
+aVWarren R. Brown
+p132
+aVA. Gianninas
+p133
+aVJ. J. Hermes
+p134
+aVCarlos Allende Prieto
+p135
+aVS. J. Kenyon
+p136
+asg23
+S'/pdf/1406.3346'
+p137
+ssI5
+(dp138
+g9
+VCosmological tests of modified gravity: contraints on $F(R)$ theories from the galaxy clustering ratio
+p139
+sg11
+VThe clustering ratio $\u005ceta$, a large-scale structure observable originally devised to constrain the shape of the power spectrum of matter density fluctuations, is shown to provide a sensitive and model independent probe of the nature of gravity in the cosmological regime. We apply this analysis to $F(R)$ theories of gravity using the luminous red galaxy sample extracted from the Sloan Digital Sky Survey. We find that the absolute amplitude of deviations from GR, $f_{R_0 }$, is constrained to be smaller than $3 \u005ctimes 10^{-6}$ at the 1$\u005csigma$ confidence level. This bound, improving by an order of magnitude on current constraints, makes cosmological probes of gravity competitive with Solar system tests.
+p140
+sg13
+VarXiv:1406.3347
+p141
+sg15
+S'5 pages, 3 figures'
+p142
+sg17
+S'/abs/1406.3347'
+p143
+sg19
+(lp144
+VJulien Bel
+p145
+aVPhilippe Brax
+p146
+aVChristian Marinoni
+p147
+aVPatrick Valageas
+p148
+asg23
+S'/pdf/1406.3347'
+p149
+ssI6
+(dp150
+g9
+VA Massive Galaxy in its Core Formation Phase Three Billion Years After the Big Bang
+p151
+sg11
+VMost massive galaxies are thought to have formed their dense stellar cores at early cosmic epochs. However, cores in their formation phase have not yet been observed. Previous studies have found galaxies with high gas velocity dispersions or small apparent sizes but so far no objects have been identified with both the stellar structure and the gas dynamics of a forming core. Here we present a candidate core in formation 11 billion years ago, at z=2.3. GOODS-N-774 has a stellar mass of 1.0x10^11 Msun, a half-light radius of 1.0 kpc, and a star formation rate of 90[+45-20]Msun/yr. The star forming gas has a velocity dispersion 317+-30 km/s, amongst the highest ever measured. It is similar to the stellar velocity dispersions of the putative descendants of GOODS-N-774, compact quiescent galaxies at z~2 and giant elliptical galaxies in the nearby Universe. Galaxies such as GOODS-N-774 appear to be rare; however, from the star formation rate and size of the galaxy we infer that many star forming cores may be heavily obscured, and could be missed in optical and near-infrared surveys.
+p152
+sg13
+VarXiv:1406.3350
+p153
+sg15
+S'To appear in Nature'
+p154
+sg17
+S'/abs/1406.3350'
+p155
+sg19
+(lp156
+VErica Nelson
+p157
+aVPieter van Dokkum
+p158
+aVMarijn Franx
+p159
+aVGabriel Brammer
+p160
+aVIvelina Momcheva
+p161
+aVNatascha Förster Schreiber
+p162
+aVElisabete da Cunha
+p163
+aVLinda Tacconi
+p164
+aVRachel Bezanson
+p165
+aVAllison Kirkpatrick
+p166
+aVJoel Leja
+p167
+aVHans-Walter Rix
+p168
+aVRosalind Skelton
+p169
+aVArjen van der Wel
+p170
+aVKatherine Whitaker
+p171
+aVStijn Wuyts
+p172
+asg23
+S'/pdf/1406.3350'
+p173
+ssI7
+(dp174
+g9
+Vhe Nature of Extreme Emission Line Galaxies at z=1-2: Kinematics and Metallicities from Near-Infrared Spectroscopy
+p175
+sg11
+VWe present near-infrared spectroscopy of a sample of 22 Extreme Emission Line Galaxies at redshifts 1.3 < z < 2.3, confirming that these are low-mass (M* = 10^8 - 10^9 M_sun) galaxies undergoing intense starburst episodes (M*/SFR ~ 10-100 Myr). The sample is selected by [O III] or H{\u005calpha} emission line flux and equivalent width using near-infrared grism spectroscopy from the 3D-HST survey. High-resolution NIR spectroscopy is obtained with LBT/LUCI and VLT/X-SHOOTER. The [O III]/H{\u005cbeta} line ratio is high (> 5) and [N II]/H{\u005calpha} is always significantly below unity, which suggests a low gas-phase metallicity. We are able to determine gas-phase metallicities for 7 of our objects using various strong-line methods, with values in the range 0.05-0.30 Z_sun and with a median of 0.15 Z_sun; for 3 of these objects we detect [O III]{\u005clambda}4363 which allows for a direct constraint on the metallicity. The velocity dispersion, as measured from the nebular emission lines, is typically ~50 km/s. Combined with the observed star-forming activity, the Jeans and Toomre stability criteria imply that the gas fraction must be large (> 2/3), consistent with the difference between our dynamical and stellar mass estimates. The implied gas depletion time scale (several hundred Myr) is substantially longer than the inferred mass-weighted ages (~50 Myr), which further supports the emerging picture that most stars in low-mass galaxies form in short, intense bursts of star formation.
+p176
+sg13
+VarXiv:1406.3351
+p177
+sg15
+S'Resubmitted to ApJ after first referee report, 18 pages, 14 figures, 4 tables'
+p178
+sg17
+S'/abs/1406.3351'
+p179
+sg19
+(lp180
+VMichael V. Maseda
+p181
+aVArjen van der Wel
+p182
+aVHans-Walter Rix
+p183
+aVElisabete da Cunha
+p184
+aVCamilla Pacifici
+p185
+aVIvelina Momcheva
+p186
+aVGabriel B. Brammer
+p187
+aVSharon E. Meidt
+p188
+aVMarijn Franx
+p189
+aVPieter van Dokkum
+p190
+aVMattia Fumagalli
+p191
+aVEric F. Bell
+p192
+aVHenry C. Ferguson
+p193
+aVNatascha M. Förster-Schreiber
+p194
+aVAnton M. Koekemoer
+p195
+aVDavid C. Koo
+p196
+aVBritt F. Lundgren
+p197
+aVDanilo Marchesini
+p198
+aVErica J. Nelson
+p199
+aVShannon G. Patel
+p200
+aVRosalind E. Skelton
+p201
+aVAmber N. Straughn
+p202
+aVJonathan R. Trump
+p203
+aVKatherine E. Whitaker
+p204
+asg23
+S'/pdf/1406.3351'
+p205
+ssI8
+(dp206
+g9
+Vhe Alpha-element knee of the Sagittarius Stream
+p207
+sg11
+VWe employ abundances from the Sloan Digital Sky Survey (SDSS) and the Sloan Extension for Galactic Understanding and Exploration (SEGUE) to study the alpha-element distribution of the stellar members of the Sagittarius stream. To test the reliability of SDSS/SEGUE abundances for the study of Sagittarius, we select high-likelihood samples tracing the different components of the Milky Way, and recover known literature alpha-element distributions. Using selection criteria based on the spatial position, radial velocity, distance and colours of individual stars, we obtain a robust sample of Sagittarius-stream stars. The alpha-element distribution of the Sagittarius stream forms a narrow sequence at intermediate metallicities with a clear turn-down, consistent with the presence of an alpha-element "knee". This is the first time that the alpha-element knee of the Sagittarius dwarf galaxy has been detected. Fitting a toy model to our data, we determine that the alpha-knee in Sagittarius takes place at [Fe/H]=-1.27pm0.05, only slightly less metal-poor than the knee in the Milky Way. This indicates that a small number of Sagittarius-like galaxies could have contributed significantly to the build-up of the Milky Way's stellar halo system at ancient times.
+p208
+sg13
+VarXiv:1406.3352
+p209
+sg15
+S'6 pages, 3 figures'
+p210
+sg17
+S'/abs/1406.3352'
+p211
+sg19
+(lp212
+VT.J.L. de Boer
+p213
+aVV. Belokurov
+p214
+aVT.C. Beers
+p215
+aVY.S. Lee
+p216
+asg23
+S'/pdf/1406.3352'
+p217
+ssI9
+(dp218
+g9
+VA Kinematic Measurement of Ram Pressure in the Outer Disk of Regular Galaxies
+p219
+sg11
+VWhile most ram pressure studies have focused on ram pressure stripping in galaxy clusters, we devise a novel approach based on a kinematic measurement of ram pressure perturbations in HI velocity fields for intergalactic material (IGM) densities and relative velocities that are one to two orders of magnitude lower than in galaxies showing ram pressure stripping. Our model evaluates ram pressure induced kinematic terms in gas disks with constant inclination as well as those with a warped geometry. Ram pressure perturbations are characterized by kinematic modes of even order, m=0 and m=2, corresponding to a ram wind perpendicular and parallel to the gas disk, respectively. Long-term consequences of ram pressure, such as warped disks as well as uncertainties in the disk geometry typically generate uneven modes (m=1 and m=3), that are clearly distinguishable from the kinematic ram pressure terms. We have applied our models to three nearby isolated galaxies, utilizing Markov Chain Monte Carlo fitting routines to determine ram pressure perturbations in the velocity fields of NGC 6946 and NGC 3621 of ~30km s$^{-1}$ (effective line-of-sight velocity change) at HI column densities below (4-10)$\u005ctimes$10$^{20}$cm$^{-2}$ (at radial scales greater than ~15kpc). In contrast, NGC 628 is dominated by a strongly warped disk. Our model fits reveal the three-dimensional vector of the galaxies' movement with respect to the IGM rest-frame and provide constraints on the product of speed with IGM density, opening a new window for extragalactic velocity measurements and studies of the intergalactic medium.
+p220
+sg13
+VarXiv:1406.3354
+p221
+sg15
+S'34 pages, 28 figures, accepted for publication in MNRAS'
+p222
+sg17
+S'/abs/1406.3354'
+p223
+sg19
+(lp224
+VSebastian Haan
+p225
+aVRobert Braun
+p226
+asg23
+S'/pdf/1406.3354'
+p227
+ssI10
+(dp228
+g9
+V3D-HST Emission Line Galaxies at z ~ 2: Discrepancies in the Optical/UV Star Formation Rates
+p229
+sg11
+VWe use Hubble Space Telescope near-IR grism spectroscopy to examine the H-beta line strengths of 260 star-forming galaxies in the redshift range 1.90 < z < 2.35. We show that at these epochs, the H-beta star formation rate (SFR) is a factor of ~1.8 higher than what would be expected from the systems' rest-frame UV flux density, suggesting a shift in the standard conversion between these quantities and star formation rate. We demonstrate that at least part of this shift can be attributed to metallicity, as H-beta is more greatly enhanced in systems with lower oxygen abundance. This offset must be considered when measuring the star formation rate history of the universe. We also show that the relation between stellar and nebular extinction in our z ~ 2 sample is consistent with that observed in the local universe.
+p230
+sg13
+VarXiv:1406.3355
+p231
+sg15
+S'15 pages, 11 figures, Accepted to ApJ'
+p232
+sg17
+S'/abs/1406.3355'
+p233
+sg19
+(lp234
+VGregory R. Zeimann
+p235
+aVRobin Ciardullo
+p236
+aVHenry Gebhardt
+p237
+aVCaryl Gronwall
+p238
+aVDonald P. Schneider
+p239
+aVAlex Hagen
+p240
+aVJoanna S. Bridge
+p241
+aVJohn Feldmeier
+p242
+aVJonathan R. Trump
+p243
+asg23
+S'/pdf/1406.3355'
+p244
+ssI11
+(dp245
+g9
+VOn the lack of correlation between Mg II 2796, 2803 Angstrom and Lyman alpha emission in lensed star-forming galaxies
+p246
+sg11
+VWe examine the Mg II 2796, 2803 Angstrom, Lyman alpha, and nebular line emission in five bright star-forming galaxies at 1.66<z<1.91 that have been gravitationally lensed by foreground galaxy clusters. All five galaxies show prominent Mg II emission and absorption in a P Cygni profile. We find no correlation between the equivalent widths of Mg II and Lyman alpha emission. The Mg II emission has a broader range of velocities than do the nebular emission line profiles; the Mg II emission is redshifted with respect to systemic by 100 to 200 km/s. When present, Lyman alpha is even more redshifted. The reddest components of Mg II and Lyman alpha emission have tails to 500-600 km/s, implying a strong outflow. The lack of correlation in the Mg II and Lyman alpha equivalent widths, the differing velocity profiles, and the high ratios of Mg II to nebular line fluxes together suggest that the bulk of Mg II emission does not ultimately arise as nebular line emission, but may instead be reprocessed stellar continuum emission.
+p247
+sg13
+VarXiv:1406.3356
+p248
+sg15
+S'The Astrophysical Journal, in press. 6 pages, 2 figures'
+p249
+sg17
+S'/abs/1406.3356'
+p250
+sg19
+(lp251
+VJ. R. Rigby
+p252
+aVM. B. Bayliss
+p253
+aVM. D. Gladders
+p254
+aVK. Sharon
+p255
+aVE. Wuyts
+p256
+aVH. Dahle
+p257
+asg23
+S'/pdf/1406.3356'
+p258
+ssI12
+(dp259
+g9
+VAnalysis of Magnetic Fields in Inertial Alfven Wave Collisions
+p260
+sg11
+VTurbulence in astrophysical and space plasmas is dominated by the nonlinear interaction of counterpropagating Alfven waves. Most Alfven wave turbulence theories have been based on ideal plasma models, such as incompressible MHD, for Alfven waves at large scales. However, in the inertial Alfven wave regime (vA > vthe), relevant to magnetospheric plasmas, how the turbulent nonlinear interactions are modified by the dispersive nature of the waves remains to be explored. Here we present the first laboratory evidence of the nonlinear interaction in the inertial regime. A comparison is made with the theory for MHD Alfven waves.
+p261
+sg13
+VarXiv:1406.3357
+p262
+sg15
+S'2 pages, 1 figure'
+p263
+sg17
+S'/abs/1406.3357'
+p264
+sg19
+(lp265
+VDereth J. Drake
+p266
+aVJames W. R. Schroeder
+p267
+aVBrian C. Shanken
+p268
+aVGregory G. Howes
+p269
+aVFrederick Skiff
+p270
+aVCraig A. Kletzing
+p271
+aVTroy A. Carter
+p272
+aVSeth Dorfman
+p273
+asg23
+S'/pdf/1406.3357'
+p274
+ssI13
+(dp275
+g9
+VSpin Axes and Shape Models of Asteroid Pairs: Fingerprints of YORP and a Path to the Density of Rubble Piles
+p276
+sg11
+VAn asteroid pair consists of two unbound objects with almost identical heliocentric orbital elements that were formed when a single "rubble pile" asteroid failed to remain bound against an increasing rotation rate. Models suggest that the pairs' progenitors gained the fast rotation due to the YORP effect. Since it was shown that the spin axis vector can be aligned by the YORP effect, such a behavior should be seen on asteroid pairs, if they were indeed formed by the described mechanism. Alternatively, if the pairs were formed by a collision, the spin axes should have a random direction and small or young bodies might have a tumbling rotation. Here I apply the lightcurve inversion method on self-obtained photometric data, in order to derive the rotation axis vectors and shape models of the asteroid pairs 2110, 3749, 5026, 6070, 7343 and 44612. Three asteroids resulted with polar-directed spin axes and three objects with ambiguous results. In addition, the secondary member 44612 presents the same sense of rotation as its primary member 2110, and its spin is not tumbling. Finally, I use a rotational fission model, based on the assumption of an angular momentum conservation, and match it to the measured spin, shape, and mass ratio parameters in order to constrain the density of the primary members in the pairs. Using this method, low density values that are expected from a "rubble pile" are derived. All these results lead to the conclusion that the disruption of these asteroid pairs was most likely the outcome of the YORP effect that spun-up "rubble pile" asteroids.
+p277
+sg13
+VarXiv:1406.3359
+p278
+sg15
+S'20 Pages, 41 figures, 5 tables. Accepted for publication in Icarus'
+p279
+sg17
+S'/abs/1406.3359'
+p280
+sg19
+(lp281
+VDavid Polishook
+p282
+asg23
+S'/pdf/1406.3359'
+p283
+ssI14
+(dp284
+g9
+VOptically selected fossil groups; X-ray observations and galaxy properties
+p285
+sg11
+VWe report on the X-ray and optical observations of galaxy groups selected from the 2dfGRS group catalog, to explore the possibility that galaxy groups hosting a giant elliptical galaxy and a large optical luminosity gap present between the two brightest group galaxies, can be associated with an extended X-ray emission, similar to that observed in fossil galaxy groups. The X-ray observations of 4 galaxy groups were carried out with Chandra telescope with 10-20 ksec exposure time. Combining the X-ray and the optical observations we find evidences for the presence of a diffuse extended X-ray emission beyond the optical size of the brightest group galaxy. Taking both the X-ray and the optical criteria, one of the groups is identified as a fossil group and one is ruled out because of the contamination in the earlier optical selection. For the two remaining systems, the X-ay luminosity threshold is close to the convention know for fossil groups. In all cases the X-ray luminosity is below the expected value from the X-ray selected fossils for a given optical luminosity of the group. A rough estimation for the comoving number density of fossil groups is obtained and found to be in broad agreement with the estimations from observations of X-ray selected fossils and predictions of cosmological simulations.
+p286
+sg13
+VarXiv:1406.3362
+p287
+sg15
+S'Accepted for publication in MNRAS'
+p288
+sg17
+S'/abs/1406.3362'
+p289
+sg19
+(lp290
+VHabib G. Khosroshahi
+p291
+aVGhassem Gozaliasl
+p292
+aVJesper Rasmussen
+p293
+aVAlireza Molaeinezhad
+p294
+aVTrevor Ponman
+p295
+aVAli A. Dariush
+p296
+aVAlastair J.R. Sanderson
+p297
+asg23
+S'/pdf/1406.3362'
+p298
+ssI15
+(dp299
+g9
+VNuSTAR observations of X-ray bursts from the magnetar 1E 1048.1-5937
+p300
+sg11
+VWe report the detection of eight bright X-ray bursts from the 6.5-s magnetar 1E 1048.1-5937, during a 2013 July observation campaign with the Nuclear Spectroscopic Telescope Array (NuSTAR). We study the morphological and spectral properties of these bursts and their evolution with time. The bursts resulted in count rate increases by orders of magnitude, sometimes limited by the detector dead time, and showed blackbody spectra with kT=6-8 keV in the T90 duration of 1-4 s, similar to earlier bursts detected from the source. We find that the spectra during the tail of the bursts can be modeled with an absorbed blackbody with temperature decreasing with flux. The bursts flux decays followed a power-law of index 0.8-0.9. In the burst tail spectra, we detect a ~13 keV emission feature, similar to those reported in previous bursts from this source as well as from other magnetars observed with the Rossi X-ray Timing Explorer (RXTE). We explore possible origins of the spectral feature such as proton cyclotron emission, which implies a magnetic field strength of B~2X10^15 G in the emission region. However, the consistency of the energy of the feature in different objects requires further explanation.
+p301
+sg13
+VarXiv:1406.3377
+p302
+sg15
+S'10 pages, 6 figures, accepted for publication in ApJ'
+p303
+sg17
+S'/abs/1406.3377'
+p304
+sg19
+(lp305
+VHongjun An
+p306
+aVVictoria M. Kaspi
+p307
+aVAndrei M. Beloborodov
+p308
+aVChryssa Kouveliotou
+p309
+aVRobert F. Archibald
+p310
+aVSteven E. Boggs
+p311
+aVFinn E. Christensen
+p312
+aVWilliam W. Craig
+p313
+aVEric V. Gotthelf
+p314
+aVBrian W. Grefenstette
+p315
+aVCharles J. Hailey
+p316
+aVFiona A. Harrison
+p317
+aVKristin K. Madsen
+p318
+aVKaya Mori
+p319
+aVDaniel Stern
+p320
+aVWilliam W. Zhang
+p321
+asg23
+S'/pdf/1406.3377'
+p322
+ssI16
+(dp323
+g9
+VWater Ice and Dust in the Innermost Coma of Comet 103P/Hartley 2
+p324
+sg11
+VOn November 4th, 2010, the Deep Impact eXtended Investigation (DIXI) successfully encountered comet 103P/Hartley 2, when it was at a heliocentric distance of 1.06 AU. Spatially resolved near-IR spectra of comet Hartley 2 were acquired in the 1.05-4.83 micron wavelength range using the HRI-IR spectrometer. We present spectral maps of the inner ~10 kilometers of the coma collected 7 minutes and 23 minutes after closest approach. The extracted reflectance spectra include well-defined absorption bands near 1.5, 2.0, and 3.0 micron consistent in position, bandwidth, and shape with the presence of water ice grains. Using Hapke's radiative transfer model, we characterize the type of mixing (areal vs. intimate), relative abundance, grain size, and spatial distribution of water ice and refractories. Our modeling suggests that the dust, which dominates the innermost coma of Hartley 2 and is at a temperature of 300K, is thermally and physically decoupled from the fine-grained water ice particles, which are on the order of 1 micron in size. The strong correlation between the water ice, dust, and CO2 spatial distribution supports the concept that CO2 gas drags the water ice and dust grains from the nucleus. Once in the coma, the water ice begins subliming while the dust is in a constant outflow. The derived water ice scale-length is compatible with the lifetimes expected for 1-micron pure water ice grains at 1 AU, if velocities are near 0.5 m/s. Such velocities, about three order of magnitudes lower than the expansion velocities expected for isolated 1-micron water ice particles [Hanner, 1981; Whipple, 1951], suggest that the observed water ice grains are likely aggregates.
+p325
+sg13
+VarXiv:1406.3382
+p326
+sg15
+S'51 pages, 12 figures, accepted for publication in Icarus'
+p327
+sg17
+S'/abs/1406.3382'
+p328
+sg19
+(lp329
+VSilvia Protopapa
+p330
+aVJessica M. Sunshine
+p331
+aVLori M. Feaga
+p332
+aVMichael S. P. Kelley
+p333
+aVMichael F. A' Hearn
+p334
+aVTony L. Farnham
+p335
+aVOlivier Groussin
+p336
+aVSebastien Besse
+p337
+aVFrederic Merlin
+p338
+aVJian-Yang Li
+p339
+asg23
+S'/pdf/1406.3382'
+p340
+ssI17
+(dp341
+g9
+VConstraints on Pre-inflation Fluctuations in a Nearly Flat Open \u039bCDM Cosmology
+p342
+sg11
+VWe analyze the possible constraints on parameters characterizing the pre-inflating universe in an open inflation model with a present day very slightly open $\u005cLambda$CDM universe. We employ an analytic model to show that for a broad class of inflation-generating effective potentials, the simple requirement that the observed dipole moment represents the pre-inflation curvature as it enters the horizon allows one to set upper and lower limits on the magnitude and wavelength scale of pre-inflation fluctuations in the inflaton field and the curvature of the pre-inflation universe, as a function of the fraction of the total initial energy density in the inflaton field. We estimate that if the current CMB dipole is a universal dark flow (or if it is near the upper limit set by the Planck Collaboration) then the current constraints on $\u005cLambda$CDM cosmological parameters imply rather small curvature $\u005cOmega_k \u005csimeq 0.1$ for the pre-inflating universe for a broad range of the fraction of the total energy in the inflaton field at the onset of inflation. Such small pre-inflation curvature might be indicative of open-inflation models in which there are two epochs of inflation.
+p343
+sg13
+VarXiv:1406.3409
+p344
+sg15
+S'6 pages, 1 figure'
+p345
+sg17
+S'/abs/1406.3409'
+p346
+sg19
+(lp347
+VG. J. Mathews
+p348
+aVN. Q. Lan
+p349
+aVT. Kajino
+p350
+asg23
+S'/pdf/1406.3409'
+p351
+ssI18
+(dp352
+g9
+VWarm Dark Haloes Accretion Histories and their Gravitational Signatures
+p353
+sg11
+VWe study clusters in Warm Dark Matter (WDM) models of a thermally produced dark matter particle $0.5$ keV in mass. We show that, despite clusters in WDM cosmologies having similar density profiles as their Cold Dark Matter (CDM) counterparts, the internal properties, such as the amount of substructure, shows marked differences. This result is surprising as clusters are at mass scales that are {\u005cem a thousand times greater} than that at which structure formation is suppressed. WDM clusters gain significantly more mass via smooth accretion and contain fewer substructures than their CDM brethren. The higher smooth mass accretion results in subhaloes which are physically more extended and less dense. These fine-scale differences can be probed by strong gravitational lensing. We find, unexpectedly, that WDM clusters have {\u005cem higher} lensing efficiencies than those in CDM cosmologies, contrary to the naive expectation that WDM clusters should be less efficient due to the fewer substructures they contain. Despite being less dense, the larger WDM subhaloes are more likely to have larger lensing cross-sections than CDM ones. Additionally, WDM subhaloes typically reside at larger distances, which radially stretches the critical lines associated with strong gravitational lensing, resulting in excess in the number of clusters with large radial cross-sections at the $\u005csim2\u005csigma$ level. Though lensing profile for an individual cluster vary significantly with the line-of-sight, the radial arc distribution based on a sample of $\u005cgtrsim100$ clusters may prove to be the crucial test for the presence of WDM.
+p354
+sg13
+VarXiv:1406.3413
+p355
+sg15
+S'13 pages, 14 figures, submitted to MNRAS'
+p356
+sg17
+S'/abs/1406.3413'
+p357
+sg19
+(lp358
+VPascal J. Elahi
+p359
+aVHareth S. Mahdi
+p360
+aVChris Power
+p361
+aVGeraint F. Lewis
+p362
+asg23
+S'/pdf/1406.3413'
+p363
+ssI19
+(dp364
+g9
+VSearch for 100 MeV to 10 GeV gamma-ray lines in the Fermi-LAT data and implications for gravitino dark matter in the $\u03bc\u03bd$SSM
+p365
+sg11
+VDark matter decay or annihilation may produce monochromatic signals in the gamma-ray energy range. In this work we argue that there are strong theoretical motivations for studying these signals in the framework of gravitino dark matter decay and we perform a search for gamma-ray spectral lines from 100\u005c,MeV to 10\u005c,GeV with Fermi-LAT data. In contrast to previous line searches at higher energies, the sensitivity of the present search is dominated by systematic uncertainties across most of the energy range considered. We estimate the size of systematic effects by analysing the flux from a number of control regions, and include the systematic uncertainties consistently in our fitting procedure. We have not observed any significant signals and present model-independent limits on gamma-ray line emission from decaying and annihilating dark matter. We apply the former limits to the case of the gravitino, a well-known dark matter candidate in supersymmetric scenarios. In particular, the $R$-parity violating "$\u005cmu$ from $\u005cnu$" Supersymmetric Standard Model ($\u005cmu\u005cnu$SSM) is an attractive scenario in which including right-handed neutrinos solves the $\u005cmu$ problem of the Minimal Supersymmetric Standard Model while simultaneously explaining the origin of neutrino masses. At the same time, the violation of $R$-parity renders the gravitino unstable and subject to decay into a photon and a neutrino. As a consequence of the limits on line emission, $\u005cmu\u005cnu$SSM gravitinos with masses larger than about 5\u005c,GeV, or lifetimes smaller than about $10^{28}$\u005c,s, are excluded at 95% confidence level as dark matter candidates.
+p366
+sg13
+VarXiv:1406.3430
+p367
+sg15
+S'31 pages, 9 figures, and 5 tables. Contact authors: Andrea Albert, German A. Gomez-Vargas, Michael Grefe, Carlos Munoz, and Christoph Weniger'
+p368
+sg17
+S'/abs/1406.3430'
+p369
+sg19
+(lp370
+VAndrea Albert
+p371
+aVGerman A. Gomez-Vargas
+p372
+aVMichael Grefe
+p373
+aVCarlos Munoz
+p374
+aVChristoph Weniger
+p375
+aVElliott D. Bloom
+p376
+aVEric Charles
+p377
+aVMario N. Mazziotta
+p378
+aVAldo Morselli
+p379
+asg23
+S'/pdf/1406.3430'
+p380
+ssI20
+(dp381
+g9
+Vdally driven dynamos in a rotating sphere
+p382
+sg11
+VLarge-scale planetary or stellar magnetic fields generated by a dynamo effect are mostly attributed to flows forced by buoyancy forces in electrically conducting fluid layers. However, these large-scale fields may also be controlled by tides, as previously suggested for the star $\u005ctau$-boo, Mars or the Early Moon. By simulating a small local patch of a rotating fluid, \u005ccite{Barker2014} have recently shown that tides can drive small-scale dynamos by exciting a hydrodynamic instability, the so-called elliptical (or tidal) instability. By performing global magnetohydrodynamic simulations of a rotating spherical fluid body, we investigate if this instability can also drive the observed large-scale magnetic fields. We are thus interested by the dynamo threshold and the generated magnetic field in order to test if such a mechanism is relevant for planets and stars. Rather than solving the problem in a geometry deformed by tides, we consider a spherical fluid body and add a body force to mimic the tidal deformation in the bulk of the fluid. This allows us to use an efficient spectral code to solve the magnetohydrodynamic problem. We first compare the hydrodynamic results with theoretical asymptotic results, and numerical results obtained in a truely deformed ellipsoid, which confirms the presence of the elliptical instability. We then perform magnetohydrodynamic simulations, and investigate the dynamo capability of the flow. Kinematic and self-consistent dynamos are finally simulated, showing that the elliptical instability is capable of generating dipole dominated large-scale magnetic field in global simulations of a fluid rotating sphere.
+p383
+sg13
+VarXiv:1406.3431
+p384
+sg15
+S'Astrophysical Journal Letters In press, (accepted) (2014) (accepted)'
+p385
+sg17
+S'/abs/1406.3431'
+p386
+sg19
+(lp387
+VDavid Cébron (ISTerre)
+p388
+aVRainer Hollerbach
+p389
+asg23
+S'/pdf/1406.3431'
+p390
+ssI21
+(dp391
+g9
+VUniversal Profiles of the Intracluster Medium from Suzaku X-Ray and Subaru Weak Lensing Obesrvations
+p392
+sg11
+VWe conduct a joint X-ray and weak-lensing study of four relaxed galaxy clusters (Hydra A, A478, A1689 and A1835) observed by both Suzaku and Subaru out to virial radii, with an aim to understand recently-discovered unexpected feature of the ICM in cluster outskirts. We show that the average hydrostatic-to-lensing total mass ratio for the four clusters decreases from \u005csim 70% to \u005csim 40% as the overdensity contrast decreases from 500 to the virial value.The average gas mass fraction from lensing total mass estimates increases with cluster radius and agrees with the cosmic mean baryon fraction within the virial radius, whereas the X-ray-based gas fraction considerably exceeds the cosmic values due to underestimation of the hydrostatic mass. We also develop a new advanced method for determining normalized cluster radial profiles for multiple X-ray observables by simultaneously taking into account both their radial dependence and multivariate scaling relations with weak-lensing masses. Although the four clusters span a range of halo mass, concentration, X-ray luminosity and redshift, we find that the gas entropy, pressure, temperature and density profiles are all remarkably self-similar when scaled with the lensing M_200 mass and r_200 radius.The entropy monotonically increases out to \u005csim 0.5r_200 following the accretion shock heating model K(r)\u005cpropto r^1.1, and flattens at \u005csimgt 0.5r_200.The universality of the scaled entropy profiles indicates that the thermalization mechanism over the entire cluster region (>0.1r_200) is controlled by gravitation in a common to all clusters, although the heating efficiency in the outskirts needs to be modified from the standard law.The bivariate scaling functions of the gas density and temperature reveal that the flattening of the outskirts entropy profile is caused by the steepening of the temperature, rather than the flattening of the gas density.
+p393
+sg13
+VarXiv:1406.3451
+p394
+sg15
+S'Submitted to PASJ : 13 pages 6 figures and 4 tables'
+p395
+sg17
+S'/abs/1406.3451'
+p396
+sg19
+(lp397
+VN. Okabe
+p398
+aVK. Umetsu
+p399
+aVT. Tamura
+p400
+aVY. Fujita
+p401
+aVM. Takizawa
+p402
+aVY. -Y. Zhang
+p403
+aVK. Matsushita
+p404
+aVT. Hamana
+p405
+aVY. Fukazawa
+p406
+aVT. Futamase
+p407
+aVM. Kawaharada
+p408
+aVS. Miyazaki
+p409
+aVY. Mochizuki
+p410
+aVK. Nakazawa
+p411
+aVT. Ohashi
+p412
+aVN. Ota
+p413
+aVT. Sasaki
+p414
+aVK. Sato
+p415
+aVS. I. Tam
+p416
+asg23
+S'/pdf/1406.3451'
+p417
+ssI22
+(dp418
+g9
+VIntroduction to the Theory of Stellar Evolution
+p419
+sg11
+VIn this chapter we briefly review the basics of the theory of stellar evolution.
+p420
+sg13
+VarXiv:1406.3462
+p421
+sg15
+S'Chapter 1, in Ecology of Blue Straggler Stars, H.M.J. Boffin, G. Carraro & G. Beccari (Eds), Astrophysics and Space Science Library, Springer'
+p422
+sg17
+S'/abs/1406.3462'
+p423
+sg19
+(lp424
+VG. Beccari
+p425
+aVG. Carraro
+p426
+asg23
+S'/pdf/1406.3462'
+p427
+ssI23
+(dp428
+g9
+VBlue Straggler Stars: Early Observations that Failed to Solve the Problem
+p429
+sg11
+VIn this chapter, I describe early ideas on blue stragglers, and various observations (some published, some not) that promised but failed to resolve the question of their origin. I review the data and ideas that were circulating from Allan Sandage's original discovery in 1953 of "anomalous blue stars" in the globular cluster M3, up until about 1992, when what seems to have been the only previous meeting devoted to Blue Straggler Stars (BSSs) was held at the Space Telescope Science Institute.
+p430
+sg13
+VarXiv:1406.3463
+p431
+sg15
+S'Chapter 2, in Ecology of Blue Straggler Stars, H.M.J. Boffin, G. Carraro & G. Beccari (Eds), Astrophysics and Space Science Library, Springer'
+p432
+sg17
+S'/abs/1406.3463'
+p433
+sg19
+(lp434
+VRussel D. Cannon
+p435
+asg23
+S'/pdf/1406.3463'
+p436
+ssI24
+(dp437
+g9
+Vhe Blue Stragglers of the Old Open Cluster NGC 188
+p438
+sg11
+VThe old (7 Gyr) open cluster NGC 188 has yielded a wealth of astrophysical insight into its rich blue straggler population. Specifically, the NGC 188 blue stragglers are characterized by: A binary frequency of 80% for orbital periods less than $10^4$ days;Typical orbital periods around 1000 days;Typical secondary star masses of 0.5 M$_{\u005codot}$; At least some white dwarf companion stars; Modestly rapid rotation; A bimodal radial spatial distribution; Dynamical masses greater than standard stellar evolution masses (based on short-period binaries); Under-luminosity for dynamical masses (short-period binaries). Extensive $N$-body modeling of NGC 188 with empirical initial conditions reproduces the properties of the cluster, and in particular the main-sequence solar-type binary population. The current models also reproduce well the binary orbital properties of the blue stragglers, but fall well short of producing the observed number of blue stragglers. This deficit could be resolved by reducing the frequency of common-envelope evolution during Roche lobe overflow. Both the observations and the $N$-body models strongly indicate that the long-period blue-straggler binaries - which dominate the NGC 188 blue straggler population - are formed by asymptotic-giant (primarily) and red-giant mass transfer onto main sequence stars. The models suggest that the few non-velocity-variable blue stragglers formed from mergers or collisions. Several remarkable short-period double-lined binaries point to the importance of subsequent dynamical exchange encounters, and provide at least one example of a likely collisional origin for a blue straggler.
+p439
+sg13
+VarXiv:1406.3467
+p440
+sg15
+S'Chapter 3, in Ecology of Blue Straggler Stars, H.M.J. Boffin, G. Carraro & G. Beccari (Eds), Astrophysics and Space Science Library, Springer'
+p441
+sg17
+S'/abs/1406.3467'
+p442
+sg19
+(lp443
+VRobert D. Mathieu
+p444
+aVAaron M. Geller
+p445
+asg23
+S'/pdf/1406.3467'
+p446
+ssI25
+(dp447
+g9
+VField Blue Stragglers and Related Mass Transfer Issues
+p448
+sg11
+VThis chapter contains my impressions and perspectives about the current state of knowledge about field blue stragglers (FBS) stars, drawn from an extensive literature that I searched. I conclude my review of issues that attend FBS and mass transfer, by a brief enumeration of a few mildly disquieting observational facts.
+p449
+sg13
+VarXiv:1406.3468
+p450
+sg15
+S'Chapter 4, in Ecology of Blue Straggler Stars, H.M.J. Boffin, G. Carraro & G. Beccari (Eds), Astrophysics and Space Science Library, Springer'
+p451
+sg17
+S'/abs/1406.3468'
+p452
+sg19
+(lp453
+VGeorge W. Preston
+p454
+asg23
+S'/pdf/1406.3468'
+p455
+ssI26
+(dp456
+g9
+VFe-rich ejecta in the supernova remnant G352.7-0.1 with Suzaku
+p457
+sg11
+VIn this work, we present results from a $\u005csim$201.6 ks observation of G352.7$-$0.1 by using the X-ray Imaging Spectrometer onboard {\u005cit Suzaku} X-ray Observatory. The X-ray emission from the remnant is well described by two-temperature thermal models of non-equilibrium ionization with variable abundances with a column density of $N_{\u005crm H}$ $\u005csim$ 3.3$\u005ctimes$10$^{22}$ cm$^{-2}$. The soft component is characterized by an electron temperature of $kT_{\u005crm e}$ $\u005csim$ 0.6 keV, an ionization time-scale of $\u005ctau$ $\u005csim$ 3.4$\u005ctimes$10$^{11}$ cm$^{-3}$ s, and enhanced Si, S, Ar, and Ca abundances. The hard component has $kT_{\u005crm e}$ $\u005csim$ 4.3 keV, $\u005ctau$ $\u005csim$ 8.8$\u005ctimes$10$^{9}$ cm$^{-3}$ s, and enhanced Fe abundance. The elemental abundances of Si, S, Ar, Ca, and Fe are found to be significantly higher than the solar values that confirm the presence of ejecta. We detected strong Fe K-shell emission and determined its origin to be the ejecta for the first time. The detection of Fe ejecta with a lower ionization time-scale favor Type Ia origin for this remnant.
+p458
+sg13
+VarXiv:1406.3470
+p459
+sg15
+S'5 pages, 2 figures and 2 tables, Accepted for publication in The Astrophysical Journal'
+p460
+sg17
+S'/abs/1406.3470'
+p461
+sg19
+(lp462
+VAytap Sezer
+p463
+aVFatma Gok
+p464
+asg23
+S'/pdf/1406.3470'
+p465
+ssI27
+(dp466
+g9
+VBlue Straggler Stars in Globular Clusters: a powerful tool to probe the internal dynamical evolution of stellar systems
+p467
+sg11
+VThis chapter presents an overview of the main observational results obtained to date about Blue Straggler Stars (BSSs) in Galactic Globular Clusters (GCs). The BSS specific frequency, radial distribution, chemical composition and rotational properties are presented and discussed in the framework of using this stellar population as probe of GC internal dynamics. In particular, the shape of the BSS radial distribution has been found to be a powerful tracer of the dynamical age of stellar systems, thus allowing the definition of the first empirical "dynamical clock".
+p468
+sg13
+VarXiv:1406.3471
+p469
+sg15
+S'Chapter 5, in Ecology of Blue Straggler Stars, H.M.J. Boffin, G. Carraro & G. Beccari (Eds), Astrophysics and Space Science Library, Springer'
+p470
+sg17
+S'/abs/1406.3471'
+p471
+sg19
+(lp472
+VFrancesco R. Ferraro
+p473
+aVBarbara Lanzoni
+p474
+aVEmanuele Dalessandro
+p475
+aVAlessio Mucciarelli
+p476
+aVLoredana Lovisi
+p477
+asg23
+S'/pdf/1406.3471'
+p478
+ssI28
+(dp479
+g9
+Vhe Blue Straggler Population in Dwarf Galaxies
+p480
+sg11
+VIn this chapter I review the recent developments regarding the study of Blue Stragglers (BSS) in dwarf galaxies. The loose density environment of dwarf galaxies resembles that of the Galactic Halo, hence it is natural to compare their common BSS properties. At the same time, it is unescapable to compare with the BSS properties in Galactic Globular clusters, which constitute the reference point for BSS studies. Admittedly, the literature on BSS in dwarf galaxies is not plentiful. The limitation is mostly due to the large distance to even the closest dwarf galaxies. Nevertheless, recent studies have allowed a deeper insight on the BSS photometric properties that are worth examining.
+p481
+sg13
+VarXiv:1406.3472
+p482
+sg15
+S'Chapter 6, in Ecology of Blue Straggler Stars, H.M.J. Boffin, G. Carraro & G. Beccari (Eds), Astrophysics and Space Science Library, Springer'
+p483
+sg17
+S'/abs/1406.3472'
+p484
+sg19
+(lp485
+VYazan Momany
+p486
+asg23
+S'/pdf/1406.3472'
+p487
+ssI29
+(dp488
+g9
+VMass Transfer by Stellar Wind
+p489
+sg11
+VI review the process of mass transfer in a binary system through a stellar wind, with an emphasis on systems containing a red giant. I show how wind accretion in a binary system is different from the usually assumed Bondi-Hoyle approximation, first as far as the flow's structure is concerned, but most importantly, also for the mass accretion and specific angular momentum loss. This has important implications on the evolution of the orbital parameters. I also discuss the impact of wind accretion, on the chemical pollution and change in spin of the accreting star. The last section deals with observations and covers systems that most likely went through wind mass transfer: barium and related stars, symbiotic stars and central stars of planetary nebulae (CSPN). The most recent observations of cool CSPN progenitors of barium stars, as well as of carbon-rich post-common envelope systems, are providing unique constraints on the mass transfer processes.
+p490
+sg13
+VarXiv:1406.3473
+p491
+sg15
+S'Chapter 7, in Ecology of Blue Straggler Stars, H.M.J. Boffin, G. Carraro & G. Beccari (Eds), Astrophysics and Space Science Library, Springer'
+p492
+sg17
+S'/abs/1406.3473'
+p493
+sg19
+(lp494
+VHenri M.J. Boffin
+p495
+asg23
+S'/pdf/1406.3473'
+p496
+ssI30
+(dp497
+g9
+VBinary Evolution: Roche Lobe Overflow and Blue Stragglers
+p498
+sg11
+VOne of the principal mechanisms that is responsible for the origin of blue stragglers is mass transfer that takes place while one of the binary companions overfills its Roche lobe. In this Chapter, we overview the theoretical understanding of mass transfer via Roche lobe overflow: classification, how both the donor and of the accretor respond to the mass transfer on different timescales (adiabatic response, equilibrium response, superadiabatic response, time-dependent response) for different types of their envelopes (convective and radiative). These responses, as well as the assumption on how liberal the process is, are discussed in terms of the stability of the ensuing mass transfer. The predictions of the theory of mass transfer via Roche lobe overflow are then briefly compared with the observed mass-transferring systems with both degenerate and non-degenerate donors. We conclude with the discussion which cases of mass transfer and which primordial binaries could be responsible for blue stragglers formation via Roche lobe overflow, as well as how this can be enhanced for blue stragglers formed in globular clusters.
+p499
+sg13
+VarXiv:1406.3475
+p500
+sg15
+S'Chapter 8, in Ecology of Blue Straggler Stars, H.M.J. Boffin, G. Carraro & G. Beccari (Eds), Astrophysics and Space Science Library, Springer'
+p501
+sg17
+S'/abs/1406.3475'
+p502
+sg19
+(lp503
+VNatalia Ivanova
+p504
+asg23
+S'/pdf/1406.3475'
+p505
+ssI31
+(dp506
+g9
+VFormation Channels for Blue Straggler Stars
+p507
+sg11
+VIn this chapter we consider two formation channels for blue straggler stars: 1) the merger of two single stars via a collision, and 2) those produced via mass transfer within a binary. We review how computer simulations show that stellar collisions are likely to lead to relatively little mass loss and are thus effective in producing a young population of more-massive stars. The number of blue straggler stars produced by collisions will tend to increase with cluster mass. We review how the current population of blue straggler stars produced from primordial binaries decreases with increasing cluster mass. This is because exchange encounters with third, single stars in the most massive clusters tend to reduce the fraction of binaries containing a primary close to the current turn-off mass. Rather, their primaries tend to be somewhat more massive and have evolved off the main sequence, filling their Roche lobes in the past, often converting their secondaries into blue straggler stars (but more than 1 Gyr or so ago and thus they are no longer visible today as blue straggler stars).
+p508
+sg13
+VarXiv:1406.3477
+p509
+sg15
+S'Chapter 9, in Ecology of Blue Straggler Stars, H.M.J. Boffin, G. Carraro & G. Beccari (Eds), Astrophysics and Space Science Library, Springer'
+p510
+sg17
+S'/abs/1406.3477'
+p511
+sg19
+(lp512
+VMelvyn B. Davies
+p513
+asg23
+S'/pdf/1406.3477'
+p514
+ssI32
+(dp515
+g9
+VDynamical Processes in Globular Clusters
+p516
+sg11
+VGlobular clusters are among the most congested stellar systems in the Universe. Internal dynamical evolution drives them toward states of high central density, while simultaneously concentrating the most massive stars and binary systems in their cores. As a result, these clusters are expected to be sites of frequent close encounters and physical collisions between stars and binaries, making them efficient factories for the production of interesting and observable astrophysical exotica. I describe some elements of the competition among stellar dynamics, stellar evolution, and other processes that control globular cluster dynamics, with particular emphasis on pathways that may lead to the formation of blue stragglers.
+p517
+sg13
+VarXiv:1406.3487
+p518
+sg15
+S'Chapter 10, in Ecology of Blue Straggler Stars, H.M.J. Boffin, G. Carraro & G. Beccari (Eds), Astrophysics and Space Science Library, Springer'
+p519
+sg17
+S'/abs/1406.3487'
+p520
+sg19
+(lp521
+VStephen L. W. McMillan
+p522
+asg23
+S'/pdf/1406.3487'
+p523
+ssI33
+(dp524
+g9
+Vhe Multiple Origin of Blue Straggler Stars: Theory vs. Observations
+p525
+sg11
+VIn this chapter we review the various suggested channels for the formation and evolution of blue straggler stars (BSSs) in different environments and their observational predictions. These include mass transfer during binary stellar evolution - case A/B/C and D (wind Roche-lobe overflow) mass transfer, stellar collisions during single and binary encounters in dense stellar cluster, and coupled dynamical and stellar evolution of triple systems. We also explore the importance of the BSS and binary dynamics in stellar clusters. We review the various observed properties of BSSs in different environments (halo and bulge BSSs, BSSs in globular clusters and BSSs in old open clusters), and compare the current observations with the theoretical predictions for BSS formation. We try to constrain the likely progenitors and processes that play a role in the formation of BSSs and their evolution. We find that multiple channels of BSS formation are likely to take part in producing the observed BSSs, and we point out the strengths and weaknesses of each the formation channel in respect to the observational constraints. Finally we point out directions to further explore the origin of BSS, and highlight eclipsing binary BSSs as important observational tool.
+p526
+sg13
+VarXiv:1406.3490
+p527
+sg15
+S'Chapter 11, in Ecology of Blue Straggler Stars, H.M.J. Boffin, G. Carraro & G. Beccari (Eds), Astrophysics and Space Science Library, Springer'
+p528
+sg17
+S'/abs/1406.3490'
+p529
+sg19
+(lp530
+VHagai B. Perets
+p531
+asg23
+S'/pdf/1406.3490'
+p532
+ssI34
+(dp533
+g9
+VModels of Individual Blue Stragglers
+p534
+sg11
+VThis chapter describes the current state of models of individual blue stragglers. Stellar collisions, binary mergers (or coalescence), and partial or ongoing mass transfer have all been studied in some detail. The products of stellar collisions retain memory of their parent stars and are not fully mixed. Very high initial rotation rates must be reduced by an unknown process to allow the stars to collapse to the main sequence. The more massive collision products have shorter lifetimes than normal stars of the same mass, while products between low mass stars are long-lived and look very much like normal stars of their mass. Mass transfer can result in a merger, or can produce another binary system with a blue straggler and the remnant of the original primary. The products of binary mass transfer cover a larger portion of the colour-magnitude diagram than collision products for two reasons: there are more possible configurations which produce blue stragglers, and there are differing contributions to the blended light of the system. The effects of rotation may be substantial in both collision and merger products, and could result in significant mixing unless angular momentum is lost shortly after the formation event. Surface abundances may provide ways to distinguish between the formation mechanisms, but care must be taking to model the various mixing mechanisms properly before drawing strong conclusions. Avenues for future work are outlined.
+p535
+sg13
+VarXiv:1406.3491
+p536
+sg15
+S'Chapter 12, in Ecology of Blue Straggler Stars, H.M.J. Boffin, G. Carraro & G. Beccari (Eds), Astrophysics and Space Science Library, Springer'
+p537
+sg17
+S'/abs/1406.3491'
+p538
+sg19
+(lp539
+VAlison Sills
+p540
+asg23
+S'/pdf/1406.3491'
+p541
+ssI35
+(dp542
+g9
+VBlue Stragglers in Globular Clusters: Observations, Statistics and Physics
+p543
+sg11
+VThis chapter explores how we might use the observed {\u005cem statistics} of blue stragglers in globular clusters to shed light on their formation. This means we will touch on topics also discussed elsewhere in this book, such as the discovery and implications of bimodal radial distributions and the "double sequences" of blue stragglers that have recently been found in some clusters. However, we will focus particularly on the search for a "smoking gun" correlation between the number of blue stragglers in a given globular cluster and a physical cluster parameter that would point towards a particular formation channel. As we shall see, there is little evidence for an intrinsic correlation between blue straggler numbers and stellar collision rates, even in dense cluster cores. On the other hand, there is a clear correlation between blue straggler numbers and the total (core) mass of the cluster. This would seem to point towards a formation channel involving binaries, rather than dynamical encounters. However, the correlation between blue straggler numbers and actual binary numbers - which relies on recently determined empirical binary fractions - is actually weaker than that with core mass. We explain how this surprising result may be reconciled with a binary formation channel if binary fractions depend almost uniquely on core mass. If this is actually the case, it would have significant implications for globular cluster dynamics more generally.
+p544
+sg13
+VarXiv:1406.3493
+p545
+sg15
+S'Chapter 13, in Ecology of Blue Straggler Stars, H.M.J. Boffin, G. Carraro & G. Beccari (Eds), Astrophysics and Space Science Library, Springer'
+p546
+sg17
+S'/abs/1406.3493'
+p547
+sg19
+(lp548
+VChristian Knigge
+p549
+asg23
+S'/pdf/1406.3493'
+p550
+ssI36
+(dp551
+g9
+VBlue Stragglers in Clusters and Integrated Spectral Properties of Stellar Populations
+p552
+sg11
+VBlue straggler stars are the most prominent bright objects in the colour-magnitude diagram of a star cluster that challenges the theory of stellar evolution. Star clusters are the closest counterparts of the theoretical concept of simple stellar populations (SSPs) in the Universe. SSPs are widely used as the basic building blocks to interpret stellar contents in galaxies. The concept of an SSP is a group of coeval stars which follows a given distribution in mass, and has the same chemical property and age. In practice, SSPs are more conveniently made by the latest stellar evolutionary models of single stars. In reality, however, stars can be more complicated than just single either at birth time or during the course of evolution in a typical environment. Observations of star clusters show that there are always exotic objects which do not follow the predictions of standard theory of stellar evolution. Blue straggler stars (BSSs), as discussed intensively in this book both observationally and theoretically, are very important in our context when considering the integrated spectral properties of a cluster, or a simple stellar population. In this chapter, we are going to describe how important the contribution of BSSs is to the total light of a cluster.
+p553
+sg13
+VarXiv:1406.3494
+p554
+sg15
+S'Chapter 14, in Ecology of Blue Straggler Stars, H.M.J. Boffin, G. Carraro & G. Beccari (Eds), Astrophysics and Space Science Library, Springer'
+p555
+sg17
+S'/abs/1406.3494'
+p556
+sg19
+(lp557
+VYu Xin
+p558
+aVLicai Deng
+p559
+asg23
+S'/pdf/1406.3494'
+p560
+ssI37
+(dp561
+g9
+VReprocessing of Ices in Turbulent Protoplanetary Disks: Carbon and Nitrogen Chemistry
+p562
+sg11
+VWe study the influence of the turbulent transport on ice chemistry in protoplanetary disks, focusing on carbon and nitrogen bearing molecules. Chemical rate equations are solved with the diffusion term, mimicking the turbulent mixing in the vertical direction. Turbulence can bring ice-coated dust grains from the midplane to the warm irradiated disk surface, and the ice mantles are reprocessed by photoreactions, thermal desorption, and surface reactions. The upward transport decreases the abundance of methanol and ammonia ices at r < 30 AU, because warm dust temperature prohibits their reformation on grain surfaces. This reprocessing could explain the smaller abundances of carbon and nitrogen bearing molecules in cometary coma than those in low-mass protostellar envelopes. We also show the effect of mixing on the synthesis of complex organic molecules (COMs) are two ways: (1) transport of ices from the midplane to the disk surface and (2) transport of atomic hydrogen from the surface to the midplane. The former enhances the COMs formation in the disk surface, while the latter suppresses it in the midplane. Then, when mixing is strong, COMs are predominantly formed in the disk surface, while their parent molecules are (re)formed in the midplane. This cycle expands the COMs distribution both vertically and radially outward compared with that in the non-turbulent model. We derive the timescale of the sink mechanism by which CO and N2 are converted to less volatile molecules to be depleted from the gas phase, and find that the vertical mixing suppresses this mechanism in the inner disks.
+p563
+sg13
+VarXiv:1406.3507
+p564
+sg15
+S'38 pages, 11 figures, 3 tables, accepted to ApJ'
+p565
+sg17
+S'/abs/1406.3507'
+p566
+sg19
+(lp567
+VKenji Furuya
+p568
+aVYuri Aikawa
+p569
+asg23
+S'/pdf/1406.3507'
+p570
+ssI38
+(dp571
+g9
+VDispersion measure contributed by a relativistic neutron star wind and implication for fast radio bursts
+p572
+sg11
+VThe possible contribution to dispersion measure (DM) by neutron star winds is investigated by introducing a relativistic definition of the DM. On one hand, I propose that the observed fast radio bursts (FRBs) could be produced by activities on some peculiar young Galactic neutron stars, where the large DMs of the FRBs can be ascribed to the neutron star winds rather than the intergalactic medium. On the other hand, in the sight of cosmological origin of FRBs, I also investigate the possible association of the FRBs with the collapses of millisecond magnetars harbored in gamma-ray bursts (GRBs). In particular, as required by the observed bright internal X-ray afterglows, a high intrinsic DM could be contributed by the emitting neutron star winds, which could even exceed the contribution from the intergalactic medium. In any case, such a result is strongly dependent on the uncertain dissipation mechanisms of the winds and more DM measurements of FRBs could provide stringent constraints on the wind physics.
+p573
+sg13
+VarXiv:1406.3520
+p574
+sg15
+S'5 pages, 1 figures'
+p575
+sg17
+S'/abs/1406.3520'
+p576
+sg19
+(lp577
+VYun-Wei Yu
+p578
+asg23
+S'/pdf/1406.3520'
+p579
+ssI39
+(dp580
+g9
+VDetecting Earth's Temporarily-Captured Natural Satellites - Minimoons
+p581
+sg11
+VWe present a study on the discoverability of temporarily captured orbiters (TCOs) by present day or near-term anticipated ground-based and space-based facilities. TCOs (Granvik et al. 2012) are potential targets for spacecraft ren- dezvous or human exploration (Chyba et al. 2014) and provide an opportunity to study the population of the smallest asteroids in the solar system. We find that present day ground-based optical surveys such as Pan-STARRS and ATLAS can discover the largest TCOs over years of operation. A targeted survey conducted with the Subaru telescope can discover TCOs in the 0.5 m to 1.0 m diameter size range in about 5 nights of observing. Furthermore, we discuss the application of space-based infrared surveys, such as NEOWISE, and ground-based meteor detection systems such as CAMS, CAMO and ASGARD in discovering TCOs. These systems can detect TCOs but at a uninteresting rate. Finally, we discuss the application of bi-static radar at Arecibo and Green Bank to discover TCOs. Our radar simulations are strongly dependent on the rotation rate distribution of the smallest asteroids but with an optimistic distribution we find that these systems have > 80% chance of detecting a > 10 cm diameter TCO in about 40 h of operation.
+p582
+sg13
+VarXiv:1406.3534
+p583
+sg15
+S'44 Pages, 14 Figures, 1 Table'
+p584
+sg17
+S'/abs/1406.3534'
+p585
+sg19
+(lp586
+VBryce Bolin
+p587
+aVRobert Jedicke
+p588
+aVMikael Granvik
+p589
+aVPeter Brown
+p590
+aVEllen Howell
+p591
+aVMichael C. Nolan
+p592
+aVPetrus M. Jenniskens
+p593
+aVMonique Chyba
+p594
+aVGeoff Patterson
+p595
+aVRichard Wainscoat
+p596
+asg23
+S'/pdf/1406.3534'
+p597
+ssI40
+(dp598
+g9
+VDAMEWARE: A web cyberinfrastructure for astrophysical data mining
+p599
+sg11
+VAstronomy is undergoing through a methodological revolution triggered by an unprecedented wealth of complex and accurate data. The new panchromatic, synoptic sky surveys require advanced tools for discovering patterns and trends hidden behind data which are both complex and of high dimensionality. We present DAMEWARE (DAta Mining & Exploration Web Application REsource): a general purpose, web-based, distributed data mining environment developed for the exploration of large datasets, and finely tuned for astronomical applications. By means of graphical user interfaces, it allows the user to perform classification, regression or clustering tasks with machine learning methods. Salient features of DAMEWARE include its capability to work on large datasets with minimal human intervention, and to deal with a wide variety of real problems such as the classification of globular clusters in the galaxy NGC1399, the evaluation of photometric redshifts and, finally, the identification of candidate Active Galactic Nuclei in multiband photometric surveys. In all these applications, DAMEWARE allowed to achieve better results than those attained with more traditional methods. With the aim of providing potential users with all needed information, in this paper we briefly describe the technological background of DAMEWARE, give a short introduction to some relevant aspects of data mining, followed by a summary of some science cases and, finally, we provide a detailed description of a template use case.
+p600
+sg13
+VarXiv:1406.3538
+p601
+sg15
+S'To appear in PASP (accepted for pubblication)'
+p602
+sg17
+S'/abs/1406.3538'
+p603
+sg19
+(lp604
+VMassimo Brescia
+p605
+aVStefano Cavuoti
+p606
+aVGiuseppe Longo
+p607
+aVAlfonso Nocella
+p608
+aVMauro Garofalo
+p609
+aVFrancesco Manna
+p610
+aVFrancesco Esposito
+p611
+aVGiovanni Albano
+p612
+aVMarisa Guglielmo
+p613
+aVGiovanni D'Angelo
+p614
+aVAlessandro Di Guido
+p615
+aVGeorge S. Djorgovski
+p616
+aVCiro Donalek
+p617
+aVAshish A. Mahabal
+p618
+aVMatthew J. Graham
+p619
+aVMichelangelo Fiore
+p620
+aVRaffaele D'Abrusco
+p621
+asg23
+S'/pdf/1406.3538'
+p622
+ssI41
+(dp623
+g9
+VBasics of the NLTE physics
+p624
+sg11
+VBasic assumptions of the NLTE approximation in stellar atmospheres are summarized. The assumptions of thermodynamic equilibrium, local thermodynamic equilibrium (LTE), and non-LTE (NLTE) are compared. It is emphasized that LTE is a poor approximation if radiative transitions dominate in stellar atmospheres. The equations of kinetic equilibrium and methods of their solution are discussed.
+p625
+sg13
+VarXiv:1406.3553
+p626
+sg15
+S'in Determination of Atmospheric Parameters of B-, A-, F- and G-Type Stars, E. Niemczura et al. eds., Springer, in press'
+p627
+sg17
+S'/abs/1406.3553'
+p628
+sg19
+(lp629
+VJi\u0159í Kubát
+p630
+asg23
+S'/pdf/1406.3553'
+p631
+ssI42
+(dp632
+g9
+VNLTE analysis of spectra: OBA stars
+p633
+sg11
+VMethods of calculation of NLTE model atmosphere are discussed. The NLTE trace element procedure is compared with the full NLTE model atmosphere calculation. Differences between LTE and NLTE atmosphere modeling are evaluated. The ways of model atom construction are discussed. Finally, modelling of expanding atmospheres of hot stars with winds is briefly reviewed.
+p634
+sg13
+VarXiv:1406.3556
+p635
+sg15
+S'in Determination of Atmospheric Parameters of B-, A-, F- and G-Type Stars, E. Niemczura et al. eds., Springer, in press'
+p636
+sg17
+S'/abs/1406.3556'
+p637
+sg19
+(lp638
+VJi\u0159í Kubát
+p639
+aVBrankica \u0160urlan
+p640
+asg23
+S'/pdf/1406.3556'
+p641
+ssI43
+(dp642
+g9
+VCurrent status of NLTE analysis of stellar atmospheres
+p643
+sg11
+VVarious available codes for NLTE modeling and analysis of hot star spectra are reviewed. Generalizations of standard equations of kinetic equilibrium and their consequences are discussed.
+p644
+sg13
+VarXiv:1406.3559
+p645
+sg15
+S'in Determination of Atmospheric Parameters of B-, A-, F- and G-Type Stars, E. Niemczura et al. eds., Springer, in press'
+p646
+sg17
+S'/abs/1406.3559'
+p647
+sg19
+(lp648
+VJi\u0159í Kubát
+p649
+asg23
+S'/pdf/1406.3559'
+p650
+ssI44
+(dp651
+g9
+VFrequency-dependent damping in propagating slow magneto-acoustic waves
+p652
+sg11
+VPropagating slow magneto-acoustic waves are often observed in polar plumes and active region fan loops. The observed periodicities of these waves range from a few minutes to few tens of minutes and their amplitudes were found to decay rapidly as they travel along the supporting structure. Previously, thermal conduction, compressive viscosity, radiation, density stratification, and area divergence, were identified to be some of the causes for change in the slow wave amplitude. Our recent studies indicate that the observed damping in these waves is frequency dependent. We used imaging data from SDO/AIA, to study this dependence in detail and for the first time from observations we attempted to deduce a quantitative relation between damping length and frequency of these oscillations. We developed a new analysis method to obtain this relation. The observed frequency dependence does not seem to agree with the current linear wave theory and it was found that the waves observed in the polar regions show a different dependence from those observed in the on-disk loop structures despite the similarity in their properties.
+p653
+sg13
+VarXiv:1406.3565
+p654
+sg15
+S'accepted for publication in ApJ'
+p655
+sg17
+S'/abs/1406.3565'
+p656
+sg19
+(lp657
+VS. Krishna Prasad
+p658
+aVD. Banerjee
+p659
+aVT. Van Doorsselaere
+p660
+asg23
+S'/pdf/1406.3565'
+p661
+ssI45
+(dp662
+g9
+VA census of H$\u03b1$ emitters in the intergalactic medium of the NGC 2865 system
+p663
+sg11
+VTidal debris which are rich in HI gas, formed in interacting and merging systems, are suitable laboratories to study star formation outside galaxies. Recently, several such systems were observed, which contained many young star forming regions outside the galaxies. In previous works, we have studied young star forming regions outside galaxies in different systems with optical and/or gaseous tidal debris, all of them with available archive GALEX/UV images, in order to understand how often they occur and in which type of environments. In this paper we searched for star forming regions around the galaxy NGC2865, a shell galaxy which is circled by a ring of HI, with a total mass of 1.2 x 10$^9$ M$_\u005codot$. Using the Multi-Slit Imaging Spectroscopy Technique with the Gemini telescope, we detected all H$\u005calpha$ emitting sources in the surroundings of the galaxy NGC2865, down to a flux limit of 10$^{-18}$ erg cm$^{-2}$ s$^{-1}$ \u005cAA$^{-1}$. Together with Near and Far-Ultraviolet flux information we characterize the star formation rates, masses, ages, and metallicities for these HII regions. In total, we found 26 emission-line sources in a 60 $\u005ctimes$ 60 Kpc field centered over the southeastern tail of the HI gas present around the galaxy NGC2865. Out of the 26 H$\u005calpha$ emitters, 19 are in the satellite galaxy FGCE 0745 and seven are intergalactic HII regions scattered over the south tail of the HI gas around NGC2865. We found that the intergalactic HII regions are young ($<$200 Myr) with stellar masses in the range 4 X 10$^3$M$_\u005codot$ to 17x10$^6$ M$_\u005codot$. These are found in a region of low HI gas density, where the probability of forming stars is expected to be low. For one of the intergalactic HII regions we estimated a solar oxygen abundance of 12 + log(O/H) $\u005csim$ 8.7. We also were able to estimate the metallicity for the satellite galaxy FGCE0745 to be 12 + log(O/H) ~ 8.0.
+p664
+sg13
+VarXiv:1406.3574
+p665
+sg15
+S'13 pages, 13 figures, Accepted in A&A'
+p666
+sg17
+S'/abs/1406.3574'
+p667
+sg19
+(lp668
+VF. Urrutia-Viscarra
+p669
+aVM. Arnaboldi
+p670
+aVC. Mendes de Oliveira
+p671
+aVO. Gerhard
+p672
+aVS. Torres-Flores
+p673
+aVE. R. Carrasco
+p674
+aVD. de Mello
+p675
+asg23
+S'/pdf/1406.3574'
+p676
+ssI46
+(dp677
+g9
+VConstraining parameters of white-dwarf binaries using gravitational-wave and electromagnetic observations
+p678
+sg11
+VThe space-based gravitational wave (GW) detector, \u005cemph{evolved Laser Interferometer Space Antenna} (eLISA) is expected to observe millions of compact Galactic binaries that populate our Milky Way. GW measurements obtained from the eLISA detector are in many cases complimentary to possible electro-magnetic (EM) data. In our previous papers, we have shown that the EM data can significantly enhance our knowledge of the astrophysically relevant GW parameters of the Galactic binaries, such as the amplitude and inclination. This is possible due to the presence of some strong correlations between GW parameters that are measurable by both EM and GW observations, for example the inclination and sky position. In this paper, we quantify the constraints in the physical parameters of the white-dwarf binaries, i.e. the individual masses, chirp mass and the distance to the source that can be obtained by combining the full set of EM measurements such as the inclination, radial velocities, distances and/or individual masses with the GW measurements. We find the following $2-\u005csigma$ fractional uncertainties in the parameters of interest. The EM observations of distance constrains the the chirp mass to $\u005csim 15-25 %$, whereas EM data of a single-lined spectroscopic binary constrains the secondary mass and the distance with factors of 2 to $\u005csim 40 %$. The single-line spectroscopic data complemented with distance constrains the secondary mass to $\u005csim 25-30%$. Finally EM data on double-lined spectroscopic binary constrains the distance to $\u005csim 30%$. All of these constraints depend on the inclination and the signal strength of the binary systems. We also find that the EM information on distance and/or the radial velocity are the most useful in improving the estimate of the secondary mass,inclination and/or distance.
+p679
+sg13
+VarXiv:1406.3599
+p680
+sg15
+S'12 pages, 15 figures, accepted for publication by ApJ'
+p681
+sg17
+S'/abs/1406.3599'
+p682
+sg19
+(lp683
+VSweta Shah
+p684
+aVGijs Nelemans
+p685
+asg23
+S'/pdf/1406.3599'
+p686
+ssI47
+(dp687
+g9
+VExcitation of the Orbital Inclination of Iapetus during Planetary Encounters
+p688
+sg11
+VSaturn's moon Iapetus has an orbit in a transition region where the Laplace surface is bending from the equator to the orbital plane of Saturn. The orbital inclination of Iapetus to the local Laplace plane is ~8 deg, which is unexpected, because the inclination should be ~0 if Iapetus formed from a circumplanetary disk on the Laplace surface. It thus appears that some process has pumped up Iapetus's inclination while leaving its eccentricity near zero (e=0.03 at present). Here we examined the possibility that Iapetus's inclination was excited during the early solar system instability when encounters between Saturn and ice giants occurred. We found that the dynamical effects of planetary encounters on Iapetus's orbit sensitively depend on the distance of the few closest encounters. In four out of ten instability cases studied here, the orbital perturbations were too large to be plausible. In one case, Iapetus's orbit was practically unneffected. In the remaining five cases, the perturbations of Iapetus's inclination were adequate to explain its present value. In three of these cases, however, Iapetus's eccentricity was excited to 0.1-0.25, and it is not clear whether it could have been damped to its present value (0.03) by some subsequent process (e.g., tides and dynamical friction from captured irregular satellites do not seem to be strong enough). Our results therefore imply that only 2 out of 10 instability cases (~20%) can excite Iapetus's inclination to its present value (~30% of trials lead to >5 deg) while leaving its orbital eccentricity low.
+p689
+sg13
+VarXiv:1406.3600
+p690
+sg15
+S'Astronomical Journal'
+p691
+sg17
+S'/abs/1406.3600'
+p692
+sg19
+(lp693
+VDavid Nesvorny
+p694
+aVDavid Vokrouhlicky
+p695
+aVRogerio Deienno
+p696
+aVKevin J. Walsh
+p697
+asg23
+S'/pdf/1406.3600'
+p698
+ssI48
+(dp699
+g9
+VMeasuring tides and binary parameters from gravitational wave data and eclipsing timings of detached white dwarf binaries
+p700
+sg11
+VThe discovery of the most compact detached white dwarf (WD) binary SDSS J065133.33+284423.3 has been discussed in terms of probing the tidal effects in white dwarfs. This system is also a verification source for the space-based gravitational wave (GW) detector, evolved Laser Interferometer Space Antenna (eLISA) which will observe short-period compact Galactic binaries with $P_{orb}\u005clesssim 5$ hrs. We address the prospects of doing tidal studies using eLISA binaries by showing the fractional uncertainties in the orbital decay rate and the rate of that decay, $\u005cdot{f}, \u005cddot{f}$ expected from both the GW and EM data for some of the high-$f$ binaries. We find that $\u005cdot{f}$ and $\u005cddot{f}$ can be measured using GW data only for the most massive WD binaries observed at high-frequencies. Form timing the eclipses for $\u005csim 10$ years, we find that $\u005cdot{f}$ can be known to $\u005csim 0.1% $ for J0651. We find that from GW data alone, measuring the effects of tides in binaries is (almost) impossible. We also investigate the improvement in the knowledge of the binary parameters by combining GW amplitude and inclination with EM data with and without $\u005cdot{f}$. In our previous work we found that EM data on distance constrained 2-$\u005csigma$ uncertainty in chirp mass to $15-25%$ whereas adding $\u005cdot{f}$ reduces it to $0.11%$. EM data on $\u005cdot{f}$ also constrains 2-$\u005csigma$ uncertainty in distance to $35%-19%$. EM data on primary mass constrains the secondary mass $m_2$ to factors of 2 to $\u005csim40%$ whereas adding $\u005cdot{f}$ reduces this to $25%$. And finally using single-line spectroscopic constrains 2-$\u005csigma$ uncertainties in both the $m_2, d$ to factors of 2 to $\u005csim 40%$. Adding EM data on $\u005cdot{f}$ reduces these 2-$\u005csigma$ uncertainties to $\u005cleq 25%$ and $6%-19%$ respectively. Thus we find that EM measurements of $\u005cdot{f}$ and radial velocity will be valuable in constraining binary parameters.
+p701
+sg13
+VarXiv:1406.3603
+p702
+sg15
+S'10 pages, 3 figures, Accepted for publication in ApJ'
+p703
+sg17
+S'/abs/1406.3603'
+p704
+sg19
+(lp705
+VSweta Shah
+p706
+aVGijs Nelemans
+p707
+asg23
+S'/pdf/1406.3603'
+p708
+ssI49
+(dp709
+g9
+VAstrometric detection feasibility of gravitational effects of quantum vacuum
+p710
+sg11
+VThis work analyzes in some detail the feasibility of testing with astrometric measurements the hypothesis that Quantum Vacuum can have gravitational effects, as suggested in a series of recent papers ([3, 6, 5]). In particular, the possibility of detecting an excess shift of the longitude of the pericenter in the orbit of the trans-neptunian system UX25 and its satellite is investigated. The excess shift which might be experimented by the orbit of the satellite was estimated, under reasonable working hypothesis, to be about 0:23 arcsec per orbit. Several observing scenarios are explored here, including those using conventional and adaptive optics telescopes from ground, and some spaceborne telescopes.
+p711
+sg13
+VarXiv:1406.3611
+p712
+sg15
+S'11 pages, 7 figures'
+p713
+sg17
+S'/abs/1406.3611'
+p714
+sg19
+(lp715
+VMario Gai (OATo)
+p716
+aVAlberto Vecchiato (OATo)
+p717
+asg23
+S'/pdf/1406.3611'
+p718
+sss.
