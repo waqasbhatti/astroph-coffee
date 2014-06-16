@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 '''
-dbutils - Waqas Bhatti (wbhatti@astro.princeton.edu) - Jun 2014
+arxivdb - Waqas Bhatti (wbhatti@astro.princeton.edu) - Jun 2014
 
-Contains utilities for astroph-coffee server SQLite database manipulation.
+Contains utilities for astroph-coffee server SQLite database manipulation for
+inserting/modifying arXiv papers.
 
 '''
 

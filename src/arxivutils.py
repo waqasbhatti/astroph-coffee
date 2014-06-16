@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-'''utils.py - Waqas Bhatti (wbhatti@astro.princeton.edu) - Jun 2014
+'''arxivutils.py - Waqas Bhatti (wbhatti@astro.princeton.edu) - Jun 2014
 
 Contains useful functions for getting and parsing arxiv listings for the
 astroph-coffee server.
