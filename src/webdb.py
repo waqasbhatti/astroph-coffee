@@ -64,7 +64,6 @@ def add_local_authors(user_data_file, database=None):
         cursor = database.cursor()
         closedb = False
 
-
     query = 'insert into users (author, email) values (?, ?)'
 
     with open(user_data_file,'rb') as fd:
