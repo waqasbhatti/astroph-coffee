@@ -16,6 +16,7 @@ from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
 from tornado.escape import squeeze
 
+from pytz import utc
 
 def get_page_html(url, fakery=True):
     '''
@@ -86,13 +87,13 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
         paper_title = squeeze(
             data.find_all(
                 'div',class_='list-title'
-            )[0].text.strip('\n').lstrip('Title: ')
+            )[0].text.strip('\n').split('Title: ')[-1]
         )
 
         paper_authors = (
             data.find_all(
                 'div',class_='list-authors'
-            )[0].text.strip('\n').lstrip('Authors: ')
+            )[0].text.strip('\n').split('Authors: ')[-1]
             )
         paper_authors = [squeeze(x.lstrip('\n').rstrip('\n'))
                          for x in paper_authors.split(', ')]
@@ -165,9 +166,9 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
 
 
 
-def grab_arxiv_papers(url='http://arxiv.org/list/astro-ph/new',
-                      fakery=True,
-                      pickledict=False):
+def arxiv_update(url='http://arxiv.org/list/astro-ph/new',
+                 fakery=True,
+                 pickledict=False):
     '''
     This rolls up all the functions above.
 
@@ -181,7 +182,7 @@ def grab_arxiv_papers(url='http://arxiv.org/list/astro-ph/new',
     # process the papers and crosslists
     paperdict, crosslistdict = get_arxiv_articles(paperlinks, paperdata,
                                                   crosslinks, crossdata)
-    now = datetime.utcnow()
+    now = datetime.now(tz=utc)
 
     arxiv = {'utc':now,
              'npapers':len(paperdict.keys()),
@@ -196,3 +197,6 @@ def grab_arxiv_papers(url='http://arxiv.org/list/astro-ph/new',
             pickle.dump(arxiv, fd)
 
     return arxiv
+
+
+

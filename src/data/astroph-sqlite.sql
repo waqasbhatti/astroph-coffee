@@ -1,14 +1,16 @@
-create table local_people (
+create table local_authors (
        author text,
        email text,
        primary key (email)
 );
 
 create table arxiv (
-       date_utc date,
+       utctime datetime,
+       utcdate date,
        day_serial integer,
        title text,
        article_type text,
+       arxiv_id text,
        authors text,
        comments text,
        abstract text,
@@ -17,7 +19,8 @@ create table arxiv (
        nvotes integer,
        voters text,
        presenters text,
-       primary key(date_utc, day_serial, title)
+       local_authors boolean default false,
+       primary key(utcdate, day_serial, article_type, arxiv_id)
 );
 
 create table users (
