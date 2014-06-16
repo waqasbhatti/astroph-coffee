@@ -1,6 +1,6 @@
 *.pyc
 DEBUG
-*sqlite*
+*sqlite
 testfiles/
 run/*
 run/logs/*.log
