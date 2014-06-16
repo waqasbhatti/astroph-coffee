@@ -1,14 +1,12 @@
+#!/usr/bin/env python
+
+'''utils.py - Waqas Bhatti (wbhatti@astro.princeton.edu) - Jun 2014
+
+Contains useful functions for getting and parsing arxiv listings for the
+astroph-coffee server.
+
 '''
-utils.py - Waqas Bhatti (wbhatti@astro.princeton.edu) - Jun 2014
 
-Contains useful things for the astroph-coffee server.
-
-'''
-
-import os
-import os.path
-import sqlite3
-import ConfigParser
 import random
 import time
 from datetime import date, datetime
@@ -168,7 +166,8 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
 
 
 def grab_arxiv_papers(url='http://arxiv.org/list/astro-ph/new',
-                      fakery=True):
+                      fakery=True,
+                      pickledict=False):
     '''
     This rolls up all the functions above.
 
@@ -184,8 +183,16 @@ def grab_arxiv_papers(url='http://arxiv.org/list/astro-ph/new',
                                                   crosslinks, crossdata)
     now = datetime.utcnow()
 
-    return {'utc':now,
-            'npapers':len(paperdict.keys()),
-            'papers':paperdict,
-            'ncrosslists':len(crosslistdict.keys()),
-            'crosslists':crosslistdict}
+    arxiv = {'utc':now,
+             'npapers':len(paperdict.keys()),
+             'papers':paperdict,
+             'ncrosslists':len(crosslistdict.keys()),
+             'crosslists':crosslistdict}
+
+    if pickledict:
+        import cPickle as pickle
+        pickle_fpath = 'data/%s-UT-arxiv.pickle' % now.strftime('%Y-%m-%d')
+        with open(pickle_fpath,'wb') as fd:
+            pickle.dump(arxiv, fd)
+
+    return arxiv
