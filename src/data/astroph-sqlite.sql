@@ -31,9 +31,10 @@ create table users (
 
 create table sessions (
        token text,
-       username text,
+       useremail text,
+       ipaddress text,
+       clientheader text,
        login_utc double precision,
-       logout_utc double precision,
        primary key (token)
 );
 
