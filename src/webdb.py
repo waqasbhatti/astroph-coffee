@@ -64,7 +64,7 @@ def add_local_authors(user_data_file, database=None):
         cursor = database.cursor()
         closedb = False
 
-    query = 'insert into users (author, email) values (?, ?)'
+    query = 'insert into local_authors (author, email) values (?, ?)'
 
     with open(user_data_file,'rb') as fd:
         for line in fd:
@@ -73,10 +73,12 @@ def add_local_authors(user_data_file, database=None):
                 try:
                     author, email = line.split(',')
                     author, email = author.strip(), email.lower().strip()
+                    print('inserting %s with email %s' % (author, email))
                     cursor.execute(query, (author, email))
                 except Exception as e:
                     print('could not process line: %s, skipping' % line)
                     print('error was: %s' % e)
+                    database.rollback()
                     continue
 
     database.commit()
@@ -104,12 +106,53 @@ def gen_token(ipaddress, clientheader, tokenvalue):
     return sha256(tokenbase).hexdigest()
 
 
-def user_signup(ipaddress,
-                clientheader,
-                useremail,
-                onlylocals=False,
-                onlydomains=None,
-                database=None):
+def session_check(sessiontoken, database=None):
+    '''
+    This checks if a sessiontoken is present in the sessions table of the DB.
+
+    '''
+
+    # open the database if needed and get a cursor
+    if not database:
+        database, cursor = opendb()
+        closedb = True
+    else:
+        cursor = database.cursor()
+        closedb = False
+
+    try:
+
+        query = ("select token, useremail from sessions where token = ?")
+        params = (sessiontoken,)
+        cursor.execute(query, params)
+        row = cursor.fetchone()
+
+        if row and len(row) > 0:
+            results = (True, row[0], row[1], 'token_found')
+        else:
+            results = (False, None, None, 'unknown_token')
+
+    except:
+
+        print('could not get database results for sessiontoken: %s'
+              % sessiontoken)
+        results = (False, None, None, 'database_error')
+
+    # at the end, close the cursor and DB connection
+    if closedb:
+        cursor.close()
+        database.close()
+
+    return results
+
+
+
+def session_initiate(ipaddress,
+                     clientheader,
+                     useremail,
+                     onlylocals=False,
+                     onlydomains=None,
+                     database=None):
     '''
     This initiates a user signup and returns a session token for this
     user. Optionally, can restrict signups to domain names in the list
@@ -160,29 +203,6 @@ def user_signup(ipaddress,
         cursor = database.cursor()
         closedb = False
 
-
-
-
-
-    # at the end, close the cursor and DB connection
-    if closedb:
-        cursor.close()
-        database.close()
-
-
-def session_check(ipaddress, clientheader, sessiontoken, database=None):
-    '''
-    This checks if a sessiontoken is present in the sessions table of the DB.
-
-    '''
-
-    # open the database if needed and get a cursor
-    if not database:
-        database, cursor = opendb()
-        closedb = True
-    else:
-        cursor = database.cursor()
-        closedb = False
 
 
 
