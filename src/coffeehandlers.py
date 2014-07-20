@@ -143,7 +143,9 @@ class ArticleListHandler(tornado.web.RequestHandler):
                             user_name)
 
                 # show the listing page
-
+                self.render("listing.html",
+                            user_name=user_name,
+                            local_today=local_today)
 
 
             elif sessioninfo[-1] != 'database_error':
@@ -153,6 +155,9 @@ class ArticleListHandler(tornado.web.RequestHandler):
 
 
                 # show the listing page
+                self.render("listing.html",
+                            user_name=user_name,
+                            local_today=local_today)
 
             else:
 
@@ -165,17 +170,17 @@ class ArticleListHandler(tornado.web.RequestHandler):
 
                 self.render("errorpage.html",
                             user_name=user_name,
-                            message=message)
+                            local_today=local_today
+                            error_message=message)
 
 
         # there's no existing user session
         else:
 
-            session_token = webdb.gen_token(ip_address,
-                                            client_header,
-                                            'initial')
-
-
+            # show the listing page
+            self.render("listing.html",
+                        user_name=user_name,
+                        local_today=local_today)
 
 
 
@@ -230,7 +235,9 @@ class VotingHandler(tornado.web.RequestHandler):
                                 user_name)
 
                     # show the voting page for this user
-
+                    self.render("voting.html",
+                                user_name=user_name,
+                                local_today=local_today)
 
 
                 elif sessioninfo[-1] != 'database_error':
@@ -239,7 +246,10 @@ class VotingHandler(tornado.web.RequestHandler):
                                    '%s, %s' % (ip_address, client_header))
 
 
-                    # show the voting page for the new user
+                    # show the voting page for this user
+                    self.render("voting.html",
+                                user_name=user_name,
+                                local_today=local_today)
 
                 else:
 
@@ -252,28 +262,17 @@ class VotingHandler(tornado.web.RequestHandler):
 
                     self.render("errorpage.html",
                                 user_name=user_name,
+                                local_today=local_today,
                                 message=message)
 
 
             # there's no existing user session
             else:
 
-                # generate an initial session token
-                session_token = webdb.gen_token(ip_address,
-                                                client_header,
-                                                'initial')
-
-
-                # get the articles for today
-
-
-
-                # set the cookie
-                self.set_secure_cookie('coffee_session',
-                                       session_token,
-                                       expires_days=30)
-
-                # render the special voting page with articles for today
+                # show the voting page for this user
+                self.render("voting.html",
+                            user_name=user_name,
+                            local_today=local_today)
 
 
         # if we're not within the voting time limits, redirect to the articles
@@ -287,7 +286,13 @@ class VotingHandler(tornado.web.RequestHandler):
         '''
         This handles POST requests for vote submissions.
 
+        - handles errors
+        - sets cookie if user is new
+        - submits votes to DB
+        - redirects to the articles page
+
         '''
+
 
 
 
