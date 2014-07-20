@@ -148,6 +148,8 @@ if __name__ == '__main__':
          {'database':DATABASE,
           'voting_start':VOTING_START,
           'voting_end':VOTING_END}),
+        (r'/astroph-coffee/contact',coffeehandlers.ContactHandler,
+         {'database':DATABASE}),
     ]
 
     #######################

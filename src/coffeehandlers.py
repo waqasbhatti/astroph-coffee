@@ -25,6 +25,79 @@ import webdb
 ##################
 
 
+class ContactHandler(tornado.web.RequestHandler):
+
+    '''
+    This handles all requests for /astroph-coffee and redirects based on
+    time of day.
+
+    '''
+
+
+    def initialize(self, database):
+        '''
+        This sets up the database.
+
+        '''
+
+        self.database = database
+
+
+    def get(self):
+        '''
+        This handles GET requests.
+
+        '''
+        local_today = datetime.now(tz=utc).strftime('%Y-%m-%d %H:%M UTC')
+
+        # first, get the session token
+        session_token = self.get_secure_cookie('coffee_session',
+                                               max_age_days=30)
+        ip_address = self.request.remote_ip
+        client_header = self.request.headers['User-Agent'] or 'none'
+        user_name = 'anonuser@%s' % ip_address
+
+
+        # check if this session_token corresponds to an existing user
+        if session_token:
+
+            sessioninfo = webdb.session_check(session_token,
+                                               database=self.database)
+
+            if sessioninfo[0]:
+
+                user_name = sessioninfo[2]
+                LOGGER.info('found session for %s, continuing with it' %
+                            useremail)
+
+            elif sessioninfo[-1] != 'database_error':
+
+                LOGGER.warning('unknown user, starting a new session for '
+                               '%s, %s' % (ip_address, client_header))
+
+
+            else:
+
+                self.set_status(500)
+                message = ("There was a database error "
+                           "trying to look up user credentials.")
+
+                LOGGER.error('database error while looking up session for '
+                               '%s, %s' % (ip_address, client_header))
+
+                self.render("errorpage.html",
+                            user_name=user_name,
+                            error_message=message,
+                            local_today=local_today)
+
+
+            # show the contact page
+            self.render("contact.html",
+                        local_today=local_today,
+                        user_name=useremail)
+
+
+
 class ArticleListHandler(tornado.web.RequestHandler):
     '''This handles all requests for the listing of selected articles. Note: if
     nobody voted on anything, the default is to return all articles with local
@@ -53,6 +126,8 @@ class ArticleListHandler(tornado.web.RequestHandler):
                                                max_age_days=30)
         ip_address = self.request.remote_ip
         client_header = self.request.headers['User-Agent'] or 'none'
+        local_today = datetime.now(tz=utc).strftime('%Y-%m-%d %H:%M UTC')
+        user_name = 'anonuser@%s' % ip_address
 
         # check if this session_token corresponds to an existing user
         if session_token:
@@ -60,13 +135,12 @@ class ArticleListHandler(tornado.web.RequestHandler):
             sessioninfo = webdb.session_check(session_token,
                                                database=self.database)
 
-            useremail = 'anonuser@%s' % ip_address
 
             if sessioninfo[0]:
 
-                useremail = sessioninfo[2]
+                user_name = sessioninfo[2]
                 LOGGER.info('found session for %s, continuing with it' %
-                            useremail)
+                            user_name)
 
                 # show the listing page
 
@@ -90,7 +164,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
                                '%s, %s' % (ip_address, client_header))
 
                 self.render("errorpage.html",
-                            useremail=useremail,
+                            user_name=user_name,
                             message=message)
 
 
@@ -128,17 +202,19 @@ class VotingHandler(tornado.web.RequestHandler):
 
         '''
 
-        # first, check if we're in voting time-limits
+        # first, get the session token
+        session_token = self.get_secure_cookie('coffee_session',
+                                               max_age_days=30)
+        ip_address = self.request.remote_ip
+        client_header = self.request.headers['User-Agent'] or 'none'
+        local_today = datetime.now(tz=utc).strftime('%Y-%m-%d %H:%M UTC')
+        user_name = 'anonuser@%s' % ip_address
+
+        # check if we're in voting time-limits
         timenow = datetime.now(tz=utc).timetz()
 
         # if we are within the time limits, then show the voting page
         if self.voting_start < timenow < self.voting_end:
-
-            # get the session token
-            session_token = self.get_secure_cookie('coffee_session',
-                                                   max_age_days=30)
-            ip_address = self.request.remote_ip
-            client_header = self.request.headers['User-Agent'] or 'none'
 
             # check if this session_token corresponds to an existing user
             if session_token:
@@ -146,14 +222,12 @@ class VotingHandler(tornado.web.RequestHandler):
                 sessioninfo = webdb.session_check(session_token,
                                                    database=self.database)
 
-                useremail = 'anonuser@%s' % ip_address
-
                 if sessioninfo[0]:
 
-                    useremail = sessioninfo[2]
+                    user_name = sessioninfo[2]
                     LOGGER.info('found session for %s, '
                                 'continuing with it' %
-                                useremail)
+                                user_name)
 
                     # show the voting page for this user
 
@@ -177,7 +251,7 @@ class VotingHandler(tornado.web.RequestHandler):
                                    '%s, %s' % (ip_address, client_header))
 
                     self.render("errorpage.html",
-                                useremail=useremail,
+                                user_name=user_name,
                                 message=message)
 
 

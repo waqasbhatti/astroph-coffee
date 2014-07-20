@@ -1,0 +1,126 @@
+{% if 'anonuser@' not in user_name %}
+
+<div class="fixed">
+  <nav class="top-bar" data-topbar>
+
+    <ul class="title-area">
+
+      <li class="name">
+        <h1>
+          <a href="/astro-ph-coffee">
+            Astro-ph Coffee
+          </a>
+        </h1>
+      </li>
+
+      <!-- activates the mobile menu -->
+      <li class="toggle-topbar menu-icon">
+        <a href="#"><span>menu</span></a>
+      </li>
+
+    </ul>
+
+    <section class="top-bar-section">
+
+      <ul class="left">
+        <li>
+          {{ user_name }}
+        </li>
+      </ul>
+
+      <ul class="right">
+
+        <li class="has-button">
+
+          <form action="/astroph-coffee/vote" method="POST"
+                id="vote-form" name="vote-form">
+            <input type="hidden"
+                   id="voter-email"
+                   name="voter-email"
+                   value="{{ user_name }}" required>
+            <a href="#"
+               class="button active small radius"
+               id="vote-submit"
+               name="vote-submit">Submit votes</a>
+
+            {% module xsrf_form_html() %}
+          </form>
+
+        </li>
+
+      </ul>
+
+    </section>
+
+  </nav>
+</div>
+
+{% else %}
+
+<div class="fixed">
+  <nav class="top-bar" data-topbar>
+
+    <ul class="title-area">
+
+      <li class="name">
+        <h1>
+          <a href="/astro-ph-coffee">
+            Astro-ph Coffee
+          </a>
+        </h1>
+      </li>
+
+      <!-- activates the mobile menu -->
+      <li class="toggle-topbar menu-icon">
+        <a href="#"><span>menu</span></a>
+      </li>
+
+    </ul>
+
+    <section class="top-bar-section">
+
+      <ul class="left">
+        <li>
+          {{ user_name }}
+        </li>
+      </ul>
+
+      <ul class="right">
+
+        <li class="has-form">
+
+          <form action="/astroph-coffee/vote" method="POST"
+                id="vote-form" name="vote-form" data-abide>
+
+            <div class="row collapse">
+
+              <div class="small-9 columns">
+                <input type="email"
+                       placeholder="your email address"
+                       id="voter-email"
+                       name="voter-email" required>
+                <small class="error">enter a valid email address</small>
+              </div>
+
+              <div class="small-3 columns">
+                <a href="#" class="button active postfix radius"
+                   id="vote-submit"
+                   name="vote-submit">Submit votes</a>
+              </div>
+
+            </div>
+
+            {% module xsrf_form_html() %}
+
+          </form>
+
+        </li>
+
+      </ul>
+
+    </section>
+
+  </nav>
+</div>
+
+{% end %}
