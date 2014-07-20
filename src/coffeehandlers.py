@@ -25,11 +25,10 @@ import webdb
 ##################
 
 
-class ContactHandler(tornado.web.RequestHandler):
+class AboutHandler(tornado.web.RequestHandler):
 
     '''
-    This handles all requests for /astroph-coffee and redirects based on
-    time of day.
+    This handles all requests for /astroph-coffee/about.
 
     '''
 
@@ -92,7 +91,7 @@ class ContactHandler(tornado.web.RequestHandler):
 
 
         # show the contact page
-        self.render("contact.html",
+        self.render("about.html",
                     local_today=local_today,
                     user_name=user_name)
 
@@ -179,6 +178,9 @@ class ArticleListHandler(tornado.web.RequestHandler):
 
         # there's no existing user session
         else:
+
+            LOGGER.warning('unknown user, starting a new session for '
+                           '%s, %s' % (ip_address, client_header))
 
             # show the listing page
             self.render("listing.html",
@@ -276,6 +278,9 @@ class VotingHandler(tornado.web.RequestHandler):
 
             # there's no existing user session
             else:
+
+                LOGGER.warning('unknown user, starting a new session for '
+                               '%s, %s' % (ip_address, client_header))
 
                 # show the voting page for this user
                 self.render("voting.html",
