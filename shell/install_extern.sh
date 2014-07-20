@@ -12,5 +12,6 @@ pip install BeautifulSoup4 -U
 pip install lxml -U
 pip install selenium -U
 pip install pytz
+pip install itsdangerous
 
 deactivate

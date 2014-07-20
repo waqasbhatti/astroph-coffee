@@ -176,6 +176,8 @@ def arxiv_update(url='http://arxiv.org/list/astro-ph/new',
 
     '''
 
+    print('updating article DB from arxiv...')
+
     html = get_page_html(url, fakery=fakery)
     soup = soupify(html)
 
@@ -199,6 +201,3 @@ def arxiv_update(url='http://arxiv.org/list/astro-ph/new',
             pickle.dump(arxiv, fd)
 
     return arxiv
-
-
-
