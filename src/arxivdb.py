@@ -131,10 +131,10 @@ def insert_articles(arxiv, database=None):
 def get_articles(date,
                  invoteorder=True,
                  minvotes=1,
-                 localtop=True,
                  database=None):
     '''
-    This grabs all articles from the database for the given date.
+    This grabs all articles from the database for the given date. Local authors
+    are automatically put in a separate dictionary
 
     '''
 
@@ -235,8 +235,3 @@ def modify_presenters(arxiv_id, presenter, action, database=None):
     if closedb:
         cursor.close()
         database.close()
-
-
-
-
-

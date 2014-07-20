@@ -15,7 +15,7 @@ import sqlite3
 import signal
 import logging
 
-from datetime import datetime, time
+from datetime import time
 from pytz import utc
 
 # setup signal trapping on SIGINT

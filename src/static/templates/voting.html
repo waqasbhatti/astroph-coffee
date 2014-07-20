@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block pagetitle %}Astro-ph Coffee | Vote on articles for {{ local_today}}{% end %}
+
+{% block pageheader %}
+
+{% include "topbar.html" %}
+
+<div class="row">
+  <div class="small-12 columns">
+    <h4>
+      <a href="/astroph-coffee">Astro-ph Coffee</a> | Vote on articles for {{ local_today}}
+    </h4>
+  </div>
+</div>
+
+{% end %}
+
+
+{% block pagecontent %}
+
+<div class="row">
+  <div class="small-12 columns">
+
+    <p>List of articles for today</p>
+
+  </div>
+</div>
+
+{% end %}

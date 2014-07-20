@@ -1,0 +1,66 @@
+<div class="row">
+
+  <div class="large-12 columns">
+
+    <nav class="top-bar" data-topbar>
+
+      <ul class="title-area">
+
+        <li class="name"></li>
+
+        <!-- activates the mobile menu -->
+        <li class="toggle-topbar menu-icon">
+          <a href="#"><span>menu</span></a>
+        </li>
+
+      </ul>
+
+      <section class="top-bar-section">
+
+        <ul class="left">
+
+          <li>
+            {% include "userlink-module.html" %}
+          </li>
+
+        </ul>
+
+        <ul class="right">
+
+          {% if 'anonuser@' in user_name %}
+
+          <li class="has-button">
+
+            <ul class="button-group radius">
+              <li><a href="/lightcurves/users/new"
+                     class="button tiny">Signup</a></li>
+              <li><a href="/lightcurves/users/login?next={{ current_url }}"
+                     class="button tiny">Login</a></li>
+            </ul>
+
+          </li>
+
+          {% else %}
+
+          <li class="has-button">
+
+            <form action="/lightcurves/users/logout" method="POST"
+                  id="logout-form" name="logout-form">
+              <a href="#" class="button tiny radius" id="logout-submit"
+                 name="logout-submit">Logout</a>
+              {% module xsrf_form_html() %}
+            </form>
+
+          </li>
+
+          {% end %}
+
+        </ul>
+
+      </section>
+
+    </nav>
+
+  </div>
+
+</div>
