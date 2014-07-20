@@ -48,7 +48,7 @@ class ContactHandler(tornado.web.RequestHandler):
         This handles GET requests.
 
         '''
-        local_today = datetime.now(tz=utc).strftime('%Y-%m-%d %H:%M UTC')
+        local_today = datetime.now(tz=utc).strftime('%Y-%m-%d %H:%M %Z')
 
         # first, get the session token
         session_token = self.get_secure_cookie('coffee_session',
@@ -68,7 +68,7 @@ class ContactHandler(tornado.web.RequestHandler):
 
                 user_name = sessioninfo[2]
                 LOGGER.info('found session for %s, continuing with it' %
-                            useremail)
+                            user_name)
 
             elif sessioninfo[-1] != 'database_error':
 
@@ -91,10 +91,10 @@ class ContactHandler(tornado.web.RequestHandler):
                             local_today=local_today)
 
 
-            # show the contact page
-            self.render("contact.html",
-                        local_today=local_today,
-                        user_name=useremail)
+        # show the contact page
+        self.render("contact.html",
+                    local_today=local_today,
+                    user_name=user_name)
 
 
 
@@ -126,7 +126,8 @@ class ArticleListHandler(tornado.web.RequestHandler):
                                                max_age_days=30)
         ip_address = self.request.remote_ip
         client_header = self.request.headers['User-Agent'] or 'none'
-        local_today = datetime.now(tz=utc).strftime('%Y-%m-%d %H:%M UTC')
+        local_today = datetime.now(tz=utc).strftime('%Y-%m-%d %H:%M %Z')
+        todays_date = datetime.now(tz=utc).strftime('%A, %b %d %Y %Z')
         user_name = 'anonuser@%s' % ip_address
 
         # check if this session_token corresponds to an existing user
@@ -145,7 +146,8 @@ class ArticleListHandler(tornado.web.RequestHandler):
                 # show the listing page
                 self.render("listing.html",
                             user_name=user_name,
-                            local_today=local_today)
+                            local_today=local_today,
+                            todays_date=todays_date)
 
 
             elif sessioninfo[-1] != 'database_error':
@@ -157,7 +159,8 @@ class ArticleListHandler(tornado.web.RequestHandler):
                 # show the listing page
                 self.render("listing.html",
                             user_name=user_name,
-                            local_today=local_today)
+                            local_today=local_today,
+                            todays_date=todays_date)
 
             else:
 
@@ -170,7 +173,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
 
                 self.render("errorpage.html",
                             user_name=user_name,
-                            local_today=local_today
+                            local_today=local_today,
                             error_message=message)
 
 
@@ -180,7 +183,8 @@ class ArticleListHandler(tornado.web.RequestHandler):
             # show the listing page
             self.render("listing.html",
                         user_name=user_name,
-                        local_today=local_today)
+                        local_today=local_today,
+                        todays_date=todays_date)
 
 
 
@@ -190,7 +194,7 @@ class VotingHandler(tornado.web.RequestHandler):
 
     '''
 
-    def initialize(self, database, voting_start, voting_end):
+    def initialize(self, database, voting_start, voting_end, debug):
         '''
         Sets up the database.
 
@@ -199,6 +203,7 @@ class VotingHandler(tornado.web.RequestHandler):
         self.database = database
         self.voting_start = voting_start
         self.voting_end = voting_end
+        self.debug = debug
 
 
     def get(self):
@@ -212,14 +217,15 @@ class VotingHandler(tornado.web.RequestHandler):
                                                max_age_days=30)
         ip_address = self.request.remote_ip
         client_header = self.request.headers['User-Agent'] or 'none'
-        local_today = datetime.now(tz=utc).strftime('%Y-%m-%d %H:%M UTC')
+        local_today = datetime.now(tz=utc).strftime('%Y-%m-%d %H:%M %Z')
+        todays_date = datetime.now(tz=utc).strftime('%A, %b %d %Y %Z')
         user_name = 'anonuser@%s' % ip_address
 
         # check if we're in voting time-limits
         timenow = datetime.now(tz=utc).timetz()
 
         # if we are within the time limits, then show the voting page
-        if self.voting_start < timenow < self.voting_end:
+        if (self.voting_start < timenow < self.voting_end) or self.debug:
 
             # check if this session_token corresponds to an existing user
             if session_token:
@@ -237,7 +243,8 @@ class VotingHandler(tornado.web.RequestHandler):
                     # show the voting page for this user
                     self.render("voting.html",
                                 user_name=user_name,
-                                local_today=local_today)
+                                local_today=local_today,
+                                todays_date=todays_date)
 
 
                 elif sessioninfo[-1] != 'database_error':
@@ -249,7 +256,8 @@ class VotingHandler(tornado.web.RequestHandler):
                     # show the voting page for this user
                     self.render("voting.html",
                                 user_name=user_name,
-                                local_today=local_today)
+                                local_today=local_today,
+                                todays_date=todays_date)
 
                 else:
 
@@ -272,7 +280,8 @@ class VotingHandler(tornado.web.RequestHandler):
                 # show the voting page for this user
                 self.render("voting.html",
                             user_name=user_name,
-                            local_today=local_today)
+                            local_today=local_today,
+                            todays_date=todays_date)
 
 
         # if we're not within the voting time limits, redirect to the articles

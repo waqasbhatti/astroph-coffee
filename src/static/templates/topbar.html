@@ -5,7 +5,7 @@
 
       <li class="name">
         <h1>
-          <a href="/astro-ph-coffee">
+          <a href="/astroph-coffee">
             Astro-ph Coffee
           </a>
         </h1>
@@ -22,7 +22,11 @@
 
       <ul class="left">
         <li>
-          {{ user_name }}
+          {% if 'anonuser@' not in user_name %}
+          <a title="you are signed in as this user">Signed in as {{ user_name }}</a>
+          {% else %}
+          <a title="you are not signed in">{{ user_name }}</a>
+          {% end %}
         </li>
       </ul>
 

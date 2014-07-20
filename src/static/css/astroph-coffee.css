@@ -42,3 +42,33 @@ footer {
 .footer-link-list {
     margin-left: inherit;
 }
+
+
+/* button styles */
+.button {
+    font-family: "open_sansregular", "Open Sans", "Droid Sans", "Helvetica", "Arial", sans-serif;
+}
+
+/* top-bar styles */
+
+.top-bar input, .top-bar .button, .top-bar button {
+    font-size: 0.77778rem;
+    position: relative;
+    top: 7px;
+    height: auto;
+    padding-top: 0.35rem;
+}
+
+.top-bar .button, .top-bar button {
+    padding-top: 0.45rem;
+    padding-bottom: 0.35rem;
+    margin-bottom: 0px;
+}
+
+.top-bar-section ul li > a {
+    font-family: "open_sansregular", "Open Sans", "Droid Sans", "Helvetica", "Arial", sans-serif;
+}
+
+#voter-email {
+    width: 12.5rem;
+}

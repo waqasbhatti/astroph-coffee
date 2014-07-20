@@ -7,7 +7,7 @@
 
       <li class="name">
         <h1>
-          <a href="/astro-ph-coffee">
+          <a href="/astroph-coffee">
             Astro-ph Coffee
           </a>
         </h1>
@@ -24,28 +24,17 @@
 
       <ul class="left">
         <li>
-          {{ user_name }}
+          <a title="you are signed in as this user">Signed in as {{ user_name }}</a>
         </li>
       </ul>
 
       <ul class="right">
 
-        <li class="has-button">
+        <li class="has-form">
 
-          <form action="/astroph-coffee/vote" method="POST"
-                id="vote-form" name="vote-form">
-            <input type="hidden"
-                   id="voter-email"
-                   name="voter-email"
-                   value="{{ user_name }}" required>
-            <a href="#"
-               class="button active small radius"
-               id="vote-submit"
-               name="vote-submit">Submit votes</a>
-
-            {% module xsrf_form_html() %}
-          </form>
-
+          <a href="#" class="active button small radius"
+             id="vote-submit"
+             name="vote-submit">Submit votes</a>
         </li>
 
       </ul>
@@ -64,7 +53,7 @@
 
       <li class="name">
         <h1>
-          <a href="/astro-ph-coffee">
+          <a href="/astroph-coffee">
             Astro-ph Coffee
           </a>
         </h1>
@@ -81,39 +70,31 @@
 
       <ul class="left">
         <li>
-          {{ user_name }}
+          <a title="you are not signed in">{{ user_name }}</a>
         </li>
       </ul>
 
       <ul class="right">
 
+          <li>
+            <a title="Enter an email address to vote for articles">Email
+            address needed to vote for articles</a>
+          </li>
+
         <li class="has-form">
 
-          <form action="/astroph-coffee/vote" method="POST"
-                id="vote-form" name="vote-form" data-abide>
+          <input type="email"
+                 placeholder="person@example.edu"
+                 id="voter-email"
+                 name="voter-email">
 
-            <div class="row collapse">
+        </li>
 
-              <div class="small-9 columns">
-                <input type="email"
-                       placeholder="your email address"
-                       id="voter-email"
-                       name="voter-email" required>
-                <small class="error">enter a valid email address</small>
-              </div>
+        <li class="has-form">
 
-              <div class="small-3 columns">
-                <a href="#" class="button active postfix radius"
-                   id="vote-submit"
-                   name="vote-submit">Submit votes</a>
-              </div>
-
-            </div>
-
-            {% module xsrf_form_html() %}
-
-          </form>
-
+          <a href="#" class="active button small radius"
+             id="vote-submit"
+             name="vote-submit">Submit votes</a>
         </li>
 
       </ul>

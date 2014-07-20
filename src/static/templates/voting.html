@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
-{% block pagetitle %}Vote on articles for {{ local_today }}{% end %}
+{% block pagetitle %}Vote on articles for {{ todays_date }}{% end %}
 
 {% block pageheader %}
 
-{% include "topbar.html" %}
+{% include "topbar-voting.html" %}
 
 <div class="row">
   <div class="small-12 columns">
-    <h3>Vote on articles for {{ local_today }}</h3>
+    <h3>Vote on articles for {{ todays_date }}</h3>
   </div>
 </div>
 
