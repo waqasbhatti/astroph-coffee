@@ -1,5 +1,3 @@
-{% if 'anonuser@' not in user_name %}
-
 <div class="fixed">
   <nav class="top-bar" data-topbar>
 
@@ -22,7 +20,7 @@
 
     <section class="top-bar-section">
 
-      <ul class="left">
+      <ul class="right">
         <li>
           <a title="you are signed in as this user">{{ user_name }}</a>
         </li>
@@ -31,82 +29,8 @@
         </li>
       </ul>
 
-      <ul class="right">
-
-        <li class="has-form">
-
-          <a href="#" class="alert button small radius"
-             id="vote-submit"
-             name="vote-submit">Submit votes</a>
-        </li>
-
-      </ul>
-
     </section>
 
   </nav>
 </div>
 
-{% else %}
-
-<div class="fixed">
-  <nav class="top-bar" data-topbar>
-
-    <ul class="title-area">
-
-      <li class="name">
-        <h1>
-          <a href="/astroph-coffee">
-            Astro-Coffee@Princeton
-          </a>
-        </h1>
-      </li>
-
-      <!-- activates the mobile menu -->
-      <li class="toggle-topbar menu-icon">
-        <a href="#"><span>menu</span></a>
-      </li>
-
-    </ul>
-
-    <section class="top-bar-section">
-
-      <ul class="left">
-        <li>
-          <a href="/astroph-coffee/papers" target="_blank">
-            See current voted papers
-          </a>
-        </li>
-      </ul>
-
-      <ul class="right">
-
-          <li>
-            <a title="You're not signed in, so an email address is required to vote for papers">Email address
-            needed</a>
-          </li>
-
-        <li class="has-form">
-
-          <input type="email"
-                 placeholder="person@example.edu"
-                 id="voter-email"
-                 name="voter-email">
-
-        </li>
-
-        <li class="has-form">
-
-          <a href="#" class="alert button small radius"
-             id="vote-submit"
-             name="vote-submit">Submit votes</a>
-        </li>
-
-      </ul>
-
-    </section>
-
-  </nav>
-</div>
-
-{% end %}
