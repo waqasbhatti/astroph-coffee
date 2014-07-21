@@ -23,15 +23,19 @@
 
     <ul class="inline-list">
 
-      {% if local_articles %}
-      <li><a href="#local-papers" class="button secondary radius">Papers with local authors</a></li>
+      {% if local_articles and len(local_articles) > 1 %}
+      <li><a href="#local-papers" class="button secondary radius"><strong>{{ len(local_articles) }}</strong> papers with local authors</a></li>
+      {% elif local_articles and len(local_articles) == 1 %}
+      <li><a href="#local-papers" class="button secondary radius"><strong>1</strong> paper with local authors</a></li>
       {% end %}
 
-      {% if voted_articles %}
-      <li><a href="#voted-papers" class="button secondary radius">Papers with votes</a></li>
+      {% if voted_articles and len(voted_articles) > 1 %}
+      <li><a href="#voted-papers" class="button secondary radius"><strong>{{ len(voted_articles) }}</strong> papers with votes</a></li>
+      {% elif voted_articles and len(voted_articles) == 1 %}
+      <li><a href="#voted-papers" class="button secondary radius"><strong>{{ len(voted_articles) }}</strong> paper with votes</a></li>
       {% end %}
 
-      <li><a href="#other-papers" class="button secondary radius">All other papers</a></li>
+      <li><a href="#other-papers" class="button secondary radius"><strong>{{ len(other_articles) }}</strong> other papers</a></li>
 
     </ul>
 
@@ -60,7 +64,7 @@
 
         <div class="row">
           <div class="small-12 columns">
-            <h3 >{{ article[2] }}</h3>
+            <h3>{{ article[2] }}</h3>
           </div>
         </div>
 
@@ -85,23 +89,32 @@
 
         <div class="row">
           <div class="small-12 columns">
-            <a href="{{ article[7] }}" target="_blank"
-               class="button active radius expand">
-              Paper {{ article[1] }} &mdash; {{ article[0] }}
+            <a href="{{ article[8] }}"
+               class="button success radius ">
+              Get PDF
             </a>
           </div>
         </div>
 
+        <div class="row small-listing-row">
+          <div class="small-12 columns">
+            Paper {{ article[1] }} &mdash; <a href="{{ article[7] }}">{{ article[0] }}</a>
+          </div>
+        </div>
+
+        {% if article[9] > 1 %}
         <div class="row">
           <div class="small-12 columns">
-            <a href="{{ article[8] }}" target="_blank"
-               class="button active radius expand">
-              Get paper PDF
-            </a>
+            <strong>{{ article[9] }}</strong> votes
           </div>
         </div>
-
-        {% if article[9] > 0 %}
+        {% elif article[9] == 1 %}
+        <div class="row">
+          <div class="small-12 columns">
+            <strong>{{ article[9] }}</strong> vote
+          </div>
+        </div>
+        {% elif article[9] == 0 %}
         <div class="row">
           <div class="small-12 columns">
             <strong>{{ article[9] }}</strong> votes
@@ -112,7 +125,7 @@
         {% if len(article[11]) > 0 %}
         <div class="row">
           <div class="small-12 columns">
-            Presenter: <strong>{{ article[11] }}</strong>
+            Presenters: <strong>{{ article[11] }}</strong>
           </div>
         </div>
         {% end %}
@@ -143,7 +156,7 @@
 
         <div class="row">
           <div class="small-12 columns">
-            <h3 >{{ article[2] }}</h3>
+            <h3 class="paper-title" data-arxivid="{{ article[0] }}"><a href="#" title="click to see abstract">{{ article[2] }}</a></h3>
           </div>
         </div>
 
@@ -156,7 +169,7 @@
           </div>
         </div>
 
-        <div class="row">
+        <div class="row hide paper-abstract" data-arxivid="{{ article[0] }}">
           <div class="small-12 columns">
             <p>{{ article[6] }}</p>
           </div>
@@ -168,23 +181,32 @@
 
         <div class="row">
           <div class="small-12 columns">
-            <a href="{{ article[7] }}" target="_blank"
-               class="button active radius expand">
-              Paper {{ article[1] }} &mdash; {{ article[0] }}
+            <a href="{{ article[8] }}"
+               class="button success radius ">
+              Get PDF
             </a>
           </div>
         </div>
 
+        <div class="row small-listing-row">
+          <div class="small-12 columns">
+            Paper {{ article[1] }} &mdash; <a href="{{ article[7] }}">{{ article[0] }}</a>
+          </div>
+        </div>
+
+        {% if article[9] > 1 %}
         <div class="row">
           <div class="small-12 columns">
-            <a href="{{ article[8] }}" target="_blank"
-               class="button active radius expand">
-              Get paper PDF
-            </a>
+            <strong>{{ article[9] }}</strong> votes
           </div>
         </div>
-
-        {% if article[9] > 0 %}
+        {% elif article[9] == 1 %}
+        <div class="row">
+          <div class="small-12 columns">
+            <strong>{{ article[9] }}</strong> vote
+          </div>
+        </div>
+        {% elif article[9] == 0 %}
         <div class="row">
           <div class="small-12 columns">
             <strong>{{ article[9] }}</strong> votes
@@ -228,7 +250,7 @@
 
         <div class="row">
           <div class="small-12 columns">
-            <h3 >{{ article[2] }}</h3>
+            <h3 class="paper-title" data-arxivid="{{ article[0] }}"><a href="#" title="click to see abstract">{{ article[2] }}</a></h3>
           </div>
         </div>
 
@@ -241,7 +263,7 @@
           </div>
         </div>
 
-        <div class="row">
+        <div class="row hide paper-abstract" data-arxivid="{{ article[0] }}">
           <div class="small-12 columns">
             <p>{{ article[6] }}</p>
           </div>
@@ -253,23 +275,32 @@
 
         <div class="row">
           <div class="small-12 columns">
-            <a href="{{ article[7] }}" target="_blank"
-               class="button active radius expand">
-              Paper {{ article[1] }} &mdash; {{ article[0] }}
+            <a href="{{ article[8] }}"
+               class="button success radius ">
+              Get PDF
             </a>
           </div>
         </div>
 
+        <div class="row small-listing-row">
+          <div class="small-12 columns">
+            Paper {{ article[1] }} &mdash; <a href="{{ article[7] }}">{{ article[0] }}</a>
+          </div>
+        </div>
+
+        {% if article[9] > 1 %}
         <div class="row">
           <div class="small-12 columns">
-            <a href="{{ article[8] }}" target="_blank"
-               class="button active radius expand">
-              Get paper PDF
-            </a>
+            <strong>{{ article[9] }}</strong> votes
           </div>
         </div>
-
-        {% if article[9] > 0 %}
+        {% elif article[9] == 1 %}
+        <div class="row">
+          <div class="small-12 columns">
+            <strong>{{ article[9] }}</strong> vote
+          </div>
+        </div>
+        {% elif article[9] == 0 %}
         <div class="row">
           <div class="small-12 columns">
             <strong>{{ article[9] }}</strong> votes
@@ -296,5 +327,17 @@
 
   </div>
 </div>
+
+{% end %}
+
+{% block pagejs %}
+
+<script src="/astroph-coffee/static/js/coffee.js"></script>
+
+<script>
+$(document).ready(function () {
+  coffee.action_setup();
+});
+</script>
 
 {% end %}

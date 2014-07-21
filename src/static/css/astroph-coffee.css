@@ -84,3 +84,7 @@ footer {
 .listing-row {
     padding-bottom: 2.5rem;
 }
+
+.small-listing-row {
+    padding-bottom: 1.0rem;
+}
