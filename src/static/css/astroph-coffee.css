@@ -70,7 +70,7 @@ footer {
 }
 
 #voter-email {
-    width: 12.5rem;
+    width: 10.5rem;
 }
 
 
@@ -79,4 +79,8 @@ footer {
 .crosslist-article {
     color: #333;
     background: rgba(246, 215, 215, 1);
+}
+
+.listing-row {
+    padding-bottom: 2.5rem;
 }

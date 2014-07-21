@@ -24,7 +24,10 @@
 
       <ul class="left">
         <li>
-          <a title="you are signed in as this user">Signed in as {{ user_name }}</a>
+          <a title="you are signed in as this user">{{ user_name }}</a>
+        </li>
+        <li>
+          <a href="/astroph-coffee/papers">Today's papers</a>
         </li>
       </ul>
 
@@ -70,15 +73,17 @@
 
       <ul class="left">
         <li>
-          <a title="you are not signed in">{{ user_name }}</a>
+          <a href="/astroph-coffee/papers" target="_blank">
+            See current voted papers
+          </a>
         </li>
       </ul>
 
       <ul class="right">
 
           <li>
-            <a title="Enter an email address to vote for papers">Email
-            address needed to vote for papers</a>
+            <a title="You're not signed in, so an email address is required to vote for papers">Email address
+            needed</a>
           </li>
 
         <li class="has-form">

@@ -47,7 +47,7 @@
 
     {% for article in local_articles %}
 
-    <div class="row">
+    <div class="row listing-row">
 
       {% if article[3] == 'astronomy' %}
       <div class="small-12 medium-8 columns">
@@ -84,7 +84,7 @@
           <div class="small-12 columns">
             <a href="{{ article[7] }}" target="_blank"
                class="button active radius expand">
-              {{ article[0] }}
+              Paper {{ article[1] }} &mdash; {{ article[0] }}
             </a>
           </div>
         </div>
@@ -149,7 +149,7 @@
 
     {% for article in other_articles %}
 
-    <div class="row">
+    <div class="row listing-row">
 
       {% if article[3] == 'astronomy' %}
       <div class="small-12 medium-8 columns">
@@ -186,7 +186,7 @@
           <div class="small-12 columns">
             <a href="{{ article[7] }}" target="_blank"
                class="button active radius expand">
-              {{ article[0] }}
+              Paper {{ article[1] }} &mdash; {{ article[0] }}
             </a>
           </div>
         </div>
