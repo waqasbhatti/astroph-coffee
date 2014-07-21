@@ -122,6 +122,8 @@ if __name__ == '__main__':
     VOTING_END = [int(x) for x in VOTING_END.split(':')]
     VOTING_END = time(VOTING_END[0], VOTING_END[1], tzinfo=utc)
 
+    SERVER_TZ = CONF.get('times','server_tz')
+
 
     ##################
     ## URL HANDLERS ##
@@ -136,14 +138,16 @@ if __name__ == '__main__':
          {'database':DATABASE,
           'voting_start':VOTING_START,
           'voting_end':VOTING_END}),
-        (r'/astroph-coffee/articles',coffeehandlers.ArticleListHandler,
+        (r'/astroph-coffee/papers',coffeehandlers.ArticleListHandler,
          {'database':DATABASE,
           'voting_start':VOTING_START,
-          'voting_end':VOTING_END}),
-        (r'/astroph-coffee/articles/',coffeehandlers.ArticleListHandler,
+          'voting_end':VOTING_END,
+          'server_tz':SERVER_TZ}),
+        (r'/astroph-coffee/papers/',coffeehandlers.ArticleListHandler,
          {'database':DATABASE,
           'voting_start':VOTING_START,
-          'voting_end':VOTING_END}),
+          'voting_end':VOTING_END,
+          'server_tz':SERVER_TZ}),
         (r'/astroph-coffee/vote',coffeehandlers.VotingHandler,
          {'database':DATABASE,
           'voting_start':VOTING_START,

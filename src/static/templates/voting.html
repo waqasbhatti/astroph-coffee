@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block pagetitle %}Vote on articles for {{ todays_date }}{% end %}
+{% block pagetitle %}Vote on papers for {{ todays_date }}{% end %}
 
 {% block pageheader %}
 
@@ -8,7 +8,7 @@
 
 <div class="row">
   <div class="small-12 columns">
-    <h3>Vote on articles for {{ todays_date }}</h3>
+    <h1>Vote on papers for {{ todays_date }}</h1>
   </div>
 </div>
 
@@ -17,10 +17,230 @@
 
 {% block pagecontent %}
 
+{% if local_articles or other_articles %}
+
 <div class="row">
   <div class="small-12 columns">
 
-    <p>List of articles for today</p>
+    <ul class="inline-list">
+
+      {% if local_articles %}
+      <li><a href="#local-papers" class="button secondary radius">Papers with local authors</a></li>
+      {% end %}
+
+      <li><a href="#other-papers" class="button secondary radius">All other papers</a></li>
+
+    </ul>
+
+  </div>
+</div>
+
+{% end %}
+
+
+<div class="row">
+  <div class="small-12 columns">
+
+    {% if local_articles %}
+
+    <h2 id="local-papers">Papers with local authors</h2>
+
+    {% for article in local_articles %}
+
+    <div class="row">
+
+      {% if article[3] == 'astronomy' %}
+      <div class="small-12 medium-8 columns">
+      {% else %}
+      <div class="small-12 medium-8 columns crosslist-article">
+      {% end %}
+
+        <div class="row">
+          <div class="small-12 columns">
+            <h3 >{{ article[2] }}</h3>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="small-12 columns">
+            <h6 class="subheader">{{ ', '.join((article[4].split(': ')[-1]).split(',')) }}</h6>
+            {% if len(article[5]) > 0 %}
+            <p><em>{% raw article[5] %}</em></p>
+            {% end %}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="small-12 columns">
+            <p>{{ article[6] }}</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="small-12 medium-4 columns text-center">
+
+        <div class="row">
+          <div class="small-12 columns">
+            <a href="{{ article[7] }}" target="_blank"
+               class="button active radius expand">
+              {{ article[0] }}
+            </a>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="small-12 columns">
+            <a href="{{ article[8] }}" target="_blank"
+               class="button active radius expand">
+              Get paper PDF
+            </a>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="small-12 columns">
+            <a href="#" class="button success radius expand vote-button">
+              Vote for this paper
+            </a>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="small-12 columns">
+            <a href="#"
+               class="button success radius expand volunteer-button">
+              Volunteer to present this paper
+            </a>
+          </div>
+        </div>
+
+        {% if article[9] > 0 %}
+        <div class="row">
+          <div class="small-12 columns">
+            <strong>{{ article[9] }}</strong> votes
+          </div>
+        </div>
+        {% end %}
+
+        {% if len(article[11]) > 0 %}
+        <div class="row">
+          <div class="small-12 columns">
+            Presenters: <strong>{{ article[11] }}</strong>
+          </div>
+        </div>
+        {% end %}
+
+      </div>
+
+    </div>
+
+    {% end %}
+
+    {% end %}
+
+
+
+    {% if other_articles %}
+
+    {% if other_articles and (local_articles or voted_articles) %}
+    <h2 id="other-papers">All other papers</h2>
+    {% end %}
+
+    {% for article in other_articles %}
+
+    <div class="row">
+
+      {% if article[3] == 'astronomy' %}
+      <div class="small-12 medium-8 columns">
+      {% else %}
+      <div class="small-12 medium-8 columns crosslist-article">
+      {% end %}
+
+        <div class="row">
+          <div class="small-12 columns">
+            <h3 >{{ article[2] }}</h3>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="small-12 columns">
+            <h6 class="subheader">{{ ', '.join((article[4].split(': ')[-1]).split(',')) }}</h6>
+            {% if len(article[5]) > 0 %}
+            <p><em>{% raw article[5] %}</em></p>
+            {% end %}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="small-12 columns">
+            <p>{{ article[6] }}</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="small-12 medium-4 columns text-center">
+
+        <div class="row">
+          <div class="small-12 columns">
+            <a href="{{ article[7] }}" target="_blank"
+               class="button active radius expand">
+              {{ article[0] }}
+            </a>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="small-12 columns">
+            <a href="{{ article[8] }}" target="_blank"
+               class="button active radius expand">
+              Get paper PDF
+            </a>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="small-12 columns">
+            <a href="#" class="button success radius expand vote-button">
+              Vote for this paper
+            </a>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="small-12 columns">
+            <a href="#"
+               class="button success radius expand volunteer-button">
+              Volunteer to present this paper
+            </a>
+          </div>
+        </div>
+
+        {% if article[9] > 0 %}
+        <div class="row">
+          <div class="small-12 columns">
+            <strong>{{ article[9] }}</strong> votes
+          </div>
+        </div>
+        {% end %}
+
+        {% if len(article[11]) > 0 %}
+        <div class="row">
+          <div class="small-12 columns">
+            Presenters: <strong>{{ article[11] }}</strong>
+          </div>
+        </div>
+        {% end %}
+
+      </div>
+
+    </div>
+
+    {% end %}
+
+    {% end %}
+
 
   </div>
 </div>

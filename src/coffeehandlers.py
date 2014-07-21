@@ -10,7 +10,7 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 from datetime import datetime
-from pytz import utc
+from pytz import utc, timezone
 
 import os.path
 import tornado.web
@@ -104,7 +104,10 @@ class ArticleListHandler(tornado.web.RequestHandler):
 
     '''
 
-    def initialize(self, database, voting_start, voting_end):
+    def initialize(self, database,
+                   voting_start,
+                   voting_end,
+                   server_tz):
         '''
         Sets up the database.
 
@@ -113,6 +116,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
         self.database = database
         self.voting_start = voting_start
         self.voting_end = voting_end
+        self.server_tz = server_tz
 
 
     def get(self):
@@ -125,8 +129,17 @@ class ArticleListHandler(tornado.web.RequestHandler):
                                                max_age_days=30)
         ip_address = self.request.remote_ip
         client_header = self.request.headers['User-Agent'] or 'none'
+
         local_today = datetime.now(tz=utc).strftime('%Y-%m-%d %H:%M %Z')
-        todays_date = datetime.now(tz=utc).strftime('%A, %b %d %Y %Z')
+        todays_date = datetime.now(tz=utc).strftime('%A, %b %d %Y')
+        todays_utcdate = datetime.now(tz=utc).strftime('%Y-%m-%d')
+        todays_localdate = (
+            datetime.now(tz=timezone(self.server_tz)).strftime('%Y-%m-%d')
+        )
+        todays_localdate_str = (
+            datetime.now(tz=timezone(self.server_tz)).strftime('%A, %b %d %Y')
+            )
+
         user_name = 'anonuser@%s' % ip_address
 
         # check if this session_token corresponds to an existing user
@@ -142,24 +155,10 @@ class ArticleListHandler(tornado.web.RequestHandler):
                 LOGGER.info('found session for %s, continuing with it' %
                             user_name)
 
-                # show the listing page
-                self.render("listing.html",
-                            user_name=user_name,
-                            local_today=local_today,
-                            todays_date=todays_date)
-
-
             elif sessioninfo[-1] != 'database_error':
 
                 LOGGER.warning('unknown user, starting a new session for '
                                '%s, %s' % (ip_address, client_header))
-
-
-                # show the listing page
-                self.render("listing.html",
-                            user_name=user_name,
-                            local_today=local_today,
-                            todays_date=todays_date)
 
             else:
 
@@ -182,11 +181,31 @@ class ArticleListHandler(tornado.web.RequestHandler):
             LOGGER.warning('unknown user, starting a new session for '
                            '%s, %s' % (ip_address, client_header))
 
-            # show the listing page
-            self.render("listing.html",
-                        user_name=user_name,
-                        local_today=local_today,
-                        todays_date=todays_date)
+
+        # get the articles for today
+        local_articles, voted_articles, other_articles = (
+            arxivdb.get_articles_for_listing(todays_utcdate,
+                                             database=self.database)
+        )
+
+        # if today's papers aren't ready yet, show local time's papers
+        if not local_articles and not voted_articles and not other_articles:
+
+            local_articles, voted_articles, other_articles = (
+                arxivdb.get_articles_for_listing(todays_localdate,
+                                                 database=self.database)
+            )
+            todays_date = todays_localdate_str
+
+
+        # show the listing page
+        self.render("listing.html",
+                    user_name=user_name,
+                    local_today=local_today,
+                    todays_date=todays_date,
+                    local_articles=local_articles,
+                    voted_articles=voted_articles,
+                    other_articles=other_articles)
 
 
 
@@ -219,8 +238,11 @@ class VotingHandler(tornado.web.RequestHandler):
                                                max_age_days=30)
         ip_address = self.request.remote_ip
         client_header = self.request.headers['User-Agent'] or 'none'
+
         local_today = datetime.now(tz=utc).strftime('%Y-%m-%d %H:%M %Z')
-        todays_date = datetime.now(tz=utc).strftime('%A, %b %d %Y %Z')
+        todays_date = datetime.now(tz=utc).strftime('%A, %b %d %Y')
+        todays_utcdate = datetime.now(tz=utc).strftime('%Y-%m-%d')
+
         user_name = 'anonuser@%s' % ip_address
 
         # check if we're in voting time-limits
@@ -235,31 +257,17 @@ class VotingHandler(tornado.web.RequestHandler):
                 sessioninfo = webdb.session_check(session_token,
                                                    database=self.database)
 
+
                 if sessioninfo[0]:
 
                     user_name = sessioninfo[2]
-                    LOGGER.info('found session for %s, '
-                                'continuing with it' %
+                    LOGGER.info('found session for %s, continuing with it' %
                                 user_name)
-
-                    # show the voting page for this user
-                    self.render("voting.html",
-                                user_name=user_name,
-                                local_today=local_today,
-                                todays_date=todays_date)
-
 
                 elif sessioninfo[-1] != 'database_error':
 
                     LOGGER.warning('unknown user, starting a new session for '
                                    '%s, %s' % (ip_address, client_header))
-
-
-                    # show the voting page for this user
-                    self.render("voting.html",
-                                user_name=user_name,
-                                local_today=local_today,
-                                todays_date=todays_date)
 
                 else:
 
@@ -273,7 +281,7 @@ class VotingHandler(tornado.web.RequestHandler):
                     self.render("errorpage.html",
                                 user_name=user_name,
                                 local_today=local_today,
-                                message=message)
+                                error_message=message)
 
 
             # there's no existing user session
@@ -282,17 +290,29 @@ class VotingHandler(tornado.web.RequestHandler):
                 LOGGER.warning('unknown user, starting a new session for '
                                '%s, %s' % (ip_address, client_header))
 
-                # show the voting page for this user
-                self.render("voting.html",
-                            user_name=user_name,
-                            local_today=local_today,
-                            todays_date=todays_date)
 
+            # get the articles for today
+            local_articles, other_articles = (
+                arxivdb.get_articles_for_voting(database=self.database)
+            )
+
+            # if today's papers aren't ready yet, redirect to the papers display
+            if not local_articles and not other_articles:
+                self.redirect('/astroph-coffee/papers')
+
+
+            # show the listing page
+            self.render("voting.html",
+                        user_name=user_name,
+                        local_today=local_today,
+                        todays_date=todays_date,
+                        local_articles=local_articles,
+                        other_articles=other_articles)
 
         # if we're not within the voting time limits, redirect to the articles
         # page
         else:
-            self.redirect('/astroph-coffee/articles')
+            self.redirect('/astroph-coffee/papers')
 
 
 
@@ -345,7 +365,7 @@ class CoffeeHandler(tornado.web.RequestHandler):
         if self.voting_start < timenow < self.voting_end:
             self.redirect('/astroph-coffee/vote')
         else:
-            self.redirect('/astroph-coffee/articles')
+            self.redirect('/astroph-coffee/papers')
 
 
 
