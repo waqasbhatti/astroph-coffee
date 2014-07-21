@@ -61,7 +61,7 @@ class AboutHandler(tornado.web.RequestHandler):
         if session_token:
 
             sessioninfo = webdb.session_check(session_token,
-                                               database=self.database)
+                                              database=self.database)
 
             if sessioninfo[0]:
 
@@ -88,7 +88,6 @@ class AboutHandler(tornado.web.RequestHandler):
                             user_name=user_name,
                             error_message=message,
                             local_today=local_today)
-
 
         # show the contact page
         self.render("about.html",
@@ -342,7 +341,8 @@ class CoffeeHandler(tornado.web.RequestHandler):
     def initialize(self,
                    database,
                    voting_start,
-                   voting_end):
+                   voting_end,
+                   server_tz):
         '''
         Sets up the database.
 
@@ -351,6 +351,9 @@ class CoffeeHandler(tornado.web.RequestHandler):
         self.database = database
         self.voting_start = voting_start
         self.voting_end = voting_end
+        self.local_tz = timezone(server_tz)
+        LOGGER.info('server timezone is %s, pytz = %s' % (server_tz,
+                                                          self.local_tz))
 
 
     def get(self):
@@ -358,14 +361,87 @@ class CoffeeHandler(tornado.web.RequestHandler):
         This handles GET requests.
 
         '''
+        # first, get the session token
+        session_token = self.get_secure_cookie('coffee_session',
+                                               max_age_days=30)
+        ip_address = self.request.remote_ip
+        client_header = self.request.headers['User-Agent'] or 'none'
+        local_today = datetime.now(tz=utc).strftime('%Y-%m-%d %H:%M %Z')
 
-        # figure out which URL to redirect to
+        user_name = 'anonuser@%s' % ip_address
+
+        # check if we're in voting time-limits
         timenow = datetime.now(tz=utc).timetz()
 
-        if self.voting_start < timenow < self.voting_end:
-            self.redirect('/astroph-coffee/vote')
+        # check if this session_token corresponds to an existing user
+        if session_token:
+
+            sessioninfo = webdb.session_check(session_token,
+                                              database=self.database)
+
+
+            if sessioninfo[0]:
+
+                user_name = sessioninfo[2]
+                LOGGER.info('found session for %s, continuing with it' %
+                            user_name)
+
+            elif sessioninfo[-1] != 'database_error':
+
+                LOGGER.warning('unknown user, starting a new session for '
+                               '%s, %s' % (ip_address, client_header))
+
+            else:
+
+                self.set_status(500)
+                message = ("There was a database error "
+                           "trying to look up user credentials.")
+
+                LOGGER.error('database error while looking up session for '
+                               '%s, %s' % (ip_address, client_header))
+
+                self.render("errorpage.html",
+                            user_name=user_name,
+                            local_today=local_today,
+                            error_message=message)
+
+
+        # there's no existing user session
         else:
-            self.redirect('/astroph-coffee/papers')
+
+            LOGGER.warning('unknown user, starting a new session for '
+                           '%s, %s' % (ip_address, client_header))
+
+        # construct the current dt and use it to figure out the local-to-server
+        # voting times
+        dtnow = datetime.now(tz=utc)
+
+        dtstart = dtnow.replace(hour=self.voting_start.hour,
+                                minute=self.voting_start.minute,
+                                second=0)
+        LOGGER.info('voting start = %s' % dtstart)
+        local_start = dtstart.astimezone(self.local_tz)
+        local_start = local_start.strftime('%H:%M %Z')
+
+        dtend = dtnow.replace(hour=self.voting_end.hour,
+                              minute=self.voting_end.minute,
+                              second=0)
+        LOGGER.info('voting end = %s' % dtend)
+        local_end = dtend.astimezone(self.local_tz)
+        local_end = local_end.strftime('%H:%M %Z')
+
+
+        utc_start = self.voting_start.strftime('%H:%M %Z')
+        utc_end = self.voting_end.strftime('%H:%M %Z')
+
+
+        self.render("index.html",
+                    user_name=user_name,
+                    local_today=local_today,
+                    voting_localstart=local_start,
+                    voting_localend=local_end,
+                    voting_start=utc_start,
+                    voting_end=utc_end)
 
 
 

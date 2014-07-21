@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block pagetitle %}Astro-Coffee@Princeton{% end %}
+
+{% block pageheader %}
+
+{% include "topbar.html" %}
+
+<div class="row">
+  <div class="small-12 columns">
+    <h1>Welcome to Astro-Coffee@Princeton!</h1>
+  </div>
+</div>
+
+{% end %}
+
+
+{% block pagecontent %}
+
+<div class="row">
+  <div class="small-12 columns">
+
+    <p>The Department of Astrophysical Sciences at Princeton University gathers
+    to discuss the latest <a href="http://www.arxiv.org/list/astro-ph/new">arXiv
+    astro-ph</a> posting every weekday at 10:30 AM US Eastern Time over coffee
+    (and donuts/bagels on Friday!) Visitors from the local astrophysical
+    community are always welcome to join in these discussions.</p>
+
+    <p>This <a href="/astroph-coffee/about">astro-coffee server</a> is meant to
+    help organize the discussion. It automatically finds and highlights papers
+    from local authors, and allows the community to vote for articles they want
+    to talk about. Currently, voting on papers is open between the hours of
+      <strong>{{ voting_localstart }}</strong> ({{ voting_start }})
+      and <strong>{{ voting_localend }}</strong> ({{ voting_end }}). Everyone
+      gets five votes (one per paper) to use as they please.</p>
+
+  </div>
+</div>
+
+{% end %}
