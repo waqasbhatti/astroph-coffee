@@ -425,6 +425,12 @@ class ArticleListHandler(tornado.web.RequestHandler):
             )
             todays_date = todays_localdate_str
 
+            flash_message = (
+                "Papers for today haven't been imported yet. "
+                "In the meantime, here are yesterday's papers. "
+                "Please wait a few minutes and try again."
+            )
+
 
         # show the listing page
         self.render("listing.html",
