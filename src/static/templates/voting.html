@@ -17,7 +17,7 @@
 
 {% block pagecontent %}
 
-{% if local_articles or other_articles %}
+{% if local_articles %}
 
 <div class="row">
   <div class="small-12 columns">
@@ -42,6 +42,10 @@
 
 <div class="row">
   <div class="small-12 columns">
+
+    <form id="voting-form" name="voting-form">
+      {% module xsrf_form_html() %}
+    </form>
 
     {% if local_articles %}
 
@@ -146,7 +150,9 @@
 
     {% if other_articles %}
 
+    {% if local_articles %}
     <h2 id="other-papers">All other papers</h2>
+    {% end %}
 
     {% for article in other_articles %}
 

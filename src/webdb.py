@@ -100,7 +100,7 @@ def gen_token(ipaddress, clientheader, tokenvalue):
 
     '''
 
-    tokenbase = '%s-%s-%s-%.4f-%s' % (ipaddress, clientheader, tokentype,
+    tokenbase = '%s-%s-%s-%.4f-%s' % (ipaddress, clientheader, tokenvalue,
                                       time.time(), urandom(12))
 
     return sha256(tokenbase).hexdigest()
@@ -147,12 +147,84 @@ def session_check(sessiontoken, database=None):
 
 
 
+def anon_session_initiate(ipaddress,
+                          clientheader,
+                          database=None):
+    '''This returns a session token for an anonymous session after inserting the
+    session token into the database.
+
+    '''
+
+    # open the database if needed and get a cursor
+    if not database:
+        database, cursor = opendb()
+        closedb = True
+    else:
+        cursor = database.cursor()
+        closedb = False
+
+    token = gen_token(ipaddress, clientheader, 'anonuser')
+
+    query = ("insert into sessions "
+             "(token, useremail, ipaddress, "
+             "clientheader, login_utc) values (?, ?, ?, ?, ?)")
+    query_params = (token,
+                    'anonuser@%s' % ipaddress,
+                    ipaddress,
+                    clientheader,
+                    time.time())
+
+    try:
+        cursor.execute(query, query_params)
+        database.commit()
+        returntuple = (True, token)
+    except Exception as e:
+        returntuple = (False, None)
+
+    # at the end, close the cursor and DB connection
+    if closedb:
+        cursor.close()
+        database.close()
+
+    return returntuple
+
+
+def anon_session_remmove(ipaddress,
+                          clientheader,
+                          database=None):
+    '''
+    This removes a session token for an anonymous session and returns success.
+
+    '''
+
+    # open the database if needed and get a cursor
+    if not database:
+        database, cursor = opendb()
+        closedb = True
+    else:
+        cursor = database.cursor()
+        closedb = False
+
+
+
+
+
+
+    # at the end, close the cursor and DB connection
+    if closedb:
+        cursor.close()
+        database.close()
+
+
+
+
 def session_initiate(ipaddress,
                      clientheader,
                      useremail,
                      onlylocals=False,
                      onlydomains=None,
                      database=None):
+
     '''
     This initiates a user signup and returns a session token for this
     user. Optionally, can restrict signups to domain names in the list
