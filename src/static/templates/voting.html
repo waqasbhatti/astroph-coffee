@@ -89,19 +89,31 @@
         {% if article[9] > 1 %}
         <div class="row small-listing-row">
           <div class="small-12 columns">
-            <strong>{{ article[9] }}</strong> votes
+            <strong>
+              <span class="vote-total" data-arxivid="{{ article[0] }}">
+                {{ article[9] }}
+              </span>
+            </strong> votes
           </div>
         </div>
         {% elif article[9] == 1 %}
         <div class="row small-listing-row">
           <div class="small-12 columns">
-            <strong>{{ article[9] }}</strong> vote
+            <strong>
+              <span class="vote-total" data-arxivid="{{ article[0] }}">
+                {{ article[9] }}
+              </span>
+            </strong> votes
           </div>
         </div>
         {% elif article[9] == 0 %}
         <div class="row small-listing-row">
           <div class="small-12 columns">
-            <strong>{{ article[9] }}</strong> votes
+            <strong>
+              <span class="vote-total" data-arxivid="{{ article[0] }}">
+                {{ article[9] }}
+              </span>
+            </strong> votes
           </div>
         </div>
         {% end %}
@@ -131,10 +143,17 @@
 
         <div class="row">
           <div class="small-12 columns">
-            <a href="#" data-arxivid="{{ article[0] }}"
+            {% if user_articles and article[0] in user_articles %}
+            <a href="#" data-arxivid="{{ article[0] }}" data-votetype="down"
+               class="button radius vote-button expand alert">
+              Remove your vote for this paper
+            </a>
+            {% else %}
+            <a href="#" data-arxivid="{{ article[0] }}" data-votetype="up"
                class="button radius vote-button expand">
               Vote for this paper
             </a>
+            {% end %}
           </div>
         </div>
 
@@ -192,19 +211,31 @@
         {% if article[9] > 1 %}
         <div class="row small-listing-row">
           <div class="small-12 columns">
-            <strong>{{ article[9] }}</strong> votes
+            <strong>
+              <span class="vote-total" data-arxivid="{{ article[0] }}">
+                {{ article[9] }}
+              </span>
+            </strong> votes
           </div>
         </div>
         {% elif article[9] == 1 %}
         <div class="row small-listing-row">
           <div class="small-12 columns">
-            <strong>{{ article[9] }}</strong> vote
+            <strong>
+              <span class="vote-total" data-arxivid="{{ article[0] }}">
+                {{ article[9] }}
+              </span>
+            </strong> votes
           </div>
         </div>
         {% elif article[9] == 0 %}
         <div class="row small-listing-row">
           <div class="small-12 columns">
-            <strong>{{ article[9] }}</strong> votes
+            <strong>
+              <span class="vote-total" data-arxivid="{{ article[0] }}">
+                {{ article[9] }}
+              </span>
+            </strong> votes
           </div>
         </div>
         {% end %}
@@ -234,10 +265,17 @@
 
         <div class="row">
           <div class="small-12 columns">
-            <a href="#" data-arxivid="{{ article[0] }}"
+            {% if user_articles and article[0] in user_articles %}
+            <a href="#" data-arxivid="{{ article[0] }}" data-votetype="down"
+               class="button radius vote-button expand alert">
+              Remove your vote for this paper
+            </a>
+            {% else %}
+            <a href="#" data-arxivid="{{ article[0] }}" data-votetype="up"
                class="button radius vote-button expand">
               Vote for this paper
             </a>
+            {% end %}
           </div>
         </div>
 

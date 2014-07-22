@@ -494,7 +494,49 @@ def record_vote(arxivid, username, vote, database=None):
 
     returnval = False
 
+    if vote == 'up':
+        voteval = 1
+    else:
+        voteval = -1
 
+    if voteval > 0:
+        # votes only count ONCE per article
+        query = ("update arxiv set nvotes = (nvotes + ?), "
+                 "voters = (voters || ? || ',') "
+                 "where arxiv_id = ? and article_type = 'astronomy' and "
+                 "voters not like ?")
+        query_params = (voteval,
+                        username,
+                        arxivid,
+                        '%{0}%'.format(username))
+
+    else:
+        # votes only count ONCE per article
+        query = ("update arxiv set nvotes = (nvotes + ?), "
+                 "voters = replace(voters, (? || ','), '') "
+                 "where arxiv_id = ? and article_type = 'astronomy' and "
+                 "voters like ?")
+        query_params = (voteval,
+                        username,
+                        arxivid,
+                        '%{0}%'.format(username))
+
+    try:
+
+        cursor.execute(query, query_params)
+        database.commit()
+
+        cursor.execute("select nvotes from arxiv where arxiv_id = ? "
+                       "and article_type = 'astronomy'",
+                       (arxivid,))
+        rows = cursor.fetchone()
+
+        if rows and len(rows) > 0:
+            returnval = rows[0]
+
+    except Exception as e:
+        raise
+        returnval = False
 
     # at the end, close the cursor and DB connection
     if closedb:
@@ -526,8 +568,8 @@ def get_user_votes(utcdate, username, database=None):
     # FIXME: this would be WAY better handled using FTS
      # unfortunately, FTS is disabled in default Python (thanks OSes other than
     # Linux!)
-    query = ("select arxivid, voters from arxiv "
-             "where utcdate = ? and nvotes > 0")
+    query = ("select arxiv_id, voters from arxiv "
+             "where utcdate = ? and nvotes > 0 and article_type = 'astronomy'")
     query_params = (utcdate,)
 
     cursor.execute(query, query_params)
@@ -545,7 +587,7 @@ def get_user_votes(utcdate, username, database=None):
 
     else:
 
-        voted_arxivids = None
+        voted_arxivids = []
 
 
     # at the end, close the cursor and DB connection

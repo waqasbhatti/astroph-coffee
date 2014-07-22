@@ -618,6 +618,12 @@ class VotingHandler(tornado.web.RequestHandler):
 
             else:
 
+                # get this user's votes
+                user_articles = arxivdb.get_user_votes(todays_utcdate,
+                                                       user_name,
+                                                       database=self.database)
+                LOGGER.info('user has votes on: %s' % user_articles)
+
                 # show the listing page
                 self.render("voting.html",
                             user_name=user_name,
@@ -626,7 +632,8 @@ class VotingHandler(tornado.web.RequestHandler):
                             local_articles=local_articles,
                             other_articles=other_articles,
                             flash_message=flash_message,
-                            new_user=new_user)
+                            new_user=new_user,
+                            user_articles=user_articles)
 
         # if we're not within the voting time limits, redirect to the articles
         # page
@@ -678,8 +685,8 @@ class VotingHandler(tornado.web.RequestHandler):
 
         '''
 
-        arxivid = self.get_argument(arxivid, None)
-        votetype = self.get_argument(votetype, None)
+        arxivid = self.get_argument('arxivid', None)
+        votetype = self.get_argument('votetype', None)
 
         session_token = self.get_secure_cookie('coffee_session',
                                                max_age_days=30)
@@ -687,17 +694,20 @@ class VotingHandler(tornado.web.RequestHandler):
         sessioninfo = webdb.session_check(session_token,
                                           database=self.database)
         user_name = sessioninfo[2]
-
+        todays_utcdate = datetime.now(tz=utc).strftime('%Y-%m-%d')
 
         # if all things are satisfied, then process the vote request
         if arxivid and votetype and sessioninfo[0]:
 
             arxivid = xhtml_escape(arxivid)
-            votetype = xhtml_escape(arxivid)
+            votetype = xhtml_escape(votetype)
+
+            LOGGER.info('user: %s, voting: %s, on: %s' % (user_name,
+                                                          votetype,
+                                                          arxivid))
 
             if 'arXiv:' not in arxivid or votetype not in ('up','down'):
 
-                self.set_status(400)
                 message = ("Your vote request used invalid arguments"
                            " and has been discarded.")
 
@@ -709,15 +719,43 @@ class VotingHandler(tornado.web.RequestHandler):
 
             else:
 
-                vote_outcome = arxivdb.record_vote(arxivid,
-                                                   user_name,
-                                                   database=database)
+                # first, check how many votes this user has
+                user_votes = arxivdb.get_user_votes(todays_utcdate,
+                                                    user_name,
+                                                    database=self.database)
 
-                if vote_outcome is False:
+                # make sure it's less than 5 or the votetype isn't up
+                if len(user_votes) < 5 or votetype != 'up':
 
-                    self.set_status(400)
-                    message = ("That article doesn't exist, and your vote "
-                               "has been discarded.")
+                    vote_outcome = arxivdb.record_vote(arxivid,
+                                                       user_name,
+                                                       votetype,
+                                                       database=self.database)
+
+                    if vote_outcome is False:
+
+                        message = ("That article doesn't exist, and your vote "
+                                   "has been discarded.")
+
+                        jsondict = {'status':'failed',
+                                    'message':message,
+                                    'results':None}
+                        self.write(jsondict)
+                        self.finish()
+
+                    else:
+
+                        message = ("Vote successfully recorded for %s" % arxivid)
+
+                        jsondict = {'status':'success',
+                                    'message':message,
+                                    'results':{'nvotes':vote_outcome}}
+                        self.write(jsondict)
+                        self.finish()
+
+                else:
+
+                    message = ("You've voted on 5 articles already.")
 
                     jsondict = {'status':'failed',
                                 'message':message,
@@ -725,19 +763,9 @@ class VotingHandler(tornado.web.RequestHandler):
                     self.write(jsondict)
                     self.finish()
 
-                else:
-
-                    message = ("Vote successfully recorded for %s" % arxivid)
-
-                    jsondict = {'status':'success',
-                                'message':message,
-                                'results':{'nvotes':nvotes}}
-                    self.write(jsondict)
-                    self.finish()
 
         else:
 
-            self.set_status(400)
             message = ("Your vote request could be authorized"
                        " and has been discarded.")
 
