@@ -458,8 +458,11 @@ class VotingHandler(tornado.web.RequestHandler):
 
 
     def get(self):
-        '''
-        This handles GET requests.
+        '''This handles GET requests.
+
+        FIXME: should also get the user's previous votes for today's date if the
+        user is logged in and send them to the template, which will set the
+        states of the voting buttons accordingly.
 
         '''
         # handle a redirect with an attached flash message
@@ -647,19 +650,102 @@ class VotingHandler(tornado.web.RequestHandler):
         takes the following arguments:
 
         arxivid: article to vote for
-        votetype: +1 or -1
+        votetype: up / down
 
         checks if an existing session is in play. if not, flashes a message
-        saying no dice, bro
+        saying no dice, bro in a flash message
 
+        - checks if the user has more than five votes used for the utcdate of
+          the requested arxivid
+        - if they do, then deny vote
+        - if they don't, allow vote
+
+        if vote is allowed:
         - changes the nvote column for arxivid
         - adds the current user to the voters column
+        - returns the nvotes for the arxivid along with
+          success/failure
 
+        if vote is not allowed:
+        - sends back a 401 + error message, which the frontend JS turns into a
+          flash message
+
+        the frontend JS then:
+
+        - updates the vote total for this arxivid
+        - handles flash messages
+        - updates the vote button status
 
         '''
 
+        arxivid = self.get_argument(arxivid, None)
+        votetype = self.get_argument(votetype, None)
+
+        session_token = self.get_secure_cookie('coffee_session',
+                                               max_age_days=30)
+
+        sessioninfo = webdb.session_check(session_token,
+                                          database=self.database)
+        user_name = sessioninfo[2]
 
 
+        # if all things are satisfied, then process the vote request
+        if arxivid and votetype and sessioninfo[0]:
+
+            arxivid = xhtml_escape(arxivid)
+            votetype = xhtml_escape(arxivid)
+
+            if 'arXiv:' not in arxivid or votetype not in ('up','down'):
+
+                self.set_status(400)
+                message = ("Your vote request used invalid arguments"
+                           " and has been discarded.")
+
+                jsondict = {'status':'failed',
+                            'message':message,
+                            'results':None}
+                self.write(jsondict)
+                self.finish()
+
+            else:
+
+                vote_outcome = arxivdb.record_vote(arxivid,
+                                                   user_name,
+                                                   database=database)
+
+                if vote_outcome is False:
+
+                    self.set_status(400)
+                    message = ("That article doesn't exist, and your vote "
+                               "has been discarded.")
+
+                    jsondict = {'status':'failed',
+                                'message':message,
+                                'results':None}
+                    self.write(jsondict)
+                    self.finish()
+
+                else:
+
+                    message = ("Vote successfully recorded for %s" % arxivid)
+
+                    jsondict = {'status':'success',
+                                'message':message,
+                                'results':{'nvotes':nvotes}}
+                    self.write(jsondict)
+                    self.finish()
+
+        else:
+
+            self.set_status(400)
+            message = ("Your vote request could be authorized"
+                       " and has been discarded.")
+
+            jsondict = {'status':'failed',
+                        'message':message,
+                        'results':None}
+            self.write(jsondict)
+            self.finish()
 
 
 

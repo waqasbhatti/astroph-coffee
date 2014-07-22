@@ -477,9 +477,39 @@ def get_articles_for_voting(database=None,
 
 ## VOTERS AND PRESENTERS
 
-def record_vote(arxiv_id, votername, vote, database=None):
+def record_vote(arxivid, username, vote, database=None):
+    '''This records votes for a paper in the DB. vote is 'up' or 'down'. If the
+    arxivid doesn't exist, then returns False. If the vote is successfully
+    processed, returns the nvotes for the arxivid.
+
     '''
-    This records votes for a paper in the DB.
+
+    # open the database if needed and get a cursor
+    if not database:
+        database, cursor = opendb()
+        closedb = True
+    else:
+        cursor = database.cursor()
+        closedb = False
+
+    returnval = False
+
+
+
+    # at the end, close the cursor and DB connection
+    if closedb:
+        cursor.close()
+        database.close()
+
+    return returnval
+
+
+
+def get_user_votes(utcdate, username, database=None):
+    '''
+    This gets a user's votes for all arxivids on the current utcdate. The
+    frontend uses this to set the current voting state for the articles on the
+    voting page.
 
     '''
 
@@ -492,7 +522,30 @@ def record_vote(arxiv_id, votername, vote, database=None):
         closedb = False
 
 
+    # get all the voters for this date
+    # FIXME: this would be WAY better handled using FTS
+     # unfortunately, FTS is disabled in default Python (thanks OSes other than
+    # Linux!)
+    query = ("select arxivid, voters from arxiv "
+             "where utcdate = ? and nvotes > 0")
+    query_params = (utcdate,)
 
+    cursor.execute(query, query_params)
+    rows = cursor.fetchall()
+
+    if rows and len(rows) > 0:
+
+        voted_arxivids = []
+
+        for row in rows:
+            paper, voters = row
+            voters = voters.split(',')
+            if username in voters:
+                voted_arxivids.append(paper)
+
+    else:
+
+        voted_arxivids = None
 
 
     # at the end, close the cursor and DB connection
@@ -500,9 +553,10 @@ def record_vote(arxiv_id, votername, vote, database=None):
         cursor.close()
         database.close()
 
+    return voted_arxivids
 
 
-def modify_presenters(arxiv_id, presenter, action, database=None):
+def modify_presenters(arxivid, presenter, action, database=None):
     '''
     This adds/removes presenters for a paper.
 
