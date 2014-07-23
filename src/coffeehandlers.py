@@ -650,8 +650,8 @@ class VotingHandler(tornado.web.RequestHandler):
             LOGGER.warning('voting period is over, '
                            'redirecting to previous day papers')
             redirect_msg = msgencode(
-                "Sorry, the voting period has ended. "
-                "Here are today's selected papers."
+                "Sorry, we're not in the voting period at the moment. "
+                "Here are today's papers."
             )
 
             redirect_url = '/astroph-coffee/papers?f=%s' % redirect_msg
