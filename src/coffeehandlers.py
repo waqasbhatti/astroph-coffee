@@ -426,9 +426,11 @@ class ArticleListHandler(tornado.web.RequestHandler):
             todays_date = todays_localdate_str
 
             flash_message = (
+                "<div data-alert class=\"alert-box radius\">"
                 "Papers for today haven't been imported yet. "
                 "In the meantime, here are yesterday's papers. "
                 "Please wait a few minutes and try again."
+                "<a href=\"#\" class=\"close\">&times;</a></div>"
             )
 
 
