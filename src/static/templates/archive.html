@@ -46,10 +46,12 @@
 
             {% for paperdate in reversed(sorted(monthpapers)) %}
 
+            {% set papertitle = paperdate[0].strftime('%A, %B %d %Y') %}
+
             <div class="row small-listing-row">
               <div class="small-6 columns">
-                <a href="/astroph-coffee/archive/{{ paperdate[0].strftime('%Y%m%d') }}">
-                  {{ paperdate[0].strftime('%A, %B %d %Y') }}
+                <a href="/astroph-coffee/archive/{{ papertitle }}">
+                  {{ papertitle }}
                 </a>
               </div>
               <div class="small-6 columns">
