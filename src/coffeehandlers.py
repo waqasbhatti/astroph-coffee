@@ -65,7 +65,7 @@ def msgdecode(message):
 def group_arxiv_dates(dates, npapers):
     '''
     This takes a list of datetime.dates and the number of papers corresponding
-    to each date and builds a nice tuple out of it, allowing the following
+    to each date and builds a nice dict out of it, allowing the following
     listing (in rev-chron order) to be made:
 
     YEAR X
