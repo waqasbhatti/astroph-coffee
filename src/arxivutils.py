@@ -15,25 +15,31 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
 from tornado.escape import squeeze
+import requests, requests.exceptions
 
 from pytz import utc
 
+CHUNKSIZE = 64
+REQUEST_HEADERS = {
+    'User-Agent': ('Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:31.0)'
+                   ' Gecko/20100101 Firefox/31.0')
+    }
 
 
 def get_page_html(url, fakery=True):
     '''
     This connects to the arxiv server and downloads the HTML of the page, while
-    faking some activity.
+    faking some activity if requested via the Selenium browser driver.
 
     '''
 
-    driver = webdriver.Firefox()
-    driver.get(url)
-    html = driver.page_source
-
-    time.sleep(5.0)
-
     if fakery:
+
+        driver = webdriver.Firefox()
+        driver.get(url)
+        html = driver.page_source
+
+        time.sleep(5.0)
 
         npagedowns = 2 + int(random.random()*20.0)
         for x in range(npagedowns):
@@ -41,8 +47,18 @@ def get_page_html(url, fakery=True):
             elem.send_keys(Keys.PAGE_DOWN)
             time.sleep(10.0 + random.random()*10.0)
 
-    # then quit
-    driver.quit()
+        # then quit
+        driver.quit()
+
+    else:
+
+        pagerequest = requests.get(url,
+                                   headers=REQUEST_HEADERS)
+
+        if pagerequest.status_code == requests.codes.ok:
+            html = pagerequest.text
+        else:
+            html = None
 
     return html
 
