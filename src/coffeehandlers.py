@@ -19,6 +19,15 @@ from tornado.escape import xhtml_escape, xhtml_unescape, url_unescape
 import arxivdb
 import webdb
 import base64
+import re
+
+######################
+## USEFUL CONSTANTS ##
+######################
+
+ARCHIVEDATE_REGEX = re.compile(r'^(\d{4})(\d{2})(\d{2})$')
+MONTH_NAMES = {x:datetime(year=2014,month=x,day=12)
+               for x in range(1,13)}
 
 
 ######################
@@ -52,6 +61,51 @@ def msgdecode(message):
     except Exception as e:
         return ''
 
+
+def group_arxiv_dates(dates, npapers):
+    '''
+    This takes a list of datetime.dates and the number of papers corresponding
+    to each date and builds a nice tuple out of it, allowing the following
+    listing (in rev-chron order) to be made:
+
+    YEAR X
+
+    Month X:
+
+    Date X --- <strong>YY<strong> papers
+
+    .
+    .
+    .
+
+    YEAR 1
+
+    Month 1:
+
+    Date 1 --- <strong>YY<strong> papers
+
+    '''
+
+    years, months = [], []
+
+    for x in dates:
+        years.append(x.year)
+        months.append(x.month)
+
+    unique_years = set(years)
+    unique_months = set(months)
+
+    yeardict = {}
+
+    for year in unique_years:
+        yeardict[year] = {}
+        for month in unique_months:
+            yeardict[year][MONTH_NAMES[month]] = [
+                (x,y) for (x,y) in zip(dates, npapers)
+                if (x.year == year and x.month == month)
+                ]
+
+    return yeardict
 
 
 
@@ -652,7 +706,7 @@ class VotingHandler(tornado.web.RequestHandler):
             redirect_msg = msgencode(
                 "Sorry, we're not in the voting period at the moment. "
                 "Here are today's papers."
-            )
+                )
 
             redirect_url = '/astroph-coffee/papers?f=%s' % redirect_msg
             self.redirect(redirect_url)
@@ -926,8 +980,9 @@ class AboutHandler(tornado.web.RequestHandler):
                             flash_message=flash_message,
                             new_user=new_user)
 
-
-        # show the contact page
+        #########################
+        # show the contact page #
+        #########################
         self.render("about.html",
                     local_today=local_today,
                     user_name=user_name,
@@ -938,36 +993,240 @@ class AboutHandler(tornado.web.RequestHandler):
 
 
 
-class AjaxHandler(tornado.web.RequestHandler):
+class ArchiveHandler(tornado.web.RequestHandler):
     '''
-    This handles all AJAX requests.
+    This handles all paper archive requests.
 
-    request types:
-
-    /astroph-coffee/ajax/vote, POST, args: arxiv_id, session_token
+    url: /astroph-coffee/archive/YYYYMMDD
 
     '''
 
-    def initialize(self, database, voting_start, voting_end):
+    def initialize(self, database):
         '''
         Sets up the database.
 
         '''
 
         self.database = database
-        self.voting_start = voting_start
-        self.voting_end = voting_end
 
 
-    def get(self, request):
+    def get(self, archivedate):
         '''
         This handles GET requests.
 
         '''
 
+        # handle a redirect with an attached flash message
+        flash_message = self.get_argument('f', None)
+        if flash_message:
+            flashtext = msgdecode(flash_message)
+            LOGGER.warning('flash message: %s' % flashtext)
+            flashbox = (
+                '<div data-alert class="alert-box radius">%s'
+                '<a href="#" class="close">&times;</a></div>' %
+                flashtext
+                )
+            flash_message = flashbox
+        else:
+            flash_message = ''
 
-    def post(self, request):
-        '''
-        This handles POST requests.
 
-        '''
+        local_today = datetime.now(tz=utc).strftime('%Y-%m-%d %H:%M %Z')
+
+        # first, get the session token
+        session_token = self.get_secure_cookie('coffee_session',
+                                               max_age_days=30)
+        ip_address = self.request.remote_ip
+        client_header = self.request.headers['User-Agent'] or 'none'
+        user_name = 'anonuser@%s' % ip_address
+        new_user = True
+
+        # check if this session_token corresponds to an existing user
+        if session_token:
+
+            sessioninfo = webdb.session_check(session_token,
+                                              database=self.database)
+
+            if sessioninfo[0]:
+
+                user_name = sessioninfo[2]
+                LOGGER.info('found session for %s, continuing with it' %
+                            user_name)
+                new_user = False
+
+            elif sessioninfo[-1] != 'database_error':
+
+                LOGGER.warning('unknown user, starting a new session for '
+                               '%s, %s' % (ip_address, client_header))
+
+                sessionok, token = webdb.anon_session_initiate(
+                    ip_address,
+                    client_header,
+                    database=self.database
+                )
+
+                if sessionok and token:
+                    self.set_secure_cookie('coffee_session',
+                                           token,
+                                           httponly=True)
+                else:
+                    LOGGER.error('could not set session cookie for %s, %s' %
+                                 (ip_address, client_header))
+                    self.set_status(500)
+                    message = ("There was a database error "
+                               "trying to look up user credentials.")
+
+                    LOGGER.error('database error while looking up session for '
+                                   '%s, %s' % (ip_address, client_header))
+
+                    self.render("errorpage.html",
+                                user_name=user_name,
+                                local_today=local_today,
+                                error_message=message,
+                                flash_message=flash_message,
+                                new_user=new_user)
+
+
+            else:
+
+                self.set_status(500)
+                message = ("There was a database error "
+                           "trying to look up user credentials.")
+
+                LOGGER.error('database error while looking up session for '
+                               '%s, %s' % (ip_address, client_header))
+
+                self.render("errorpage.html",
+                            user_name=user_name,
+                            error_message=message,
+                            local_today=local_today,
+                            flash_message=flash_message,
+                            new_user=new_user)
+
+
+        else:
+
+            sessionok, token = webdb.anon_session_initiate(
+                ip_address,
+                client_header,
+                database=self.database
+            )
+
+            if sessionok and token:
+                self.set_secure_cookie('coffee_session',
+                                       token,
+                                       httponly=True)
+            else:
+                LOGGER.error('could not set session cookie for %s, %s' %
+                             (ip_address, client_header))
+                self.set_status(500)
+                message = ("There was a database error "
+                           "trying to look up user credentials.")
+
+                LOGGER.error('database error while looking up session for '
+                               '%s, %s' % (ip_address, client_header))
+
+                self.render("errorpage.html",
+                            user_name=user_name,
+                            local_today=local_today,
+                            error_message=message,
+                            flash_message=flash_message,
+                            new_user=new_user)
+
+        ##################################
+        # now handle the archive request #
+        ##################################
+        if archivedate is not None:
+
+            archivedate = xhtml_escape(archivedate)
+            archivedate = re.match(ARCHIVEDATE_REGEX, archivedate)
+
+            if archivedate:
+
+                year, month, day = archivedate.groups()
+                listingdate = '%s-%s-%s' % (year, month, day)
+
+                # get the articles for today
+                local_articles, voted_articles, other_articles = (
+                    arxivdb.get_articles_for_listing(listingdate,
+                                                     database=self.database)
+                )
+
+                # if this date's papers aren't available, show the archive index
+                if (not local_articles and
+                    not voted_articles and
+                    not other_articles):
+
+                    archive_dates, archive_npapers = arxivdb.get_archive_index(
+                        database=self.database
+                        )
+
+                    flash_message = (
+                        "<div data-alert class=\"alert-box radius\">"
+                        "No papers for %s were found. "
+                        "You've been redirected to the Astro-Coffee archive."
+                        "<a href=\"#\" class=\"close\">&times;</a></div>"
+                        ) % listingdate
+
+                    self.render("archive.html",
+                                user_name=user_name,
+                                flash_message=flash_message,
+                                new_user=new_user,
+                                archive_dates=archive_dates,
+                                archive_npapers=archive_npapers,
+                                local_today=local_today)
+
+
+                else:
+
+                    # figure out the UTC date for this archive listing
+                    archive_datestr = datetime(
+                        hour=0,
+                        minute=15,
+                        second=0,
+                        day=int(day),
+                        month=int(month),
+                        year=int(year),
+                        tzinfo=utc
+                        ).strftime('%A, %b %d %Y')
+
+                    # show the listing page
+                    self.render("listing.html",
+                                user_name=user_name,
+                                local_today=local_today,
+                                todays_date=archive_datestr,
+                                local_articles=local_articles,
+                                voted_articles=voted_articles,
+                                other_articles=other_articles,
+                                flash_message=flash_message,
+                                new_user=new_user)
+
+            else:
+
+                archive_dates, archive_npapers = arxivdb.get_archive_index(
+                    database=self.database
+                    )
+                paper_archives = group_arxiv_dates(archive_dates,
+                                                   archive_npapers)
+
+                self.render("archive.html",
+                            user_name=user_name,
+                            flash_message=flash_message,
+                            new_user=new_user,
+                            paper_archives=paper_archives,
+                            local_today=local_today)
+
+        else:
+
+            archive_dates, archive_npapers = arxivdb.get_archive_index(
+                database=self.database
+                )
+            paper_archives = group_arxiv_dates(archive_dates,
+                                               archive_npapers)
+
+            self.render("archive.html",
+                        user_name=user_name,
+                        flash_message=flash_message,
+                        new_user=new_user,
+                        paper_archives=paper_archives,
+                        local_today=local_today)

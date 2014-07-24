@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block pagetitle %}Astro-Coffee archive{% end %}
+
+{% block pageheader %}
+
+{% include "topbar.html" %}
+
+<div class="row">
+  <div class="small-12 columns">
+    <h1>Astro-Coffee archive</h1>
+  </div>
+</div>
+
+{% end %}
+
+{% block pagecontent %}
+
+<div class="row">
+  <div class="small-12 columns">
+    <p>Papers from all Astro-Coffee discussions are archived here.</p>
+
+  </div>
+</div>
+
+{% for year in reversed(sorted(paper_archives.keys())) %}
+
+<div class="row">
+  <div class="small-12 columns">
+
+    <h2>{{ year }}</h2>
+
+    {% set yearpapers = paper_archives[year] %}
+
+    {% for month in reversed(sorted(yearpapers.keys())) %}
+
+    <div class="row">
+      <div class="small-12 columns">
+
+        <h3>{{ month.strftime('%B') }}</h3>
+
+        <div class="row">
+          <div class="small-9 small-centered columns">
+
+            {% set monthpapers = paper_archives[year][month] %}
+
+            {% for paperdate in reversed(sorted(monthpapers)) %}
+
+            <div class="row small-listing-row">
+              <div class="small-6 columns">
+                <a href="/astroph-coffee/archive/{{ paperdate[0].strftime('%Y%m%d') }}">
+                  {{ paperdate[0].strftime('%A, %B %d %Y') }}
+                </a>
+              </div>
+              <div class="small-6 columns">
+                <strong>{{ paperdate[1] }}</strong> papers
+              </div>
+            </div>
+
+            {% end %}
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {% end %}
+
+  </div>
+</div>
+
+{% end %}
+
+
+{% end %}

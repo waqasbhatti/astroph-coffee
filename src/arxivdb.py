@@ -474,6 +474,41 @@ def get_articles_for_voting(database=None,
     return (local_articles, other_articles)
 
 
+## ARTICLE ARCHIVES
+def get_archive_index(start_date=None,
+                      end_date=None,
+                      database=None):
+    '''
+    This returns all article archives in reverse date order.
+
+    '''
+    # open the database if needed and get a cursor
+    if not database:
+        database, cursor = opendb()
+        closedb = True
+    else:
+        cursor = database.cursor()
+        closedb = False
+
+    query = ("select utcdate, count(*) from arxiv "
+             "where article_type = 'astronomy' "
+             "group by utcdate order by utcdate desc")
+    cursor.execute(query)
+    rows = cursor.fetchall()
+
+    if rows and len(rows) > 0:
+        arxivdates, arxivvotes = zip(*rows)
+
+    else:
+        arxivdates, arxivvotes = [], []
+
+    # at the end, close the cursor and DB connection
+    if closedb:
+        cursor.close()
+        database.close()
+
+    return (arxivdates, arxivvotes)
+
 
 ## VOTERS AND PRESENTERS
 
@@ -496,8 +531,10 @@ def record_vote(arxivid, username, vote, database=None):
 
     if vote == 'up':
         voteval = 1
-    else:
+    elif vote =='down':
         voteval = -1
+    else:
+        voteval = 0
 
     if voteval > 0:
         # votes only count ONCE per article
@@ -510,7 +547,7 @@ def record_vote(arxivid, username, vote, database=None):
                         arxivid,
                         '%{0}%'.format(username))
 
-    else:
+    elif voteval < 0:
         # votes only count ONCE per article
         query = ("update arxiv set nvotes = (nvotes + ?), "
                  "voters = replace(voters, (? || ','), '') "
@@ -520,6 +557,10 @@ def record_vote(arxivid, username, vote, database=None):
                         username,
                         arxivid,
                         '%{0}%'.format(username))
+
+    else:
+        return False
+
 
     try:
 
