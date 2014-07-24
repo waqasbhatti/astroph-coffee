@@ -1191,7 +1191,7 @@ class ArchiveHandler(tornado.web.RequestHandler):
                         ).strftime('%A, %b %d %Y')
 
                     # show the listing page
-                    self.render("listing.html",
+                    self.render("archivelisting.html",
                                 user_name=user_name,
                                 local_today=local_today,
                                 todays_date=archive_datestr,
