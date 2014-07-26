@@ -6,20 +6,21 @@ This contains the URL handlers for the astroph-coffee web-server.
 
 '''
 
+import os.path
 import logging
+import base64
+import re
+
 LOGGER = logging.getLogger(__name__)
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from pytz import utc, timezone
 
-import os.path
 import tornado.web
 from tornado.escape import xhtml_escape, xhtml_unescape, url_unescape
 
 import arxivdb
 import webdb
-import base64
-import re
 
 ######################
 ## USEFUL CONSTANTS ##
@@ -34,32 +35,37 @@ MONTH_NAMES = {x:datetime(year=2014,month=x,day=12)
 ## USEFUL FUNCTIONS ##
 ######################
 
-from tornado.escape import xhtml_escape, xhtml_unescape
+def msgencode(message, signer):
+    '''This escapes a message, then base64 encodes it.
 
-def msgencode(message):
-    '''
-    This escapes a message, then base64 encodes it.
+    Uses an itsdangerous.Signer instance provided as the signer arg to sign the
+    message to protect against tampering.
 
     '''
     try:
-        msg = base64.b64encode(xhtml_escape(message))
+        msg = base64.b64encode(signer.sign(xhtml_escape(message)))
         msg = msg.replace('=','*')
         return msg
-
     except Exception as e:
         return ''
 
 
-def msgdecode(message):
-    '''
-    This base64 decodes a message, then unescapes it.
+
+def msgdecode(message, signer):
+    '''This base64 decodes a message, then unescapes it.
+
+    Uses an itsdangerous.Signer instance provided as the signer arg to verify
+    the message to protect against tampering.
 
     '''
     try:
         msg = message.replace('*','=')
-        return xhtml_unescape(base64.b64decode(msg))
+        decoded_message = base64.b64decode(msg)
+        decoded_message = signer.unsign(decoded_message)
+        return xhtml_unescape(decoded_message)
     except Exception as e:
         return ''
+
 
 
 def group_arxiv_dates(dates, npapers):
@@ -127,7 +133,8 @@ class CoffeeHandler(tornado.web.RequestHandler):
                    database,
                    voting_start,
                    voting_end,
-                   server_tz):
+                   server_tz,
+                   signer):
         '''
         Sets up the database.
 
@@ -137,6 +144,7 @@ class CoffeeHandler(tornado.web.RequestHandler):
         self.voting_start = voting_start
         self.voting_end = voting_end
         self.local_tz = timezone(server_tz)
+        self.signer = signer
 
 
     def get(self):
@@ -147,7 +155,7 @@ class CoffeeHandler(tornado.web.RequestHandler):
         # handle a redirect with an attached flash message
         flash_message = self.get_argument('f', None)
         if flash_message:
-            flashtext = msgdecode(flash_message)
+            flashtext = msgdecode(flash_message, self.signer)
             LOGGER.warning('flash message: %s' % flashtext)
             flashbox = (
                 '<div data-alert class="alert-box radius">%s'
@@ -316,7 +324,8 @@ class ArticleListHandler(tornado.web.RequestHandler):
     def initialize(self, database,
                    voting_start,
                    voting_end,
-                   server_tz):
+                   server_tz,
+                   signer):
         '''
         Sets up the database.
 
@@ -326,6 +335,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
         self.voting_start = voting_start
         self.voting_end = voting_end
         self.server_tz = server_tz
+        self.signer = signer
 
 
     def get(self):
@@ -338,7 +348,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
         flash_message = self.get_argument('f', None)
         if flash_message:
 
-            flashtext = msgdecode(flash_message)
+            flashtext = msgdecode(flash_message, self.signer)
             LOGGER.warning('flash message: %s' % flashtext)
             flashbox = (
                 '<div data-alert class="alert-box radius">%s'
@@ -507,7 +517,12 @@ class VotingHandler(tornado.web.RequestHandler):
 
     '''
 
-    def initialize(self, database, voting_start, voting_end, debug):
+    def initialize(self,
+                   database,
+                   voting_start,
+                   voting_end,
+                   debug,
+                   signer):
         '''
         Sets up the database.
 
@@ -517,20 +532,18 @@ class VotingHandler(tornado.web.RequestHandler):
         self.voting_start = voting_start
         self.voting_end = voting_end
         self.debug = debug
+        self.signer = signer
+
 
 
     def get(self):
         '''This handles GET requests.
 
-        FIXME: should also get the user's previous votes for today's date if the
-        user is logged in and send them to the template, which will set the
-        states of the voting buttons accordingly.
-
         '''
         # handle a redirect with an attached flash message
         flash_message = self.get_argument('f', None)
         if flash_message:
-            flashtext = msgdecode(flash_message)
+            flashtext = msgdecode(flash_message, self.signer)
             LOGGER.warning('flash message: %s' % flashtext)
             flashbox = (
                 '<div data-alert class="alert-box radius">%s'
@@ -672,7 +685,8 @@ class VotingHandler(tornado.web.RequestHandler):
                 redirect_msg = msgencode(
                     "Papers for today haven't been imported yet. "
                     "In the meantime, here are yesterday's papers. "
-                    "Please wait a few minutes and try again."
+                    "Please wait a few minutes and try again.",
+                    self.signer
                 )
 
                 redirect_url = '/astroph-coffee/papers?f=%s' % redirect_msg
@@ -705,7 +719,8 @@ class VotingHandler(tornado.web.RequestHandler):
                            'redirecting to previous day papers')
             redirect_msg = msgencode(
                 "Sorry, we're not in the voting period at the moment. "
-                "Here are today's papers."
+                "Here are today's papers.",
+                self.signer
                 )
 
             redirect_url = '/astroph-coffee/papers?f=%s' % redirect_msg
@@ -1001,13 +1016,16 @@ class ArchiveHandler(tornado.web.RequestHandler):
 
     '''
 
-    def initialize(self, database):
+    def initialize(self,
+                   database,
+                   signer):
         '''
         Sets up the database.
 
         '''
 
         self.database = database
+        self.signer = signer
 
 
     def get(self, archivedate):
@@ -1019,7 +1037,7 @@ class ArchiveHandler(tornado.web.RequestHandler):
         # handle a redirect with an attached flash message
         flash_message = self.get_argument('f', None)
         if flash_message:
-            flashtext = msgdecode(flash_message)
+            flashtext = msgdecode(flash_message, self.signer)
             LOGGER.warning('flash message: %s' % flashtext)
             flashbox = (
                 '<div data-alert class="alert-box radius">%s'

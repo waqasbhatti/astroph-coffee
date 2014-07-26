@@ -18,6 +18,10 @@ import logging
 from datetime import time
 from pytz import utc
 
+# for signing flash messages
+from itsdangerous import Signer
+
+
 # setup signal trapping on SIGINT
 def recv_sigint(signum, stack):
     '''
@@ -124,6 +128,9 @@ if __name__ == '__main__':
 
     SERVER_TZ = CONF.get('times','server_tz')
 
+    # this is used to sign flash messages so they can't be forged
+    FLASHSIGNER = Signer(SESSIONSECRET)
+
 
     ##################
     ## URL HANDLERS ##
@@ -134,34 +141,41 @@ if __name__ == '__main__':
          {'database':DATABASE,
           'voting_start':VOTING_START,
           'voting_end':VOTING_END,
-          'server_tz':SERVER_TZ}),
+          'server_tz':SERVER_TZ,
+          'signer':FLASHSIGNER}),
         (r'/astroph-coffee',coffeehandlers.CoffeeHandler,
          {'database':DATABASE,
           'voting_start':VOTING_START,
           'voting_end':VOTING_END,
-          'server_tz':SERVER_TZ}),
+          'server_tz':SERVER_TZ,
+          'signer':FLASHSIGNER}),
         (r'/astroph-coffee/papers',coffeehandlers.ArticleListHandler,
          {'database':DATABASE,
           'voting_start':VOTING_START,
           'voting_end':VOTING_END,
-          'server_tz':SERVER_TZ}),
+          'server_tz':SERVER_TZ,
+          'signer':FLASHSIGNER}),
         (r'/astroph-coffee/papers/',coffeehandlers.ArticleListHandler,
          {'database':DATABASE,
           'voting_start':VOTING_START,
           'voting_end':VOTING_END,
-          'server_tz':SERVER_TZ}),
+          'server_tz':SERVER_TZ,
+          'signer':FLASHSIGNER}),
         (r'/astroph-coffee/archive/?(.*)',coffeehandlers.ArchiveHandler,
-         {'database':DATABASE}),
+         {'database':DATABASE,
+          'signer':FLASHSIGNER}),
         (r'/astroph-coffee/vote',coffeehandlers.VotingHandler,
          {'database':DATABASE,
           'voting_start':VOTING_START,
           'voting_end':VOTING_END,
-          'debug':DEBUG}),
+          'debug':DEBUG,
+          'signer':FLASHSIGNER}),
         (r'/astroph-coffee/vote/',coffeehandlers.VotingHandler,
          {'database':DATABASE,
           'voting_start':VOTING_START,
           'voting_end':VOTING_END,
-          'debug':DEBUG}),
+          'debug':DEBUG,
+          'signer':FLASHSIGNER}),
         (r'/astroph-coffee/about',coffeehandlers.AboutHandler,
          {'database':DATABASE}),
         (r'/astroph-coffee/about/',coffeehandlers.AboutHandler,
