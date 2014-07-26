@@ -133,8 +133,13 @@ class CoffeeHandler(tornado.web.RequestHandler):
                    database,
                    voting_start,
                    voting_end,
+                   coffee_time,
                    server_tz,
-                   signer):
+                   signer,
+                   room,
+                   building,
+                   department,
+                   institution):
         '''
         Sets up the database.
 
@@ -143,8 +148,13 @@ class CoffeeHandler(tornado.web.RequestHandler):
         self.database = database
         self.voting_start = voting_start
         self.voting_end = voting_end
+        self.coffee_time = coffee_time
         self.local_tz = timezone(server_tz)
         self.signer = signer
+        self.room = room
+        self.building = building
+        self.department = department
+        self.institution = institution
 
 
     def get(self):
@@ -285,21 +295,25 @@ class CoffeeHandler(tornado.web.RequestHandler):
         dtstart = dtnow.replace(hour=self.voting_start.hour,
                                 minute=self.voting_start.minute,
                                 second=0)
-        LOGGER.info('voting start = %s' % dtstart)
         local_start = dtstart.astimezone(self.local_tz)
         local_start = local_start.strftime('%H:%M %Z')
 
         dtend = dtnow.replace(hour=self.voting_end.hour,
                               minute=self.voting_end.minute,
                               second=0)
-        LOGGER.info('voting end = %s' % dtend)
         local_end = dtend.astimezone(self.local_tz)
         local_end = local_end.strftime('%H:%M %Z')
+
+        dtcoffee = dtnow.replace(hour=self.coffee_time.hour,
+                                 minute=self.coffee_time.minute,
+                                 second=0)
+        local_coffee = dtcoffee.astimezone(self.local_tz)
+        local_coffee = local_coffee.strftime('%H:%M %Z')
 
 
         utc_start = self.voting_start.strftime('%H:%M %Z')
         utc_end = self.voting_end.strftime('%H:%M %Z')
-
+        utc_coffee = self.coffee_time.strftime('%H:%M %Z')
 
         self.render("index.html",
                     user_name=user_name,
@@ -308,8 +322,14 @@ class CoffeeHandler(tornado.web.RequestHandler):
                     voting_localend=local_end,
                     voting_start=utc_start,
                     voting_end=utc_end,
+                    coffeetime_local=local_coffee,
+                    coffeetime_utc=utc_coffee,
                     flash_message=flash_message,
-                    new_user=new_user)
+                    new_user=new_user,
+                    coffee_room=self.room,
+                    coffee_building=self.building,
+                    coffee_department=self.department,
+                    coffee_institution=self.institution)
 
 
 
@@ -475,24 +495,26 @@ class ArticleListHandler(tornado.web.RequestHandler):
                             new_user=new_user)
 
         # get the articles for today
-        local_articles, voted_articles, other_articles = (
-            arxivdb.get_articles_for_listing(todays_utcdate,
+        latestdate, local_articles, voted_articles, other_articles = (
+            arxivdb.get_articles_for_listing(utcdate=todays_utcdate,
                                              database=self.database)
         )
 
-        # if today's papers aren't ready yet, show local time's papers
+        # if today's papers aren't ready yet, show latest papers
         if not local_articles and not voted_articles and not other_articles:
 
-            local_articles, voted_articles, other_articles = (
-                arxivdb.get_articles_for_listing(todays_localdate,
-                                                 database=self.database)
+            latestdate, local_articles, voted_articles, other_articles = (
+                arxivdb.get_articles_for_listing(
+                    database=self.database
+                )
             )
-            todays_date = todays_localdate_str
+            todays_date = datetime.strptime(latestdate,
+                                            '%Y-%m-%d').strftime('%A, %b %d %Y')
 
             flash_message = (
                 "<div data-alert class=\"alert-box radius\">"
                 "Papers for today haven't been imported yet. "
-                "In the meantime, here are yesterday's papers. "
+                "Here are the most recent papers. "
                 "Please wait a few minutes and try again."
                 "<a href=\"#\" class=\"close\">&times;</a></div>"
             )
@@ -684,7 +706,7 @@ class VotingHandler(tornado.web.RequestHandler):
 
                 redirect_msg = msgencode(
                     "Papers for today haven't been imported yet. "
-                    "In the meantime, here are yesterday's papers. "
+                    "Here are yesterday's papers. "
                     "Please wait a few minutes and try again.",
                     self.signer
                 )
@@ -1165,8 +1187,8 @@ class ArchiveHandler(tornado.web.RequestHandler):
                 listingdate = '%s-%s-%s' % (year, month, day)
 
                 # get the articles for today
-                local_articles, voted_articles, other_articles = (
-                    arxivdb.get_articles_for_listing(listingdate,
+                latestdate, local_articles, voted_articles, other_articles = (
+                    arxivdb.get_articles_for_listing(utcdate=listingdate,
                                                      database=self.database)
                 )
 

@@ -238,7 +238,7 @@ def insert_articles(arxiv,
 
 ## RETRIEVING ARTICLES
 
-def get_articles_for_listing(utcdate,
+def get_articles_for_listing(utcdate=None,
                              database=None,
                              astronomyonly=True):
     '''
@@ -261,6 +261,15 @@ def get_articles_for_listing(utcdate,
     else:
         cursor = database.cursor()
         closedb = False
+
+    # if no utcdate is provided, find the latest utcdate and use that
+    if not utcdate:
+
+        query = 'select utcdate from arxiv order by utcdate desc limit 1'
+        cursor.execute(query)
+        row = cursor.fetchone()
+        utcdate = row[0].strftime('%Y-%m-%d')
+
 
     local_articles, voted_articles, other_articles = [], [], []
     articles_excluded_from_other = []
@@ -367,7 +376,10 @@ def get_articles_for_listing(utcdate,
         cursor.close()
         database.close()
 
-    return (local_articles, voted_articles, other_articles)
+    return (utcdate,
+            local_articles,
+            voted_articles,
+            other_articles)
 
 
 

@@ -97,6 +97,11 @@ if __name__ == '__main__':
     else:
         LOGGER.setLevel(logging.INFO)
 
+
+    ###################
+    ## SET UP CONFIG ##
+    ###################
+
     # read the conf files
     CONF = ConfigParser.ConfigParser()
     CONF.read(os.path.join(os.getcwd(),'conf','astroph.conf'))
@@ -120,13 +125,23 @@ if __name__ == '__main__':
     # get the times of day (UTC) to switch between voting and list mode
     VOTING_START = CONF.get('times','voting_start')
     VOTING_END = CONF.get('times','voting_end')
+    COFFEE_TIME = CONF.get('times','coffee_time')
 
     VOTING_START = [int(x) for x in VOTING_START.split(':')]
     VOTING_START = time(VOTING_START[0], VOTING_START[1], tzinfo=utc)
     VOTING_END = [int(x) for x in VOTING_END.split(':')]
     VOTING_END = time(VOTING_END[0], VOTING_END[1], tzinfo=utc)
+    COFFEE_TIME = [int(x) for x in COFFEE_TIME.split(':')]
+    COFFEE_TIME = time(COFFEE_TIME[0], COFFEE_TIME[1], tzinfo=utc)
 
+    # get the server timezone
     SERVER_TZ = CONF.get('times','server_tz')
+
+    # get the coffee place info
+    COFFEE_ROOM = CONF.get('places','room')
+    COFFEE_BUILDING = CONF.get('places','building')
+    COFFEE_DEPARTMENT = CONF.get('places','department')
+    COFFEE_INSTITUTION = CONF.get('places','institution')
 
     # this is used to sign flash messages so they can't be forged
     FLASHSIGNER = Signer(SESSIONSECRET)
@@ -141,14 +156,24 @@ if __name__ == '__main__':
          {'database':DATABASE,
           'voting_start':VOTING_START,
           'voting_end':VOTING_END,
+          'coffee_time':COFFEE_TIME,
           'server_tz':SERVER_TZ,
-          'signer':FLASHSIGNER}),
+          'signer':FLASHSIGNER,
+          'room':COFFEE_ROOM,
+          'building':COFFEE_BUILDING,
+          'department':COFFEE_DEPARTMENT,
+          'institution':COFFEE_INSTITUTION}),
         (r'/astroph-coffee',coffeehandlers.CoffeeHandler,
          {'database':DATABASE,
           'voting_start':VOTING_START,
           'voting_end':VOTING_END,
+          'coffee_time':COFFEE_TIME,
           'server_tz':SERVER_TZ,
-          'signer':FLASHSIGNER}),
+          'signer':FLASHSIGNER,
+          'room':COFFEE_ROOM,
+          'building':COFFEE_BUILDING,
+          'department':COFFEE_DEPARTMENT,
+          'institution':COFFEE_INSTITUTION}),
         (r'/astroph-coffee/papers',coffeehandlers.ArticleListHandler,
          {'database':DATABASE,
           'voting_start':VOTING_START,
