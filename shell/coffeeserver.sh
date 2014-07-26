@@ -16,18 +16,24 @@ ACTION=$1
 if [ $ACTION == "start" ]
 then
 
+    if [ $# -lt 2 ]
+    then
+        echo "Usage: $0 start </path/to/astroph-coffee> [debugflag] [server port]"
+        exit 2
+    fi
+
     BASEPATH=$2
 
     if [ $# -ge 3 ]
     then
-        DEBUGFLAG=$2
+        DEBUGFLAG=$3
     else
         DEBUGFLAG=0
     fi
 
     if [ $# -ge 4 ]
     then
-        SERVERPORT=$2
+        SERVERPORT=$4
     else
         SERVERPORT=5005
     fi
