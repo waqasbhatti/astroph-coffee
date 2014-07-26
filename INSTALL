@@ -1,0 +1,53 @@
+This file details how to install the astroph-coffee server. The server is mostly
+self-contained, runs its own web-server listening to a port on the localhost
+interface, and is meant to be used along with a frontend reverse-proxy (like
+nginx). An example nginx .conf file is provided.
+
+PREREQUISITES
+
+You'll need the following already installed:
+
+* sqlite3
+* virtualenv
+
+On a recent Linux distribution:
+
+$ sudo yum install python-virtualenv sqlite3 (Fedora/RHEL/CentOS)
+
+or
+
+$ sudo apt-get install python-virtualenv sqlite3 (Debian/Ubuntu)
+
+will do this for you.
+
+
+INSTALLING THE ASTROPH-COFFEE SERVER
+
+In the astroph-coffee directory:
+
+$ make install
+
+will make a virtualenv directory named "run" under the astroph-coffee directory
+where the server will run from. The following directories will also be created:
+
+* astroph-coffee/run/logs => logs go here
+* astroph-coffee/run/pids => pids for the server processes go here
+* astroph-coffee/run/data => the sqlite3 database for the server goes here
+
+The Python dependencies will be automatically installed by pip. These include:
+
+* tornado
+* passlib
+* requests
+* BeautifulSoup4
+* selenium
+* pytz
+* itsdangerous
+
+Once the server is installed, you'll need to edit the
+astroph-coffee/run/conf/astroph.conf file. In particular, you'll need to
+generate the secret key used by the server for cookie signing and change the
+values in the [times] section to match your location.
+
+
+RUNNING THE ASTROPH-COFFEE SERVER
