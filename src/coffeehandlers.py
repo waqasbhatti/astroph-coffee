@@ -335,9 +335,9 @@ class CoffeeHandler(tornado.web.RequestHandler):
 
 
 class ArticleListHandler(tornado.web.RequestHandler):
-    '''This handles all requests for the listing of selected articles. Note: if
-    nobody voted on anything, the default is to return all articles with local
-    authors at the top.
+    '''This handles all requests for the listing of selected articles and voting
+    pages. Note: if nobody voted on anything, the default is to return all
+    articles with local authors at the top.
 
     '''
 
@@ -494,42 +494,114 @@ class ArticleListHandler(tornado.web.RequestHandler):
                             flash_message=flash_message,
                             new_user=new_user)
 
-        # get the articles for today
-        latestdate, local_articles, voted_articles, other_articles = (
-            arxivdb.get_articles_for_listing(utcdate=todays_utcdate,
-                                             database=self.database)
-        )
 
-        # if today's papers aren't ready yet, show latest papers
-        if not local_articles and not voted_articles and not other_articles:
+        ############################
+        ## SERVE THE PAGE REQUEST ##
+        ############################
 
-            latestdate, local_articles, voted_articles, other_articles = (
-                arxivdb.get_articles_for_listing(
-                    database=self.database
+        # check if we're in voting time-limits
+        timenow = datetime.now(tz=utc).timetz()
+
+        # if we are within the time limits, then show the voting page
+        if (self.voting_start < timenow < self.voting_end):
+
+            # get the articles for today
+            local_articles, other_articles = (
+                arxivdb.get_articles_for_voting(database=self.database)
+            )
+
+            # if today's papers aren't ready yet, redirect to the papers display
+            if not local_articles and not other_articles:
+
+                LOGGER.warning('no papers for today yet, '
+                               'redirecting to previous day papers')
+
+                latestdate, local_articles, voted_articles, other_articles = (
+                    arxivdb.get_articles_for_listing(
+                        database=self.database
+                    )
                 )
+                todays_date = datetime.strptime(latestdate,
+                                                '%Y-%m-%d').strftime('%A, %b %d %Y')
+
+                flash_message = (
+                    "<div data-alert class=\"alert-box radius\">"
+                    "Papers for today haven't been imported yet. "
+                    "Here are the most recent papers. "
+                    "Please wait a few minutes and try again."
+                    "<a href=\"#\" class=\"close\">&times;</a></div>"
+                )
+
+                # show the listing page
+                self.render("listing.html",
+                            user_name=user_name,
+                            local_today=local_today,
+                            todays_date=todays_date,
+                            local_articles=local_articles,
+                            voted_articles=voted_articles,
+                            other_articles=other_articles,
+                            flash_message=flash_message,
+                            new_user=new_user)
+
+            # if today's papers are ready, show them and ask for votes
+            else:
+
+                # get this user's votes
+                user_articles = arxivdb.get_user_votes(todays_utcdate,
+                                                       user_name,
+                                                       database=self.database)
+                LOGGER.info('user has votes on: %s' % user_articles)
+
+                # show the listing page
+                self.render("voting.html",
+                            user_name=user_name,
+                            local_today=local_today,
+                            todays_date=todays_date,
+                            local_articles=local_articles,
+                            other_articles=other_articles,
+                            flash_message=flash_message,
+                            new_user=new_user,
+                            user_articles=user_articles)
+
+        # otherwise, show the article list
+        else:
+
+            # get the articles for today
+            latestdate, local_articles, voted_articles, other_articles = (
+                arxivdb.get_articles_for_listing(utcdate=todays_utcdate,
+                                                 database=self.database)
             )
-            todays_date = datetime.strptime(latestdate,
-                                            '%Y-%m-%d').strftime('%A, %b %d %Y')
 
-            flash_message = (
-                "<div data-alert class=\"alert-box radius\">"
-                "Papers for today haven't been imported yet. "
-                "Here are the most recent papers. "
-                "Please wait a few minutes and try again."
-                "<a href=\"#\" class=\"close\">&times;</a></div>"
-            )
+            # if today's papers aren't ready yet, show latest papers
+            if not local_articles and not voted_articles and not other_articles:
+
+                latestdate, local_articles, voted_articles, other_articles = (
+                    arxivdb.get_articles_for_listing(
+                        database=self.database
+                    )
+                )
+                todays_date = datetime.strptime(latestdate,
+                                                '%Y-%m-%d').strftime('%A, %b %d %Y')
+
+                flash_message = (
+                    "<div data-alert class=\"alert-box radius\">"
+                    "Papers for today haven't been imported yet. "
+                    "Here are the most recent papers. "
+                    "Please wait a few minutes and try again."
+                    "<a href=\"#\" class=\"close\">&times;</a></div>"
+                )
 
 
-        # show the listing page
-        self.render("listing.html",
-                    user_name=user_name,
-                    local_today=local_today,
-                    todays_date=todays_date,
-                    local_articles=local_articles,
-                    voted_articles=voted_articles,
-                    other_articles=other_articles,
-                    flash_message=flash_message,
-                    new_user=new_user)
+            # show the listing page
+            self.render("listing.html",
+                        user_name=user_name,
+                        local_today=local_today,
+                        todays_date=todays_date,
+                        local_articles=local_articles,
+                        voted_articles=voted_articles,
+                        other_articles=other_articles,
+                        flash_message=flash_message,
+                        new_user=new_user)
 
 
 
@@ -555,199 +627,6 @@ class VotingHandler(tornado.web.RequestHandler):
         self.voting_end = voting_end
         self.debug = debug
         self.signer = signer
-
-
-
-    def get(self):
-        '''This handles GET requests.
-
-        '''
-        # handle a redirect with an attached flash message
-        flash_message = self.get_argument('f', None)
-        if flash_message:
-            flashtext = msgdecode(flash_message, self.signer)
-            LOGGER.warning('flash message: %s' % flashtext)
-            flashbox = (
-                '<div data-alert class="alert-box radius">%s'
-                '<a href="#" class="close">&times;</a></div>' %
-                flashtext
-                )
-            flash_message = flashbox
-        else:
-            flash_message = ''
-
-
-        # first, get the session token
-        session_token = self.get_secure_cookie('coffee_session',
-                                               max_age_days=30)
-        ip_address = self.request.remote_ip
-        client_header = self.request.headers['User-Agent'] or 'none'
-
-        local_today = datetime.now(tz=utc).strftime('%Y-%m-%d %H:%M %Z')
-        todays_date = datetime.now(tz=utc).strftime('%A, %b %d %Y')
-        todays_utcdate = datetime.now(tz=utc).strftime('%Y-%m-%d')
-
-        user_name = 'anonuser@%s' % ip_address
-        new_user = True
-
-        # check if we're in voting time-limits
-        timenow = datetime.now(tz=utc).timetz()
-
-        # if we are within the time limits, then show the voting page
-        if (self.voting_start < timenow < self.voting_end) or self.debug:
-
-            # check if this session_token corresponds to an existing user
-            if session_token:
-
-                sessioninfo = webdb.session_check(session_token,
-                                                   database=self.database)
-
-
-                if sessioninfo[0]:
-
-                    user_name = sessioninfo[2]
-                    LOGGER.info('found session for %s, continuing with it' %
-                                user_name)
-                    new_user = False
-
-                elif sessioninfo[-1] != 'database_error':
-
-                    LOGGER.warning('unknown user, starting a new session for '
-                                   '%s, %s' % (ip_address, client_header))
-
-                    sessionok, token = webdb.anon_session_initiate(
-                        ip_address,
-                        client_header,
-                        database=self.database
-                    )
-
-                    if sessionok and token:
-                        self.set_secure_cookie('coffee_session',
-                                               token,
-                                               httponly=True)
-                    else:
-                        LOGGER.error('could not set session cookie for %s, %s' %
-                                     (ip_address, client_header))
-                    self.set_status(500)
-                    message = ("There was a database error "
-                               "trying to look up user credentials.")
-
-                    LOGGER.error('database error while looking up session for '
-                                   '%s, %s' % (ip_address, client_header))
-
-                    self.render("errorpage.html",
-                                user_name=user_name,
-                                local_today=local_today,
-                                error_message=message,
-                                flash_message=flash_message,
-                                new_user=new_user)
-                else:
-
-                    self.set_status(500)
-                    message = ("There was a database error "
-                               "trying to look up user credentials.")
-
-                    LOGGER.error('database error while looking up session for '
-                                   '%s, %s' % (ip_address, client_header))
-
-                    self.render("errorpage.html",
-                                user_name=user_name,
-                                local_today=local_today,
-                                error_message=message,
-                                flash_message=flash_message,
-                                new_user=new_user)
-
-
-            # there's no existing user session
-            else:
-
-                LOGGER.warning('unknown user, starting a new session for '
-                               '%s, %s' % (ip_address, client_header))
-
-
-                sessionok, token = webdb.anon_session_initiate(
-                    ip_address,
-                    client_header,
-                    database=self.database
-                )
-
-                if sessionok and token:
-                    self.set_secure_cookie('coffee_session',
-                                           token,
-                                           httponly=True)
-                else:
-                    LOGGER.error('could not set session cookie for %s, %s' %
-                                 (ip_address, client_header))
-                    self.set_status(500)
-                    message = ("There was a database error "
-                               "trying to look up user credentials.")
-
-                    LOGGER.error('database error while looking up session for '
-                                   '%s, %s' % (ip_address, client_header))
-
-                    self.render("errorpage.html",
-                                user_name=user_name,
-                                local_today=local_today,
-                                error_message=message,
-                                flash_message=flash_message,
-                                new_user=new_user)
-
-
-            # get the articles for today
-            local_articles, other_articles = (
-                arxivdb.get_articles_for_voting(database=self.database)
-            )
-
-            # if today's papers aren't ready yet, redirect to the papers display
-            if not local_articles and not other_articles:
-
-                LOGGER.warning('no papers for today yet, '
-                               'redirecting to previous day papers')
-
-                redirect_msg = msgencode(
-                    "Papers for today haven't been imported yet. "
-                    "Here are yesterday's papers. "
-                    "Please wait a few minutes and try again.",
-                    self.signer
-                )
-
-                redirect_url = '/astroph-coffee/papers?f=%s' % redirect_msg
-                self.redirect(redirect_url)
-
-            else:
-
-                # get this user's votes
-                user_articles = arxivdb.get_user_votes(todays_utcdate,
-                                                       user_name,
-                                                       database=self.database)
-                LOGGER.info('user has votes on: %s' % user_articles)
-
-                # show the listing page
-                self.render("voting.html",
-                            user_name=user_name,
-                            local_today=local_today,
-                            todays_date=todays_date,
-                            local_articles=local_articles,
-                            other_articles=other_articles,
-                            flash_message=flash_message,
-                            new_user=new_user,
-                            user_articles=user_articles)
-
-        # if we're not within the voting time limits, redirect to the articles
-        # page
-        else:
-
-            LOGGER.warning('voting period is over, '
-                           'redirecting to previous day papers')
-            redirect_msg = msgencode(
-                "Sorry, we're not in the voting period at the moment. "
-                "Here are today's papers.",
-                self.signer
-                )
-
-            redirect_url = '/astroph-coffee/papers?f=%s' % redirect_msg
-            self.redirect(redirect_url)
-
 
 
     def post(self):
