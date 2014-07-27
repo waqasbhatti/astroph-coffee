@@ -62,7 +62,11 @@ then
 elif [ $ACTION == "status" ]
 then
 
+    echo "Server status: "
     ps -e --forest -o pid,user,vsz,rss,start_time,stat,args | grep -e 'coffeeserver\.py' | grep -v grep | grep -v emacs | grep -v ^vi
+    echo
+    echo "Last 30 lines from server log:"
+    tail -30 $BASEPATH/run/logs/coffeeserver.log
 
 else
     echo "Usage: $0 start </path/to/astroph-coffee> [debugflag] [server port]"
