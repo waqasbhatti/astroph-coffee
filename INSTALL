@@ -27,7 +27,7 @@ INSTALLING THE ASTROPH-COFFEE SERVER
 
 In the astroph-coffee directory:
 
-$ make install
+$ make (or make install)
 
 will make a virtualenv directory named "run" under the astroph-coffee directory
 where the server will run from. The following directories will also be created:

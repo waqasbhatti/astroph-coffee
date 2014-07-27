@@ -4,9 +4,9 @@ BINDIR=run
 ACTIVATE_SCRIPT=$(BINDIR)/bin/activate
 DEACTIVATE_SCRIPT=$(BINDIR)/bin/deactivate
 
-.PHONY: install uninstall compile clean update
+.PHONY: install uninstall clean update
 
-all: compile
+all: install
 
 install:
 	# create python virtualenv in the run directory
@@ -27,18 +27,17 @@ install:
 	# install our python dependencies
 	./shell/install_extern.sh $(BINDIR)
 
-	@echo 'astroph-coffee modules installed to:'
+	@echo 'astroph-coffee server installed to:'
 	@echo $(value BINDIR)
 	@echo 'use the following script to activate the environment:'
 	@echo $(ACTIVATE_SCRIPT)
 	@echo 'use the following script to deactivate the environment:'
 	@echo $(DEACTIVATE_SCRIPT)
+	@echo 'Read the INSTALL file to see how to run the server'
 
 uninstall:
 	# remove stuff from the run directory
 	rm -rf $(BINDIR)
-
-compile:
 
 clean:
 	rm -f $(BINDIR)/*.pyc

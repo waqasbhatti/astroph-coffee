@@ -11,11 +11,6 @@ dist/
 *#*#*
 *.pkl
 *~
-*.fits*
-*.qastrom
-*.match
-*.strans
-*.trans
 *dump*
 docs/users.txt
 *bundled*
