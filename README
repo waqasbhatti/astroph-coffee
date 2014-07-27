@@ -1,0 +1,6 @@
+astroph-coffee - A simple platform for astro-ph arXiv discussion
+
+This server helps organize astro-ph discussion by providing a way for people to
+see local papers and vote on papers they want to talk about.
+
+See the INSTALL file for instructions on how to install and run the server.
