@@ -1,4 +1,4 @@
-astroph-coffee - A simple platform for astro-ph arXiv discussion
+## astroph-coffee - A simple platform for astro-ph arXiv discussion
 
 This server helps organize astro-ph discussion by providing a way for people to
 see local papers and vote on papers they want to talk about. It has the
@@ -28,5 +28,4 @@ order, grouped by month and year to make it easy to see what people were
 interested in talking about on previous days.
 
 See the INSTALL file for instructions on how to install and run the server. If
-you have questions or problems, please let Waqas Bhatti
-(wbhatti@astro.princeton.edu) know.
+you have questions or problems, please let me know.
