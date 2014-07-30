@@ -4,7 +4,7 @@ interface, and is meant to be used along with a frontend reverse-proxy (like
 nginx). An example nginx .conf file is provided.
 
 
-## PREREQUISITES
+## Prerequisites
 
 You'll need the following already installed:
 
@@ -27,7 +27,7 @@ $ sudo apt-get install python-virtualenv sqlite3 [nginx or apache2] (Debian/Ubun
 will do this for you.
 
 
-INSTALLING THE ASTROPH-COFFEE SERVER
+## Installing the server
 
 In the astroph-coffee directory:
 
@@ -62,7 +62,7 @@ starting at line 70 for your particular institution, department's name, URL, and
 logo.
 
 
-## ADDING LOCAL AUTHORS
+## Adding local authors
 
 You should add local authors to the astroph-coffee server database to have these
 automatically recognized on each nightly arxiv update. It's a good idea to use
@@ -99,7 +99,7 @@ Python 2.7.3 (default, Feb 27 2014, 19:58:35)
 ```
 
 
-## RUNNING THE ASTROPH-COFFEE SERVER
+## Running the server
 
 
 Use the coffeeserver.sh shell script in the astroph-coffee/shell directory to
