@@ -23,8 +23,10 @@ generally operates in two modes:
    number of votes they received. Finally, all other papers are listed below the
    local and voted papers.
 
-An archive of all paper astracts is provided in reverse chronological order,
-grouped by month and year to make it easy to see what people were interested in
-talking about on previous days.
+An archive of all paper astracts is also provided in reverse chronological
+order, grouped by month and year to make it easy to see what people were
+interested in talking about on previous days.
 
-See the INSTALL file for instructions on how to install and run the server.
+See the INSTALL file for instructions on how to install and run the server. If
+you have questions or problems, please let Waqas Bhatti
+(wbhatti@astro.princeton.edu) know.
