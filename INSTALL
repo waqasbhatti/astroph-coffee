@@ -56,7 +56,41 @@ starting at line 70 for your particular's institution and department's name,
 URL, and logo.
 
 
+ADDING LOCAL AUTHORS
+
+You should add local authors to the astroph-coffee server database to have these
+automatically recognized on each nightly arxiv update. It's a good idea to use
+the full name to make it easier to match names against authors in arXiv
+listings. The astroph-coffee server uses the Python standard library
+difflib.get_close_matches function to do the fuzzy string matching required. The
+function that does this is tag_local_authors in src/arxivdb.py. You can tune the
+match_threshold parameter for looser/tighter matching.
+
+First, create a CSV file of the form:
+
+Author Name One,authoremail1@astro.example.edu
+Author Name Two,authoremail1@astro.example.edu
+Author Name Two,authoremail1@astro.example.edu
+.
+.
+.
+etc.
+
+
+Then, to add the authors to the astroph-coffee server database, use the
+add_local_authors function in the src/webdb.py module, like so:
+
+[user@machine ~]$ cd /path/to/astroph-coffee
+[user@machine astroph-coffee]$ cd run
+[user@machine astroph-coffee]$ source bin/activate
+(run)[user@machine astroph-coffee]$ python
+Python 2.7.3 (default, Feb 27 2014, 19:58:35)
+>>> import webdb
+>>> webdb.add_local_authors('/path/to/local-authors.csv')
+
+
 RUNNING THE ASTROPH-COFFEE SERVER
+
 
 Use the coffeeserver.sh shell script in the astroph-coffee/shell directory to
 run the actual server:
@@ -83,12 +117,12 @@ Usage: update_arxiv.sh </path/to/astroph-coffee>
 
 A cronjob set up as follows:
 
-19 20 * * 0,1,2,3,4 /path/to/astroph-coffee/shell/update_arxiv.sh \
+25 20 * * 0,1,2,3,4 /path/to/astroph-coffee/shell/update_arxiv.sh \
 /path/to/astroph-coffee > \
 /path/to/astroph-coffee/run/logs/arxiv-auto-update.log 2>&1
 
-will update the server database every Sunday through Thursday night at 20:19 US
-Eastern time (new listings usually come out between 20:00 and 20:15).
+will update the server database every Sunday through Thursday night at 20:25 US
+Eastern time (new listings usually come out between 20:00 and 20:20).
 
 The working SQLite database for the server will be in the
 astroph-coffee/run/data/astroph.sqlite file. It's a good idea to back this up
