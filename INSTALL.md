@@ -86,7 +86,8 @@ etc.
 ```
 
 Then, to add the authors to the astroph-coffee server database, use the
-add_local_authors function in the src/webdb.py module, like so:
+`add_local_authors` function in the `astroph-coffee/src/webdb.py` module, like
+so:
 
 ```
 [user@machine ~]$ cd /path/to/astroph-coffee
@@ -142,7 +143,8 @@ A cronjob set up as follows:
 ```
 
 will update the server database every Sunday through Thursday night at 20:25 US
-Eastern time (new listings usually come out between 20:00 and 20:20).
+Eastern time (new listings usually come out between 20:00 and 20:20 US Eastern
+time).
 
 The working SQLite database for the server will be in the
 `astroph-coffee/run/data/astroph.sqlite` file. It's a good idea to back this up
