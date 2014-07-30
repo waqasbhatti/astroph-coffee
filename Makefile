@@ -1,4 +1,4 @@
-# set this to the directory where you want lcserver modules installed
+# set this to the directory where you want astroph-coffee modules installed
 BINDIR=run
 
 ACTIVATE_SCRIPT=$(BINDIR)/bin/activate
