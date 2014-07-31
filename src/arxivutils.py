@@ -126,6 +126,12 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
                 [str(x).lstrip('\n').rstrip('\n') for x in comment_contents]
                 ).strip())
 
+            # handle internal arxiv links correctly
+            if '<a href="/abs"' in paper_comments:
+                paper_comments = paper_comments.replace(
+                    '/abs','http://www.arxiv.org/abs'
+                    )
+
         except AttributeError:
             paper_comments = ''
 
@@ -167,6 +173,12 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
                     [str(x).lstrip('\n').rstrip('\n') for x in comment_contents]
                 ).strip()
             )
+
+            # handle internal arxiv links correctly
+            if '<a href="/abs"' in paper_comments:
+                paper_comments = paper_comments.replace(
+                    '/abs','http://www.arxiv.org/abs'
+                    )
 
         except AttributeError:
             cross_comments = ''
