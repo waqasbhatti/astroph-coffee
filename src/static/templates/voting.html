@@ -17,7 +17,7 @@
 
 {% block pagecontent %}
 
-{% if local_articles %}
+{% if local_articles or voted_articles %}
 
 <div class="row">
   <div class="small-12 columns">
@@ -28,6 +28,12 @@
       <li><a href="#local-papers" class="button secondary radius"><strong>{{ len(local_articles) }}</strong> papers with local authors</a></li>
       {% elif local_articles and len(local_articles) == 1 %}
       <li><a href="#local-papers" class="button secondary radius"><strong>1</strong> paper with local authors</a></li>
+      {% end %}
+
+      {% if voted_articles and len(voted_articles) > 1 %}
+      <li><a href="#voted-papers" class="button secondary radius"><strong>{{ len(voted_articles) }}</strong> papers with votes</a></li>
+      {% elif voted_articles and len(voted_articles) == 1 %}
+      <li><a href="#voted-papers" class="button secondary radius"><strong>{{ len(voted_articles) }}</strong> paper with votes</a></li>
       {% end %}
 
       <li><a href="#other-papers" class="button secondary radius"><strong>{{ len(other_articles) }}</strong> other papers</a></li>
@@ -166,10 +172,128 @@
     {% end %}
 
 
+    {% if voted_articles %}
+
+    <h2 id="voted-papers">Papers with votes</h2>
+
+    {% for article in voted_articles %}
+
+    <div class="row listing-row">
+
+      {% if article[3] == 'astronomy' %}
+      <div class="small-12 medium-8 columns">
+      {% else %}
+      <div class="small-12 medium-8 columns crosslist-article">
+      {% end %}
+
+        <div class="row">
+          <div class="small-12 columns">
+            <h3>{{ article[2] }}</h3>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="small-12 columns">
+            <h6 class="subheader">{{ ', '.join((article[4].split(': ')[-1]).split(',')) }}</h6>
+            {% if len(article[5]) > 0 %}
+            <p><em>{% raw article[5] %}</em></p>
+            {% end %}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="small-12 columns">
+            <p>{{ article[6] }}</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="small-12 medium-4 columns text-center">
+
+        {% if article[9] > 1 %}
+        <div class="row small-listing-row">
+          <div class="small-12 columns">
+            <strong>
+              <span class="vote-total" data-arxivid="{{ article[0] }}">
+                {{ article[9] }}
+              </span>
+            </strong> votes
+          </div>
+        </div>
+        {% elif article[9] == 1 %}
+        <div class="row small-listing-row">
+          <div class="small-12 columns">
+            <strong>
+              <span class="vote-total" data-arxivid="{{ article[0] }}">
+                {{ article[9] }}
+              </span>
+            </strong> votes
+          </div>
+        </div>
+        {% elif article[9] == 0 %}
+        <div class="row small-listing-row">
+          <div class="small-12 columns">
+            <strong>
+              <span class="vote-total" data-arxivid="{{ article[0] }}">
+                {{ article[9] }}
+              </span>
+            </strong> votes
+          </div>
+        </div>
+        {% end %}
+
+        {% if len(article[11]) > 0 %}
+        <div class="row small-listing-row">
+          <div class="small-12 columns">
+            Presenters: <strong>{{ article[11] }}</strong>
+          </div>
+        </div>
+        {% end %}
+
+        <div class="row small-listing-row">
+          <div class="small-12 columns">
+            Paper {{ article[1] }} &mdash; <a href="{{ article[7] }}">{{ article[0] }}</a>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="small-12 columns">
+            <a href="{{ article[8] }}"
+               class="button success radius expand">
+              Get paper PDF
+            </a>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="small-12 columns">
+            {% if user_articles and article[0] in user_articles %}
+            <a href="#" data-arxivid="{{ article[0] }}" data-votetype="down"
+               class="button radius vote-button expand alert">
+              Remove your vote for this paper
+            </a>
+            {% else %}
+            <a href="#" data-arxivid="{{ article[0] }}" data-votetype="up"
+               class="button radius vote-button expand">
+              Vote for this paper
+            </a>
+            {% end %}
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    {% end %}
+
+    {% end %}
+
 
     {% if other_articles %}
 
-    {% if local_articles %}
+    {% if local_articles or voted_articles %}
     <h2 id="other-papers">All other papers</h2>
     {% end %}
 
