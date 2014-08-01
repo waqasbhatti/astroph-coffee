@@ -88,3 +88,19 @@ footer {
 .small-listing-row {
     padding-bottom: 1.0rem;
 }
+
+p.abstract-para-large {
+    font-size: large;
+}
+
+p.abstract-para-medium {
+    font-size: medium;
+}
+
+p.abstract-para-small {
+    font-size: small;
+}
+
+p.comments-para {
+    font-size: small;
+}

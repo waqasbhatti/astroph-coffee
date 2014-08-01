@@ -36,7 +36,7 @@ var coffee = {
 
                            votebutton
                                .addClass('alert')
-                               .html('Remove your vote for this paper')
+                               .html('Remove your vote')
                                .attr('data-votetype','down');
 
                        }
