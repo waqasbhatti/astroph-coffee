@@ -21,12 +21,11 @@
     <section class="top-bar-section">
 
       <ul class="right">
+        <li class="show-for-medium-up">
+          <a data-dropdown="preferences-pane">View options</a>
+        </li>
         <li>
-          {% if new_user %}
-          <a>Hi there newuser@{{ user_name.split('@')[-1] }}!</a>
-          {% else %}
           <a>Hi {{ user_name }}!</a>
-          {% end %}
         </li>
       </ul>
 
@@ -54,4 +53,40 @@
   <div class="small-12 medium-8 medium-centered columns" id="message-bar">
     {% raw flash_message %}
   </div>
+</div>
+
+<div id="preferences-pane" data-dropdown-content class="tiny f-dropdown content">
+
+  <h6>Abstract visibility</h6>
+  <ul class="no-bullet">
+    <li>
+      <input type="checkbox" id="show-local-check" checked>
+      <label for="show-local-check">Local abstracts</label>
+    </li>
+    <li>
+      <input type="checkbox" id="show-voted-check">
+      <label for="show-voted-check">Voted abstracts</label>
+    </li>
+    <li>
+      <input type="checkbox" id="show-other-check">
+      <label for="show-other-check">Other abstracts</label>
+    </li>
+  </ul>
+
+  <h6>Abstract text size</h6>
+  <ul class="no-bullet">
+    <li>
+      <input type="radio" id="font-size-small" name="font-size-radio">
+      <label for="font-size-small">Small font</label>
+    </li>
+    <li>
+      <input type="radio" id="font-size-medium" name="font-size-radio" checked>
+      <label for="font-size-medium">Medium font</label>
+    </li>
+    <li>
+      <input type="radio" id="font-size-large" name="font-size-radio">
+      <label for="font-size-large">Large font</label>
+    </li>
+  </ul>
+
 </div>

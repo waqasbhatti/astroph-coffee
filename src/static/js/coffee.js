@@ -36,7 +36,7 @@ var coffee = {
 
                            votebutton
                                .addClass('alert')
-                               .html('Remove your vote for this paper')
+                               .html('Remove your vote')
                                .attr('data-votetype','down');
 
                        }
@@ -104,6 +104,76 @@ var coffee = {
             coffee.vote_on_paper(arxivid);
 
         });
+
+        // handle clicking on the various view options
+        $('#preferences-pane').on('click','#show-local-check',function (evt) {
+
+            if ($(this).prop('checked') == true) {
+                $('.local-paper-listing .paper-abstract').slideDown('fast');
+            }
+
+            else {
+                $('.local-paper-listing .paper-abstract').slideUp('fast');
+            }
+
+        });
+
+        // handle clicking on the various view options
+        $('#preferences-pane').on('click','#show-voted-check',function (evt) {
+
+            if ($(this).prop('checked') == true) {
+                $('.voted-paper-listing .paper-abstract').slideDown('fast');
+            }
+
+            else {
+                $('.voted-paper-listing .paper-abstract').slideUp('fast');
+            }
+
+        });
+
+        // handle clicking on the various view options
+        $('#preferences-pane').on('click','#show-other-check',function (evt) {
+
+            if ($(this).prop('checked') == true) {
+                $('.other-paper-listing .paper-abstract').slideDown('fast');
+            }
+
+            else {
+                $('.other-paper-listing .paper-abstract').slideUp('fast');
+            }
+
+        });
+
+        // handle clicking on the various font options
+        $('#preferences-pane').on('click','#font-size-small',function (evt) {
+
+            $('.paper-abstract p')
+                .removeClass('abstract-para-medium')
+                .removeClass('abstract-para-large')
+                .addClass('abstract-para-small');
+
+        });
+
+        // handle clicking on the various font options
+        $('#preferences-pane').on('click','#font-size-medium',function (evt) {
+
+            $('.paper-abstract p')
+                .removeClass('abstract-para-small')
+                .removeClass('abstract-para-large')
+                .addClass('abstract-para-medium');
+
+        });
+
+        // handle clicking on the various font options
+        $('#preferences-pane').on('click','#font-size-large',function (evt) {
+
+            $('.paper-abstract p')
+                .removeClass('abstract-para-small')
+                .removeClass('abstract-para-medium')
+                .addClass('abstract-para-large');
+
+        });
+
 
     }
 

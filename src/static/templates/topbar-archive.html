@@ -1,51 +1,55 @@
-<nav class="top-bar" data-topbar>
+<div class="fixed">
+  <nav class="top-bar" data-topbar>
 
-  <ul class="title-area">
+    <ul class="title-area">
 
-    <li class="name">
-      <h1>
-        <a href="/astroph-coffee">
-          Astro-Coffee@Example
-        </a>
-      </h1>
-    </li>
-
-    <!-- activates the mobile menu -->
-    <li class="toggle-topbar menu-icon">
-      <a href="#"><span>menu</span></a>
-    </li>
-
-  </ul>
-
-  <section class="top-bar-section">
-
-    <ul class="left">
-      <li class="has-form">
-        <a href="/astroph-coffee/papers" class="button radius expand">Refresh
-          this listing</a>
+      <li class="name">
+        <h1>
+          <a href="/astroph-coffee">
+            Astro-Coffee@Princeton
+          </a>
+        </h1>
       </li>
-      <li class="has-form">
-        <a href="/astroph-coffee/archive" class="button radius expand">
-          Astro-Coffee archive</a>
+
+      <!-- activates the mobile menu -->
+      <li class="toggle-topbar menu-icon">
+        <a href="#"><span>menu</span></a>
       </li>
-      <li class="has-form">
-        <a href="http://adsabs.harvard.edu/abstract_service.html"
-           class="button radius expand">Search ADS</a>
-      </li>
+
     </ul>
 
-    <ul class="right">
-      <li class="show-for-medium-up">
+    <section class="top-bar-section">
+
+      <ul class="left">
+        <li class="has-form">
+          <a href="/astroph-coffee/papers" class="button radius expand">
+            Today's papers
+          </a>
+        </li>
+        <li class="has-form">
+          <a href="/astroph-coffee/archive" class="button radius expand">
+            Astro-Coffee archive
+          </a>
+        </li>
+        <li class="has-form">
+          <a href="http://adsabs.harvard.edu/abstract_service.html"
+             class="button radius expand">Search ADS</a>
+        </li>
+      </ul>
+
+      <ul class="right">
+        <li class="show-for-medium-up">
           <a data-dropdown="preferences-pane">View options</a>
-      </li>
-      <li>
-        <a>Hi {{ user_name }}!</a>
-      </li>
-    </ul>
+        </li>
+        <li>
+          <a>Hi {{ user_name }}!</a>
+        </li>
+      </ul>
 
-  </section>
+    </section>
 
-</nav>
+  </nav>
+</div>
 
 <div class="fixed">
   <div class="small-12 medium-8 medium-centered columns" id="message-bar">
