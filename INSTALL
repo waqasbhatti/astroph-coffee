@@ -52,8 +52,8 @@ generate the secret key used by the server for cookie signing and change the
 values in the [times] and [places] sections to match your location.
 
 You should also edit the astroph-coffee/run/static/templates/base.html file
-starting at line 70 for your particular institution, department's name, URL, and
-logo.
+starting at line 70 for your particular's institution and department's name,
+URL, and logo.
 
 
 ADDING LOCAL AUTHORS
