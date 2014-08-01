@@ -82,8 +82,64 @@ var coffee = {
     },
 
 
+    // this stores the current view settings to a cookie
+    store_cookie_settings: function () {
+
+        // get current settings
+        var view = [];
+
+        $('#show-local-check,#show-voted-check,#show-other-check')
+            .each(function (ind, elem) {
+                view.push(elem.checked);
+            });
+
+        var fontsize = $('[name="font-size-radio"]')
+            .filter(':checked')
+            .attr('id');
+
+        // store in a cookie
+        $.cookie('coffee_settings',{view:view, fontsize:fontsize}, {expires:30});
+
+    },
+
+    // this restores the cookied view settings
+    restore_cookie_settings: function () {
+
+        // get the settings from the cookie
+        var viewsettings = $.cookie('coffee_settings');
+
+        var viewcontrols = ['#show-local-check',
+                            '#show-voted-check',
+                            '#show-other-check'];
+
+        if (typeof viewsettings != 'undefined') {
+
+            // set the view options
+            viewsettings.forEach(function (e,i,a) {
+
+                if (viewsettings.view[i] == true) {
+
+
+
+                }
+
+
+            });
+
+            // set the font options
+            var control = '#' + viewsettings.fontsize;
+            $(control).click();
+
+        }
+
+    },
+
     // sets up all event bindings
     action_setup: function () {
+
+        // cookie settings
+        $.cookie.json = true;
+        coffee.restore_cookie_settings();
 
         // handle sliding out the abstract when the paper title is clicked
         $('.paper-title').on('click', function(evt) {
