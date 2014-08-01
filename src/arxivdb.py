@@ -404,7 +404,7 @@ def get_articles_for_voting(database=None,
     utcdate = datetime.now(tz=utc).strftime('%Y-%m-%d')
 
 
-    local_articles, other_articles = [], []
+    local_articles, voted_articles, other_articles = [], [], []
     articles_excluded_from_other = []
 
     # deal with the local articles first
@@ -428,6 +428,30 @@ def get_articles_for_voting(database=None,
     if len(rows) > 0:
         for row in rows:
             local_articles.append(row)
+            articles_excluded_from_other.append(row[0])
+
+    # deal with articles that have votes next
+    if astronomyonly:
+        query = ("select arxiv_id, day_serial, title, article_type, "
+                 "authors, comments, abstract, link, pdf, nvotes, voters, "
+                 "presenters, local_authors from arxiv where "
+                 "utcdate = date(?) and nvotes > 0 "
+                 "and article_type = 'astronomy' "
+                 "order by nvotes desc")
+    else:
+        query = ("select arxiv_id, day_serial, title, article_type, "
+                 "authors, comments, abstract, link, pdf, nvotes, voters, "
+                 "presenters, local_authors from arxiv where "
+                 "utcdate = date(?) and nvotes > 0 "
+                 "order by nvotes desc")
+
+    query_params = (utcdate,)
+    cursor.execute(query, query_params)
+    rows = cursor.fetchall()
+
+    if len(rows) > 0:
+        for row in rows:
+            voted_articles.append(row)
             articles_excluded_from_other.append(row[0])
 
     # finally deal with the other articles
@@ -483,7 +507,7 @@ def get_articles_for_voting(database=None,
         cursor.close()
         database.close()
 
-    return (local_articles, other_articles)
+    return (local_articles, voted_articles, other_articles)
 
 
 ## ARTICLE ARCHIVES

@@ -506,12 +506,12 @@ class ArticleListHandler(tornado.web.RequestHandler):
         if (self.voting_start < timenow < self.voting_end):
 
             # get the articles for today
-            local_articles, other_articles = (
+            local_articles, voted_articles, other_articles = (
                 arxivdb.get_articles_for_voting(database=self.database)
             )
 
             # if today's papers aren't ready yet, redirect to the papers display
-            if not local_articles and not other_articles:
+            if not local_articles and not voted_articles and not other_articles:
 
                 LOGGER.warning('no papers for today yet, '
                                'redirecting to previous day papers')
@@ -558,6 +558,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
                             local_today=local_today,
                             todays_date=todays_date,
                             local_articles=local_articles,
+                            voted_articles=voted_articles,
                             other_articles=other_articles,
                             flash_message=flash_message,
                             new_user=new_user,
