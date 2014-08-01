@@ -104,3 +104,13 @@ p.abstract-para-small {
 p.comments-para {
     font-size: small;
 }
+
+
+/* drop-down styles */
+
+input[type="radio"] {
+    margin: 0;
+}
+input[type="checkbox"] {
+    margin: 0;
+}

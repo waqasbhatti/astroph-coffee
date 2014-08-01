@@ -20,6 +20,23 @@
 
     <section class="top-bar-section">
 
+      <ul class="left">
+        <li class="has-form">
+          <a href="/astroph-coffee/papers" class="button radius expand">
+            Today's papers
+          </a>
+        </li>
+        <li class="has-form">
+          <a href="/astroph-coffee/archive" class="button radius expand">
+            Astro-Coffee archive
+          </a>
+        </li>
+        <li class="has-form">
+          <a href="http://adsabs.harvard.edu/abstract_service.html"
+             class="button radius expand">Search ADS</a>
+        </li>
+      </ul>
+
       <ul class="right">
         <li class="show-for-medium-up">
           <a data-dropdown="preferences-pane">View options</a>
@@ -29,27 +46,12 @@
         </li>
       </ul>
 
-      <ul class="left">
-        <li class="has-form">
-          <a href="/astroph-coffee/papers" class="button radius expand">Refresh
-          this listing</a>
-        </li>
-        <li class="has-form">
-          <a href="/astroph-coffee/archive" class="button radius
-          expand">Astro-Coffee archive</a>
-        </li>
-        <li class="has-form">
-          <a href="http://adsabs.harvard.edu/abstract_service.html"
-             class="button radius expand">Search ADS</a>
-        </li>
-      </ul>
-
     </section>
 
   </nav>
 </div>
 
-<div class="fixed" >
+<div class="fixed">
   <div class="small-12 medium-8 medium-centered columns" id="message-bar">
     {% raw flash_message %}
   </div>
@@ -64,7 +66,7 @@
       <label for="show-local-check">Local abstracts</label>
     </li>
     <li>
-      <input type="checkbox" id="show-voted-check">
+      <input type="checkbox" id="show-voted-check" checked>
       <label for="show-voted-check">Voted abstracts</label>
     </li>
     <li>
