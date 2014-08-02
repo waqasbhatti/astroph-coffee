@@ -82,8 +82,122 @@ var coffee = {
     },
 
 
+    // this stores the current view settings to a cookie
+    store_cookie_settings: function () {
+
+        // get current settings
+        var view = [];
+
+        $('#show-local-check,#show-voted-check,#show-other-check')
+            .each(function (ind, elem) {
+                view.push(elem.checked);
+            });
+
+        var fontsize = $('[name="font-size-radio"]')
+            .filter(':checked')
+            .attr('id');
+
+        // store in a cookie
+        $.cookie('coffee_settings',{view:view, fontsize:fontsize}, {expires:30});
+
+    },
+
+    // this restores the cookied view settings
+    restore_cookie_settings: function () {
+
+        // get the settings from the cookie
+        var viewsettings = $.cookie('coffee_settings');
+
+        var viewcontrols = ['#show-local-check',
+                            '#show-voted-check',
+                            '#show-other-check'];
+
+        if (typeof viewsettings != 'undefined') {
+
+            // set the view options
+            viewcontrols.forEach(function (e,i,a) {
+
+                // check the controls
+                if (viewsettings.view[i] == true) {
+
+                    $(viewcontrols[i]).prop('checked',true);
+                    // set the properties
+                    if (i == 0) {
+                        $('.local-paper-listing .paper-abstract')
+                            .slideDown('fast');
+                    }
+                    else if (i == 1) {
+                        $('.voted-paper-listing .paper-abstract')
+                            .slideDown('fast');
+                    }
+                    else if (i == 2) {
+                        $('.other-paper-listing .paper-abstract')
+                            .slideDown('fast');
+                    }
+
+                }
+                else {
+
+                    $(viewcontrols[i]).prop('checked',false);
+                    // set the properties
+                    if (i == 0) {
+                        $('.local-paper-listing .paper-abstract')
+                            .slideUp('fast');
+                    }
+                    else if (i == 1) {
+                        $('.voted-paper-listing .paper-abstract')
+                            .slideUp('fast');
+                    }
+                    else if (i == 2) {
+                        $('.other-paper-listing .paper-abstract')
+                            .slideUp('fast');
+                    }
+                }
+
+
+            });
+
+            // set the controls
+            $('#' + viewsettings.fontsize).click();
+
+            // set the font options
+            if (viewsettings.fontsize == 'font-size-small') {
+
+                $('.paper-abstract p')
+                    .removeClass('abstract-para-medium')
+                    .removeClass('abstract-para-large')
+                    .addClass('abstract-para-small');
+
+            }
+
+            else if (viewsettings.fontsize == 'font-size-medium') {
+
+                $('.paper-abstract p')
+                    .removeClass('abstract-para-large')
+                    .removeClass('abstract-para-small')
+                    .addClass('abstract-para-medium');
+
+            }
+
+            else if (viewsettings.fontsize == 'font-size-large') {
+
+                $('.paper-abstract p')
+                    .removeClass('abstract-para-small')
+                    .removeClass('abstract-para-medium')
+                    .addClass('abstract-para-large');
+
+            }
+
+        }
+
+    },
+
     // sets up all event bindings
     action_setup: function () {
+
+        // cookie settings
+        $.cookie.json = true;
+        coffee.restore_cookie_settings();
 
         // handle sliding out the abstract when the paper title is clicked
         $('.paper-title').on('click', function(evt) {
@@ -111,10 +225,10 @@ var coffee = {
             if ($(this).prop('checked') == true) {
                 $('.local-paper-listing .paper-abstract').slideDown('fast');
             }
-
             else {
                 $('.local-paper-listing .paper-abstract').slideUp('fast');
             }
+            coffee.store_cookie_settings();
 
         });
 
@@ -124,10 +238,10 @@ var coffee = {
             if ($(this).prop('checked') == true) {
                 $('.voted-paper-listing .paper-abstract').slideDown('fast');
             }
-
             else {
                 $('.voted-paper-listing .paper-abstract').slideUp('fast');
             }
+            coffee.store_cookie_settings();
 
         });
 
@@ -137,10 +251,10 @@ var coffee = {
             if ($(this).prop('checked') == true) {
                 $('.other-paper-listing .paper-abstract').slideDown('fast');
             }
-
             else {
                 $('.other-paper-listing .paper-abstract').slideUp('fast');
             }
+            coffee.store_cookie_settings();
 
         });
 
@@ -151,6 +265,7 @@ var coffee = {
                 .removeClass('abstract-para-medium')
                 .removeClass('abstract-para-large')
                 .addClass('abstract-para-small');
+            coffee.store_cookie_settings();
 
         });
 
@@ -161,6 +276,7 @@ var coffee = {
                 .removeClass('abstract-para-small')
                 .removeClass('abstract-para-large')
                 .addClass('abstract-para-medium');
+            coffee.store_cookie_settings();
 
         });
 
@@ -171,6 +287,7 @@ var coffee = {
                 .removeClass('abstract-para-small')
                 .removeClass('abstract-para-medium')
                 .addClass('abstract-para-large');
+            coffee.store_cookie_settings();
 
         });
 

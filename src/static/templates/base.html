@@ -13,20 +13,20 @@
 
     <title>{% block pagetitle %}Astro Coffee{% end %}</title>
 
-    <link href="/astroph-coffee/static/css/normalize.css"
+    <link href="{{ static_url("css/normalize.css") }}"
           type="text/css" rel="stylesheet">
 
-    <link href="/astroph-coffee/static/css/foundation.min.css"
+    <link href="{{ static_url("css/foundation.min.css") }}"
           type="text/css" rel="stylesheet">
 
-    <link href="/astroph-coffee/static/css/astroph-coffee.css"
+    <link href="{{ static_url("css/astroph-coffee.css") }}"
           type="text/css" rel="stylesheet">
 
 
     {% block pagecss %}
     {% end %}
 
-    <script src="/astroph-coffee/static/js/vendor/modernizr.js"></script>
+    <script src="{{ static_url("js/vendor/modernizr.js") }}"></script>
 
 </head>
 
@@ -87,10 +87,10 @@
 
   </footer>
 
-  <script src="/astroph-coffee/static/js/vendor/jquery.js"></script>
-  <script src="/astroph-coffee/static/js/vendor/moment.min.js"></script>
-  <script src="/astroph-coffee/static/js/vendor/fastclick.js"></script>
-  <script src="/astroph-coffee/static/js/foundation.min.js"></script>
+  <script src="{{ static_url("js/vendor/jquery.js") }}"></script>
+  <script src="{{ static_url("js/vendor/moment.min.js") }}"></script>
+  <script src="{{ static_url("js/vendor/fastclick.js") }}" ></script>
+  <script src="{{ static_url("js/foundation.min.js") }}"></script>
 
   <script>
     $(document).foundation();
