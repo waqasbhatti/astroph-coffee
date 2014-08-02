@@ -115,20 +115,78 @@ var coffee = {
         if (typeof viewsettings != 'undefined') {
 
             // set the view options
-            viewsettings.forEach(function (e,i,a) {
+            viewcontrols.forEach(function (e,i,a) {
 
+                // check the controls
                 if (viewsettings.view[i] == true) {
 
+                    $(viewcontrols[i]).prop('checked',true);
+                    // set the properties
+                    if (i == 0) {
+                        $('.local-paper-listing .paper-abstract')
+                            .slideDown('fast');
+                    }
+                    else if (i == 1) {
+                        $('.voted-paper-listing .paper-abstract')
+                            .slideDown('fast');
+                    }
+                    else if (i == 2) {
+                        $('.other-paper-listing .paper-abstract')
+                            .slideDown('fast');
+                    }
 
+                }
+                else {
 
+                    $(viewcontrols[i]).prop('checked',false);
+                    // set the properties
+                    if (i == 0) {
+                        $('.local-paper-listing .paper-abstract')
+                            .slideUp('fast');
+                    }
+                    else if (i == 1) {
+                        $('.voted-paper-listing .paper-abstract')
+                            .slideUp('fast');
+                    }
+                    else if (i == 2) {
+                        $('.other-paper-listing .paper-abstract')
+                            .slideUp('fast');
+                    }
                 }
 
 
             });
 
+            // set the controls
+            $('#' + viewsettings.fontsize).click();
+
             // set the font options
-            var control = '#' + viewsettings.fontsize;
-            $(control).click();
+            if (viewsettings.fontsize == 'font-size-small') {
+
+                $('.paper-abstract p')
+                    .removeClass('abstract-para-medium')
+                    .removeClass('abstract-para-large')
+                    .addClass('abstract-para-small');
+
+            }
+
+            else if (viewsettings.fontsize == 'font-size-medium') {
+
+                $('.paper-abstract p')
+                    .removeClass('abstract-para-large')
+                    .removeClass('abstract-para-small')
+                    .addClass('abstract-para-medium');
+
+            }
+
+            else if (viewsettings.fontsize == 'font-size-large') {
+
+                $('.paper-abstract p')
+                    .removeClass('abstract-para-small')
+                    .removeClass('abstract-para-medium')
+                    .addClass('abstract-para-large');
+
+            }
 
         }
 
@@ -167,10 +225,10 @@ var coffee = {
             if ($(this).prop('checked') == true) {
                 $('.local-paper-listing .paper-abstract').slideDown('fast');
             }
-
             else {
                 $('.local-paper-listing .paper-abstract').slideUp('fast');
             }
+            coffee.store_cookie_settings();
 
         });
 
@@ -180,10 +238,10 @@ var coffee = {
             if ($(this).prop('checked') == true) {
                 $('.voted-paper-listing .paper-abstract').slideDown('fast');
             }
-
             else {
                 $('.voted-paper-listing .paper-abstract').slideUp('fast');
             }
+            coffee.store_cookie_settings();
 
         });
 
@@ -193,10 +251,10 @@ var coffee = {
             if ($(this).prop('checked') == true) {
                 $('.other-paper-listing .paper-abstract').slideDown('fast');
             }
-
             else {
                 $('.other-paper-listing .paper-abstract').slideUp('fast');
             }
+            coffee.store_cookie_settings();
 
         });
 
@@ -207,6 +265,7 @@ var coffee = {
                 .removeClass('abstract-para-medium')
                 .removeClass('abstract-para-large')
                 .addClass('abstract-para-small');
+            coffee.store_cookie_settings();
 
         });
 
@@ -217,6 +276,7 @@ var coffee = {
                 .removeClass('abstract-para-small')
                 .removeClass('abstract-para-large')
                 .addClass('abstract-para-medium');
+            coffee.store_cookie_settings();
 
         });
 
@@ -227,6 +287,7 @@ var coffee = {
                 .removeClass('abstract-para-small')
                 .removeClass('abstract-para-medium')
                 .addClass('abstract-para-large');
+            coffee.store_cookie_settings();
 
         });
 
