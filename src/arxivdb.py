@@ -138,7 +138,8 @@ def tag_local_authors(arxiv_date,
 def insert_articles(arxiv,
                     database=None,
                     tag_locals=True,
-                    match_threshold=0.83):
+                    match_threshold=0.83,
+                    verbose=False):
     '''
     This inserts all articles in an arxivdict created by
     arxivutils.grab_arxiv_update into the astroph-coffee server database.
@@ -172,8 +173,9 @@ def insert_articles(arxiv,
 
         for key in papers:
 
-            print('inserting astronomy article %s: %s' %
-                  (key, papers[key]['title']))
+            if verbose:
+                print('inserting astronomy article %s: %s' %
+                      (key, papers[key]['title']))
 
             params = (arxiv_dt,
                       arxiv_dt.date(),
@@ -194,8 +196,9 @@ def insert_articles(arxiv,
 
         for key in crosslists:
 
-            print('inserting cross-list article %s: %s' %
-                  (key, papers[key]['title']))
+            if verbose:
+                print('inserting cross-list article %s: %s' %
+                      (key, papers[key]['title']))
 
             params = (arxiv_dt,
                       arxiv_dt.date(),
