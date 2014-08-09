@@ -66,7 +66,7 @@ var coffee = {
                            '<div data-alert class="alert-box warning radius">' +
                            message +
                            '<a href="#" class="close">&times;</a></div>'
-                       messagebar.html(alertbox).fadeIn('fast').fadeOut(7500);
+                       messagebar.html(alertbox).fadeIn(52).fadeOut(8000);
                        $(document).foundation();
 
                    }
@@ -77,7 +77,7 @@ var coffee = {
 
                    var alertbox =
                        '<div data-alert class="alert-box alert radius">' +
-                       'Something went wrong with the server, ' +
+                       'Uh oh, something went wrong with the server, ' +
                        'please <a href="/astroph-coffee/about">' +
                        'let us know</a> about this problem!' +
                        '<a href="#" class="close">&times;</a></div>'
