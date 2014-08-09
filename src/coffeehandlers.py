@@ -683,15 +683,6 @@ class VotingHandler(tornado.web.RequestHandler):
 
         user_ip = self.request.remote_ip
 
-        # check if we're in voting time-limits
-        timenow = datetime.now(tz=utc).timetz()
-
-        # if we are within the time limits, then allow the voting POST request
-        if (self.voting_start < timenow < self.voting_end):
-            in_votetime = True
-        else:
-            in_votetime = False
-
         # TESTING
         # user_ip = '131.111.184.18' # Cambridge UK
         # user_ip = '71.168.183.215' # FIOS NJ
@@ -755,6 +746,16 @@ class VotingHandler(tornado.web.RequestHandler):
 
                 self.write(jsondict)
                 self.finish()
+
+
+        # check if we're in voting time-limits
+        timenow = datetime.now(tz=utc).timetz()
+
+        # if we are within the time limits, then allow the voting POST request
+        if (self.voting_start < timenow < self.voting_end):
+            in_votetime = True
+        else:
+            in_votetime = False
 
 
         # if all things are satisfied, then process the vote request
@@ -839,6 +840,7 @@ class VotingHandler(tornado.web.RequestHandler):
                         'results':None}
             self.write(jsondict)
             self.finish()
+
 
 
 
