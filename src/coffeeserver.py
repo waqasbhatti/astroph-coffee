@@ -21,6 +21,9 @@ from pytz import utc
 # for signing flash messages
 from itsdangerous import Signer
 
+# for geofencing
+import geoip2
+
 
 # setup signal trapping on SIGINT
 def recv_sigint(signum, stack):
@@ -143,8 +146,21 @@ if __name__ == '__main__':
     COFFEE_DEPARTMENT = CONF.get('places','department')
     COFFEE_INSTITUTION = CONF.get('places','institution')
 
+    # get the geofencing config
+    GEOFENCE_ACTIVE = CONF.get('geofence','active')
+    if GEOFENCE_ACTIVE == 'True':
+        GEOFENCE_DB = CONF.get('geofence','database')
+        GEOFENCE_DB = geoip2.database.Reader(GEOFENCE_DB)
+        GEOFENCE_COUNTRIES = CONF.get('geofence','allowed_countries').split(',')
+        GEOFENCE_REGIONS = CONF.get('geofence','allowed_subdivisions').split(',')
+    else:
+        GEOFENCE_DB = None
+        GEOFENCE_COUNTRIES = None
+        GEOFENCE_REGIONS = None
+
     # this is used to sign flash messages so they can't be forged
     FLASHSIGNER = Signer(SESSIONSECRET)
+
 
 
     ##################
@@ -194,7 +210,10 @@ if __name__ == '__main__':
           'voting_start':VOTING_START,
           'voting_end':VOTING_END,
           'debug':DEBUG,
-          'signer':FLASHSIGNER}),
+          'signer':FLASHSIGNER,
+          'geofence':GEOFENCE_DB,
+          'countries':GEOFENCE_COUNTRIES,
+          'regions':GEOFENCE_REGIONS}),
         (r'/astroph-coffee/about',coffeehandlers.AboutHandler,
          {'database':DATABASE}),
         (r'/astroph-coffee/about/',coffeehandlers.AboutHandler,
@@ -228,4 +247,7 @@ if __name__ == '__main__':
 
     except KeyboardInterrupt:
         LOGGER.info('shutting down...')
+
         DATABASE.close()
+        if GEOFENCE_DB:
+            GEOFENCE_DB.close()

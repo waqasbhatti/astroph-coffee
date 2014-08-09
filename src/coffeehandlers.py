@@ -617,7 +617,10 @@ class VotingHandler(tornado.web.RequestHandler):
                    voting_start,
                    voting_end,
                    debug,
-                   signer):
+                   signer,
+                   geofence,
+                   countries,
+                   regions):
         '''
         Sets up the database.
 
@@ -628,6 +631,9 @@ class VotingHandler(tornado.web.RequestHandler):
         self.voting_end = voting_end
         self.debug = debug
         self.signer = signer
+        self.geofence = geofence
+        self.countries = countries
+        self.regions = regions
 
 
     def post(self):
@@ -639,7 +645,7 @@ class VotingHandler(tornado.web.RequestHandler):
         votetype: up / down
 
         checks if an existing session is in play. if not, flashes a message
-        saying no dice, bro in a flash message
+        saying 'no dice' in a flash message
 
         - checks if the user has more than five votes used for the utcdate of
           the requested arxivid
@@ -674,6 +680,58 @@ class VotingHandler(tornado.web.RequestHandler):
                                           database=self.database)
         user_name = sessioninfo[2]
         todays_utcdate = datetime.now(tz=utc).strftime('%Y-%m-%d')
+
+
+        # if we're asked to geofence, then do so
+        # (unless the request came from INSIDE the building)
+        # FIXME: add exceptions for private network IPv4 addresses
+        if self.geofence and self.request.remote_ip != '127.0.0.1':
+
+            try:
+                geoip = geofence.city(self.request.remote_ip)
+
+                if (geoip.country.iso_code in self.countries and
+                    geoip.subdivisions.most_specific.iso_code
+                    in self.regions):
+                    LOGGER.info('geofencing ok: '
+                                'vote request from inside allowed regions')
+
+                else:
+                    LOGGER.warning(
+                        'geofencing activated: '
+                        'vote request from %s '
+                        'is outside allowed regions' %
+                        ('%s-%s' % (
+                            geoip.country.isocode,
+                            geoip.subdivisions.most_specific.iso_code
+                            ))
+                        )
+                    message = ("Sorry, you're trying to vote "
+                               "from an IP address that is "
+                               "blocked from voting.")
+
+                    jsondict = {'status':'failed',
+                                'message':message,
+                                'results':None}
+                    self.write(jsondict)
+                    self.finish()
+
+
+            # fail deadly
+            except Exception as e:
+                LOGGER.exception('geofencing failed for IP %s, '
+                                 'blocking request.' % self.request.remote_ip)
+
+                message = ("Sorry, you're trying to vote "
+                           "from an IP address that is "
+                           "blocked from voting.")
+
+                jsondict = {'status':'failed',
+                            'message':message,
+                            'results':None}
+                self.write(jsondict)
+                self.finish()
+
 
         # if all things are satisfied, then process the vote request
         if arxivid and votetype and sessioninfo[0]:
