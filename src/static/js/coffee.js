@@ -7,16 +7,16 @@ var coffee = {
     // this handles actual voting
     vote_on_paper: function(arxivid) {
 
+        // filter DOM for what we want
         var arxividfilter = '[data-arxivid="' + arxivid + '"]';
         var votebutton = $('.vote-button').filter(arxividfilter);
         var votetotal = $('.vote-total').filter(arxividfilter);
         var votepostfix = $('.vote-postfix').filter(arxividfilter);
+        var presenters = $('.article-presenters').filter(arxividfilter);
 
         // use attr instead of data since jquery only knows about the first-ever
         // value on page-load and uses that for .data()
         var votetype = votebutton.attr('data-votetype');
-
-        console.log(votetype + ' vote fired on ' + arxivid);
 
         var xsrftoken = $('#voting-form input').val();
         var messagebar = $('#message-bar');
