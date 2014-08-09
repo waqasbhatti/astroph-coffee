@@ -10,6 +10,7 @@ var coffee = {
         var arxividfilter = '[data-arxivid="' + arxivid + '"]';
         var votebutton = $('.vote-button').filter(arxividfilter);
         var votetotal = $('.vote-total').filter(arxividfilter);
+        var votepostfix = $('.vote-postfix').filter(arxividfilter);
 
         // use attr instead of data since jquery only knows about the first-ever
         // value on page-load and uses that for .data()
@@ -30,6 +31,12 @@ var coffee = {
 
                        // update the vote total for this arxivid
                        votetotal.text(data.results['nvotes']);
+                       if (data.results['nvotes'] != 1) {
+                           votepostfix.text('votes')
+                       }
+                       else {
+                           votepostfix.text('vote')
+                       }
 
                        // update the button to show that we've voted
                        if (votetype == 'up') {
