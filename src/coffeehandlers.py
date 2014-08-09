@@ -683,6 +683,15 @@ class VotingHandler(tornado.web.RequestHandler):
 
         user_ip = self.request.remote_ip
 
+        # check if we're in voting time-limits
+        timenow = datetime.now(tz=utc).timetz()
+
+        # if we are within the time limits, then allow the voting POST request
+        if (self.voting_start < timenow < self.voting_end):
+            in_votetime = True
+        else:
+            in_votetime = False
+
         # TESTING
         # user_ip = '131.111.184.18' # Cambridge UK
         # user_ip = '71.168.183.215' # FIOS NJ
@@ -749,7 +758,11 @@ class VotingHandler(tornado.web.RequestHandler):
 
 
         # if all things are satisfied, then process the vote request
-        if arxivid and votetype and sessioninfo[0] and not geolocked:
+        if (arxivid and
+            votetype and
+            sessioninfo[0] and
+            (not geolocked) and
+            in_votetime):
 
             arxivid = xhtml_escape(arxivid)
             votetype = xhtml_escape(votetype)
