@@ -681,14 +681,24 @@ class VotingHandler(tornado.web.RequestHandler):
         user_name = sessioninfo[2]
         todays_utcdate = datetime.now(tz=utc).strftime('%Y-%m-%d')
 
+        user_ip = self.request.remote_ip
+
+        # TESTING
+        # user_ip = '131.111.184.18' # Cambridge UK
+        # user_ip = '71.168.183.215' # FIOS NJ
+        # user_ip = '70.192.88.245' # VZW NJ
+        # user_ip = '70.42.157.5' # VZW NY
+        # user_ip = '69.141.255.240' # Comcast PA
 
         # if we're asked to geofence, then do so
         # (unless the request came from INSIDE the building)
         # FIXME: add exceptions for private network IPv4 addresses
-        if self.geofence and self.request.remote_ip != '127.0.0.1':
+        geolocked = False
+
+        if self.geofence and user_ip != '127.0.0.1':
 
             try:
-                geoip = geofence.city(self.request.remote_ip)
+                geoip = self.geofence.city(user_ip)
 
                 if (geoip.country.iso_code in self.countries and
                     geoip.subdivisions.most_specific.iso_code
@@ -702,7 +712,7 @@ class VotingHandler(tornado.web.RequestHandler):
                         'vote request from %s '
                         'is outside allowed regions' %
                         ('%s-%s' % (
-                            geoip.country.isocode,
+                            geoip.country.iso_code,
                             geoip.subdivisions.most_specific.iso_code
                             ))
                         )
@@ -713,6 +723,8 @@ class VotingHandler(tornado.web.RequestHandler):
                     jsondict = {'status':'failed',
                                 'message':message,
                                 'results':None}
+                    geolocked = True
+
                     self.write(jsondict)
                     self.finish()
 
@@ -720,7 +732,7 @@ class VotingHandler(tornado.web.RequestHandler):
             # fail deadly
             except Exception as e:
                 LOGGER.exception('geofencing failed for IP %s, '
-                                 'blocking request.' % self.request.remote_ip)
+                                 'blocking request.' % user_ip)
 
                 message = ("Sorry, you're trying to vote "
                            "from an IP address that is "
@@ -729,12 +741,14 @@ class VotingHandler(tornado.web.RequestHandler):
                 jsondict = {'status':'failed',
                             'message':message,
                             'results':None}
+                geolocked = True
+
                 self.write(jsondict)
                 self.finish()
 
 
         # if all things are satisfied, then process the vote request
-        if arxivid and votetype and sessioninfo[0]:
+        if arxivid and votetype and sessioninfo[0] and not geolocked:
 
             arxivid = xhtml_escape(arxivid)
             votetype = xhtml_escape(votetype)
@@ -801,7 +815,7 @@ class VotingHandler(tornado.web.RequestHandler):
                     self.finish()
 
 
-        else:
+        elif not geolocked:
 
             message = ("Your vote request could be authorized"
                        " and has been discarded.")

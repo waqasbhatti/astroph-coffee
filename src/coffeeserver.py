@@ -22,7 +22,7 @@ from pytz import utc
 from itsdangerous import Signer
 
 # for geofencing
-import geoip2
+import geoip2.database
 
 
 # setup signal trapping on SIGINT
@@ -150,6 +150,7 @@ if __name__ == '__main__':
     GEOFENCE_ACTIVE = CONF.get('geofence','active')
     if GEOFENCE_ACTIVE == 'True':
         GEOFENCE_DB = CONF.get('geofence','database')
+        LOGGER.info('geofence active, using database: %s' % GEOFENCE_DB)
         GEOFENCE_DB = geoip2.database.Reader(GEOFENCE_DB)
         GEOFENCE_COUNTRIES = CONF.get('geofence','allowed_countries').split(',')
         GEOFENCE_REGIONS = CONF.get('geofence','allowed_subdivisions').split(',')
