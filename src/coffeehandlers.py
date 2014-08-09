@@ -689,7 +689,7 @@ class VotingHandler(tornado.web.RequestHandler):
         # user_ip = '70.192.88.245' # VZW NJ
         # user_ip = '70.42.157.5' # VZW NY
         # user_ip = '69.141.255.240' # Comcast PA
-        # user_ip = '128.112.26.36' # Princeton Univ, NJ
+        # user_ip = '128.112.25.36' # Princeton Univ, NJ
 
         # if we're asked to geofence, then do so
         # (unless the request came from INSIDE the building)
