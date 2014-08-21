@@ -275,6 +275,7 @@ def get_articles_for_listing(utcdate=None,
 
 
     local_articles, voted_articles, other_articles = [], [], []
+    articles_excluded_from_voted = []
     articles_excluded_from_other = []
 
     # deal with the local articles first
@@ -300,23 +301,52 @@ def get_articles_for_listing(utcdate=None,
         for row in rows:
             local_articles.append(row)
             articles_excluded_from_other.append(row[0])
+            articles_excluded_from_voted.append(row[0])
 
     # deal with articles that have votes next
-    if astronomyonly:
-        query = ("select arxiv_id, day_serial, title, article_type, "
-                 "authors, comments, abstract, link, pdf, nvotes, voters, "
-                 "presenters, local_authors from arxiv where "
-                 "utcdate = date(?) and nvotes > 0 "
-                 "and article_type = 'astronomy' "
-                 "order by nvotes desc")
-    else:
-        query = ("select arxiv_id, day_serial, title, article_type, "
-                 "authors, comments, abstract, link, pdf, nvotes, voters, "
-                 "presenters, local_authors from arxiv where "
-                 "utcdate = date(?) and nvotes > 0 "
-                 "order by nvotes desc")
+    # finally deal with the other articles
+    if len(articles_excluded_from_voted) > 0:
 
-    query_params = (utcdate,)
+        if astronomyonly:
+            query = ("select arxiv_id, day_serial, title, article_type, "
+                     "authors, comments, abstract, link, pdf, nvotes, voters, "
+                     "presenters, local_authors from arxiv where "
+                     "utcdate = date(?) and "
+                     "arxiv_id not in ({exclude_list}) "
+                     "and nvotes > 0 "
+                     "and article_type = 'astronomy' "
+                     "order by nvotes desc")
+        else:
+            query = ("select arxiv_id, day_serial, title, article_type, "
+                     "authors, comments, abstract, link, pdf, nvotes, voters, "
+                     "presenters, local_authors from arxiv where "
+                     "utcdate = date(?) and "
+                     "arxiv_id not in ({exclude_list}) "
+                     "and nvotes > 0 "
+                     "order by nvotes desc")
+
+        placeholders = ', '.join('?' for x in articles_excluded_from_voted)
+        query = query.format(exclude_list=placeholders)
+        query_params = tuple([utcdate] + articles_excluded_from_voted)
+
+    else:
+
+        if astronomyonly:
+            query = ("select arxiv_id, day_serial, title, article_type, "
+                     "authors, comments, abstract, link, pdf, nvotes, voters, "
+                     "presenters, local_authors from arxiv where "
+                     "utcdate = date(?) "
+                     "and article_type = 'astronomy' "
+                     "order by day_serial asc")
+        else:
+            query = ("select arxiv_id, day_serial, title, article_type, "
+                     "authors, comments, abstract, link, pdf, nvotes, voters, "
+                     "presenters, local_authors from arxiv where "
+                     "utcdate = date(?) "
+                     "order by article_type asc, day_serial asc")
+
+        query_params = (utcdate,)
+
     cursor.execute(query, query_params)
     rows = cursor.fetchall()
 
@@ -324,6 +354,7 @@ def get_articles_for_listing(utcdate=None,
         for row in rows:
             voted_articles.append(row)
             articles_excluded_from_other.append(row[0])
+
 
     # finally deal with the other articles
     if len(articles_excluded_from_other) > 0:
@@ -408,6 +439,7 @@ def get_articles_for_voting(database=None,
 
 
     local_articles, voted_articles, other_articles = [], [], []
+    articles_excluded_from_voted = []
     articles_excluded_from_other = []
 
     # deal with the local articles first
@@ -424,6 +456,7 @@ def get_articles_for_voting(database=None,
                  "presenters, local_authors from arxiv where "
                  "utcdate = date(?) and local_authors = 1 "
                  "order by nvotes desc")
+
     query_params = (utcdate,)
     cursor.execute(query, query_params)
     rows = cursor.fetchall()
@@ -432,23 +465,52 @@ def get_articles_for_voting(database=None,
         for row in rows:
             local_articles.append(row)
             articles_excluded_from_other.append(row[0])
+            articles_excluded_from_voted.append(row[0])
 
     # deal with articles that have votes next
-    if astronomyonly:
-        query = ("select arxiv_id, day_serial, title, article_type, "
-                 "authors, comments, abstract, link, pdf, nvotes, voters, "
-                 "presenters, local_authors from arxiv where "
-                 "utcdate = date(?) and nvotes > 0 "
-                 "and article_type = 'astronomy' "
-                 "order by nvotes desc")
-    else:
-        query = ("select arxiv_id, day_serial, title, article_type, "
-                 "authors, comments, abstract, link, pdf, nvotes, voters, "
-                 "presenters, local_authors from arxiv where "
-                 "utcdate = date(?) and nvotes > 0 "
-                 "order by nvotes desc")
+    # finally deal with the other articles
+    if len(articles_excluded_from_voted) > 0:
 
-    query_params = (utcdate,)
+        if astronomyonly:
+            query = ("select arxiv_id, day_serial, title, article_type, "
+                     "authors, comments, abstract, link, pdf, nvotes, voters, "
+                     "presenters, local_authors from arxiv where "
+                     "utcdate = date(?) and "
+                     "arxiv_id not in ({exclude_list}) "
+                     "and nvotes > 0 "
+                     "and article_type = 'astronomy' "
+                     "order by nvotes desc")
+        else:
+            query = ("select arxiv_id, day_serial, title, article_type, "
+                     "authors, comments, abstract, link, pdf, nvotes, voters, "
+                     "presenters, local_authors from arxiv where "
+                     "utcdate = date(?) and "
+                     "arxiv_id not in ({exclude_list}) "
+                     "and nvotes > 0 "
+                     "order by nvotes desc")
+
+        placeholders = ', '.join('?' for x in articles_excluded_from_voted)
+        query = query.format(exclude_list=placeholders)
+        query_params = tuple([utcdate] + articles_excluded_from_voted)
+
+    else:
+
+        if astronomyonly:
+            query = ("select arxiv_id, day_serial, title, article_type, "
+                     "authors, comments, abstract, link, pdf, nvotes, voters, "
+                     "presenters, local_authors from arxiv where "
+                     "utcdate = date(?) "
+                     "and article_type = 'astronomy' "
+                     "order by day_serial asc")
+        else:
+            query = ("select arxiv_id, day_serial, title, article_type, "
+                     "authors, comments, abstract, link, pdf, nvotes, voters, "
+                     "presenters, local_authors from arxiv where "
+                     "utcdate = date(?) "
+                     "order by article_type asc, day_serial asc")
+
+        query_params = (utcdate,)
+
     cursor.execute(query, query_params)
     rows = cursor.fetchall()
 
@@ -456,6 +518,7 @@ def get_articles_for_voting(database=None,
         for row in rows:
             voted_articles.append(row)
             articles_excluded_from_other.append(row[0])
+
 
     # finally deal with the other articles
     if len(articles_excluded_from_other) > 0:
