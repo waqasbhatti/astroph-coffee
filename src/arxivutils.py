@@ -127,9 +127,9 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
                 ).strip())
 
             # handle internal arxiv links correctly
-            if '<a href="/abs"' in paper_comments:
+            if '<a href="/abs' in paper_comments:
                 paper_comments = paper_comments.replace(
-                    '/abs','http://www.arxiv.org/abs'
+                    '/abs','http://arxiv.org/abs'
                     )
 
         except AttributeError:
@@ -175,9 +175,9 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
             )
 
             # handle internal arxiv links correctly
-            if '<a href="/abs"' in paper_comments:
+            if '<a href="/abs' in paper_comments:
                 paper_comments = paper_comments.replace(
-                    '/abs','http://www.arxiv.org/abs'
+                    '/abs','http://arxiv.org/abs'
                     )
 
         except AttributeError:
