@@ -116,8 +116,8 @@ input[type="checkbox"] {
 }
 
 
-/* default row max-width set to 65.5 em == 1048 px */
+/* default row max-width set to 65 em == 1040 px */
 .row {
-    max-width: 65.5em;
+    max-width: 65em;
 }
 
