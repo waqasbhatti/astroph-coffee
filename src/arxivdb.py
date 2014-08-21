@@ -336,14 +336,16 @@ def get_articles_for_listing(utcdate=None,
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
                      "presenters, local_authors from arxiv where "
                      "utcdate = date(?) "
+                     "and nvotes > 0 "
                      "and article_type = 'astronomy' "
-                     "order by day_serial asc")
+                     "order by nvotes desc")
         else:
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
                      "presenters, local_authors from arxiv where "
                      "utcdate = date(?) "
-                     "order by article_type asc, day_serial asc")
+                     "and nvotes > 0 "
+                     "order by nvotes desc")
 
         query_params = (utcdate,)
 
@@ -500,14 +502,16 @@ def get_articles_for_voting(database=None,
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
                      "presenters, local_authors from arxiv where "
                      "utcdate = date(?) "
+                     "and nvotes > 0 "
                      "and article_type = 'astronomy' "
-                     "order by day_serial asc")
+                     "order by nvotes desc")
         else:
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
                      "presenters, local_authors from arxiv where "
                      "utcdate = date(?) "
-                     "order by article_type asc, day_serial asc")
+                     "and nvotes > 0 "
+                     "order by nvotes desc")
 
         query_params = (utcdate,)
 
