@@ -114,3 +114,10 @@ input[type="radio"] {
 input[type="checkbox"] {
     margin: 0;
 }
+
+
+/* default row max-width set to 65.5 em == 1048 px */
+.row {
+    max-width: 65.5em;
+}
+
