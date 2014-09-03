@@ -258,35 +258,44 @@ class CoffeeHandler(tornado.web.RequestHandler):
         # there's no existing user session
         else:
 
-            LOGGER.warning('unknown user, starting a new session for '
-                           '%s, %s' % (ip_address, client_header))
+            if ('crawler' not in client_header.lower() and
+                'bot' not in client_header.lower()):
 
-            sessionok, token = webdb.anon_session_initiate(
-                ip_address,
-                client_header,
-                database=self.database
-            )
-
-            if sessionok and token:
-                self.set_secure_cookie('coffee_session',
-                                       token,
-                                       httponly=True)
-            else:
-                LOGGER.error('could not set session cookie for %s, %s' %
-                             (ip_address, client_header))
-                self.set_status(500)
-                message = ("There was a database error "
-                           "trying to look up user credentials.")
-
-                LOGGER.error('database error while looking up session for '
+                LOGGER.warning('unknown user, starting a new session for '
                                '%s, %s' % (ip_address, client_header))
 
-                self.render("errorpage.html",
-                            user_name=user_name,
-                            local_today=local_today,
-                            error_message=message,
-                            flash_message=flash_message,
-                            new_user=new_user)
+                sessionok, token = webdb.anon_session_initiate(
+                    ip_address,
+                    client_header,
+                    database=self.database
+                    )
+
+                if sessionok and token:
+                    self.set_secure_cookie('coffee_session',
+                                           token,
+                                           httponly=True)
+                else:
+                    LOGGER.error('could not set session cookie for %s, %s' %
+                                 (ip_address, client_header))
+                    self.set_status(500)
+                    message = ("There was a database error "
+                               "trying to look up user credentials.")
+
+                    LOGGER.error('database error while looking up session for '
+                                 '%s, %s' % (ip_address, client_header))
+
+                    self.render("errorpage.html",
+                                user_name=user_name,
+                                local_today=local_today,
+                                error_message=message,
+                                flash_message=flash_message,
+                                new_user=new_user)
+
+            else:
+
+                LOGGER.info('crawler hit from %s: %s' %
+                            (ip_address, client_header))
+
 
         # construct the current dt and use it to figure out the local-to-server
         # voting times
@@ -464,35 +473,43 @@ class ArticleListHandler(tornado.web.RequestHandler):
         # there's no existing user session
         else:
 
-            LOGGER.warning('unknown user, starting a new session for '
-                           '%s, %s' % (ip_address, client_header))
+            if ('crawler' not in client_header.lower() and
+                'bot' not in client_header.lower()):
 
-            sessionok, token = webdb.anon_session_initiate(
-                ip_address,
-                client_header,
-                database=self.database
-            )
-
-            if sessionok and token:
-                self.set_secure_cookie('coffee_session',
-                                       token,
-                                       httponly=True)
-            else:
-                LOGGER.error('could not set session cookie for %s, %s' %
-                             (ip_address, client_header))
-                self.set_status(500)
-                message = ("There was a database error "
-                           "trying to look up user credentials.")
-
-                LOGGER.error('database error while looking up session for '
+                LOGGER.warning('unknown user, starting a new session for '
                                '%s, %s' % (ip_address, client_header))
 
-                self.render("errorpage.html",
-                            user_name=user_name,
-                            local_today=local_today,
-                            error_message=message,
-                            flash_message=flash_message,
-                            new_user=new_user)
+                sessionok, token = webdb.anon_session_initiate(
+                    ip_address,
+                    client_header,
+                    database=self.database
+                    )
+
+                if sessionok and token:
+                    self.set_secure_cookie('coffee_session',
+                                           token,
+                                           httponly=True)
+                else:
+                    LOGGER.error('could not set session cookie for %s, %s' %
+                                 (ip_address, client_header))
+                    self.set_status(500)
+                    message = ("There was a database error "
+                               "trying to look up user credentials.")
+
+                    LOGGER.error('database error while looking up session for '
+                                 '%s, %s' % (ip_address, client_header))
+
+                    self.render("errorpage.html",
+                                user_name=user_name,
+                                local_today=local_today,
+                                error_message=message,
+                                flash_message=flash_message,
+                                new_user=new_user)
+
+            else:
+
+                LOGGER.info('crawler hit from %s: %s' %
+                            (ip_address, client_header))
 
 
         ############################
@@ -958,32 +975,43 @@ class AboutHandler(tornado.web.RequestHandler):
 
         else:
 
-            sessionok, token = webdb.anon_session_initiate(
-                ip_address,
-                client_header,
-                database=self.database
-            )
+            if ('crawler' not in client_header.lower() and
+                'bot' not in client_header.lower()):
 
-            if sessionok and token:
-                self.set_secure_cookie('coffee_session',
-                                       token,
-                                       httponly=True)
-            else:
-                LOGGER.error('could not set session cookie for %s, %s' %
-                             (ip_address, client_header))
-                self.set_status(500)
-                message = ("There was a database error "
-                           "trying to look up user credentials.")
-
-                LOGGER.error('database error while looking up session for '
+                LOGGER.warning('unknown user, starting a new session for '
                                '%s, %s' % (ip_address, client_header))
 
-                self.render("errorpage.html",
-                            user_name=user_name,
-                            local_today=local_today,
-                            error_message=message,
-                            flash_message=flash_message,
-                            new_user=new_user)
+                sessionok, token = webdb.anon_session_initiate(
+                    ip_address,
+                    client_header,
+                    database=self.database
+                    )
+
+                if sessionok and token:
+                    self.set_secure_cookie('coffee_session',
+                                           token,
+                                           httponly=True)
+                else:
+                    LOGGER.error('could not set session cookie for %s, %s' %
+                                 (ip_address, client_header))
+                    self.set_status(500)
+                    message = ("There was a database error "
+                               "trying to look up user credentials.")
+
+                    LOGGER.error('database error while looking up session for '
+                                 '%s, %s' % (ip_address, client_header))
+
+                    self.render("errorpage.html",
+                                user_name=user_name,
+                                local_today=local_today,
+                                error_message=message,
+                                flash_message=flash_message,
+                                new_user=new_user)
+
+            else:
+
+                LOGGER.info('crawler hit from %s: %s' %
+                            (ip_address, client_header))
 
         #########################
         # show the contact page #
@@ -1114,32 +1142,43 @@ class ArchiveHandler(tornado.web.RequestHandler):
 
         else:
 
-            sessionok, token = webdb.anon_session_initiate(
-                ip_address,
-                client_header,
-                database=self.database
-            )
+            if ('crawler' not in client_header.lower() and
+                'bot' not in client_header.lower()):
 
-            if sessionok and token:
-                self.set_secure_cookie('coffee_session',
-                                       token,
-                                       httponly=True)
-            else:
-                LOGGER.error('could not set session cookie for %s, %s' %
-                             (ip_address, client_header))
-                self.set_status(500)
-                message = ("There was a database error "
-                           "trying to look up user credentials.")
-
-                LOGGER.error('database error while looking up session for '
+                LOGGER.warning('unknown user, starting a new session for '
                                '%s, %s' % (ip_address, client_header))
 
-                self.render("errorpage.html",
-                            user_name=user_name,
-                            local_today=local_today,
-                            error_message=message,
-                            flash_message=flash_message,
-                            new_user=new_user)
+                sessionok, token = webdb.anon_session_initiate(
+                    ip_address,
+                    client_header,
+                    database=self.database
+                    )
+
+                if sessionok and token:
+                    self.set_secure_cookie('coffee_session',
+                                           token,
+                                           httponly=True)
+                else:
+                    LOGGER.error('could not set session cookie for %s, %s' %
+                                 (ip_address, client_header))
+                    self.set_status(500)
+                    message = ("There was a database error "
+                               "trying to look up user credentials.")
+
+                    LOGGER.error('database error while looking up session for '
+                                 '%s, %s' % (ip_address, client_header))
+
+                    self.render("errorpage.html",
+                                user_name=user_name,
+                                local_today=local_today,
+                                error_message=message,
+                                flash_message=flash_message,
+                                new_user=new_user)
+
+            else:
+
+                LOGGER.info('crawler hit from %s: %s' %
+                            (ip_address, client_header))
 
         ##################################
         # now handle the archive request #
