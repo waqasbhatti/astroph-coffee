@@ -69,12 +69,7 @@
 
             <div class="row">
               <div class="small-12 columns">
-                {% set author_list = (article[4].split(': ')[-1]).split(',') %}
-                {% if len(author_list) > 5 %}
-                <h6 class="subheader">{{ ', '.join(author_list[:4]) }}<span class="button expand-authors radius">&hellip;</span><span class="remaining-authors hide">{{ ', '.join(author_list[4:] }}</span></h6>
-                {% else %}
                 <h6 class="subheader">{{ ', '.join((article[4].split(': ')[-1]).split(',')) }}</h6>
-                {% end %}
                 {% if len(article[5]) > 0 %}
                 <p class="comments-para">{% raw article[5] %}</p>
                 {% end %}
@@ -203,12 +198,7 @@
 
             <div class="row">
               <div class="small-12 columns">
-                {% set author_list = (article[4].split(': ')[-1]).split(',') %}
-                {% if len(author_list) > 5 %}
-                <h6 class="subheader">{{ ', '.join(author_list[:4]) }}<span class="button expand-authors radius">&hellip;</span><span class="remaining-authors hide">{{ ', '.join(author_list[4:] }}</span></h6>
-                {% else %}
                 <h6 class="subheader">{{ ', '.join((article[4].split(': ')[-1]).split(',')) }}</h6>
-                {% end %}
                 {% if len(article[5]) > 0 %}
                 <p class="comments-para">{% raw article[5] %}</p>
                 {% end %}
@@ -339,11 +329,7 @@
 
             <div class="row">
               <div class="small-12 columns">
-                {% if len(author_list) > 5 %}
-                <h6 class="subheader">{{ ', '.join(author_list[:4]) }}<span class="button expand-authors radius">&hellip;</span><span class="remaining-authors hide">{{ ', '.join(author_list[4:] }}</span></h6>
-                {% else %}
                 <h6 class="subheader">{{ ', '.join((article[4].split(': ')[-1]).split(',')) }}</h6>
-                {% end %}
                 {% if len(article[5]) > 0 %}
                 <p class="comments-para">{% raw article[5] %}</p>
                 {% end %}
