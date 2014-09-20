@@ -121,3 +121,12 @@ input[type="checkbox"] {
     max-width: 65em;
 }
 
+/* overriding link colors */
+
+a {
+    color: #0054b5;
+}
+
+a:hover, a:focus {
+    color: #060485;
+}
