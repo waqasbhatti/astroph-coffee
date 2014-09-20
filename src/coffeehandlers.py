@@ -832,7 +832,7 @@ class VotingHandler(tornado.web.RequestHandler):
 
         elif not geolocked:
 
-            message = ("Your vote request could be authorized"
+            message = ("Your vote request could not be authorized"
                        " and has been discarded.")
 
             jsondict = {'status':'failed',
