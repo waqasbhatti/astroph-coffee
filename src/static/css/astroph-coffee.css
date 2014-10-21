@@ -118,7 +118,7 @@ input[type="checkbox"] {
 
 /* default row max-width set to 65 em == 1040 px */
 .row {
-    max-width: 65em;
+    max-width: 64em;
 }
 
 /* overriding link colors */
@@ -129,4 +129,19 @@ a {
 
 a:hover, a:focus {
     color: #060485;
+}
+
+/* overriding line-height */
+
+p {
+    line-height: 1.4;
+}
+
+p.normal {
+    line-height: 1.6;
+}
+
+.subheader {
+    line-height: 1.1;
+    color: #636363;
 }
