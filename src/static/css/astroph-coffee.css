@@ -43,6 +43,14 @@ footer {
     margin-left: inherit;
 }
 
+footer ul {
+    line-height: 1.3;
+}
+
+footer li {
+    font-size: 90%;
+}
+
 
 /* button styles */
 .button {
