@@ -162,7 +162,8 @@ if __name__ == '__main__':
     # this is used to sign flash messages so they can't be forged
     FLASHSIGNER = Signer(SESSIONSECRET)
 
-
+    # this is used to get the interval for which reserved papers stay active
+    RESERVE_INTERVAL = CONF.get('times','reserve_interval_days')
 
     ##################
     ## URL HANDLERS ##
@@ -191,13 +192,29 @@ if __name__ == '__main__':
           'building':COFFEE_BUILDING,
           'department':COFFEE_DEPARTMENT,
           'institution':COFFEE_INSTITUTION}),
-        (r'/astroph-coffee/papers',coffeehandlers.ArticleListHandler,
+        (r'/astroph-coffee/papers',tornado.web.RedirectHandler,
+         {'url':'/astroph-coffee/papers/today'}),
+        (r'/astroph-coffee/papers/',tornado.web.RedirectHandler,
+         {'url':'/astroph-coffee/papers/today'}),
+        (r'/astroph-coffee/papers/today',coffeehandlers.ArticleListHandler,
          {'database':DATABASE,
           'voting_start':VOTING_START,
           'voting_end':VOTING_END,
           'server_tz':SERVER_TZ,
           'signer':FLASHSIGNER}),
-        (r'/astroph-coffee/papers/',coffeehandlers.ArticleListHandler,
+        (r'/astroph-coffee/papers/today/',coffeehandlers.ArticleListHandler,
+         {'database':DATABASE,
+          'voting_start':VOTING_START,
+          'voting_end':VOTING_END,
+          'server_tz':SERVER_TZ,
+          'signer':FLASHSIGNER}),
+        (r'/astroph-coffee/papers/reserved',coffeehandlers.ReservedListHandler,
+         {'database':DATABASE,
+          'voting_start':VOTING_START,
+          'voting_end':VOTING_END,
+          'server_tz':SERVER_TZ,
+          'signer':FLASHSIGNER}),
+        (r'/astroph-coffee/papers/reserved/',coffeehandlers.ReservedListHandler,
          {'database':DATABASE,
           'voting_start':VOTING_START,
           'voting_end':VOTING_END,
@@ -207,6 +224,15 @@ if __name__ == '__main__':
          {'database':DATABASE,
           'signer':FLASHSIGNER}),
         (r'/astroph-coffee/vote',coffeehandlers.VotingHandler,
+         {'database':DATABASE,
+          'voting_start':VOTING_START,
+          'voting_end':VOTING_END,
+          'debug':DEBUG,
+          'signer':FLASHSIGNER,
+          'geofence':GEOFENCE_DB,
+          'countries':GEOFENCE_COUNTRIES,
+          'regions':GEOFENCE_REGIONS}),
+        (r'/astroph-coffee/reserve',coffeehandlers.ReservationHandler,
          {'database':DATABASE,
           'voting_start':VOTING_START,
           'voting_end':VOTING_END,

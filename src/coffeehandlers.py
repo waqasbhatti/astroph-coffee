@@ -623,6 +623,75 @@ class ArticleListHandler(tornado.web.RequestHandler):
 
 
 
+class ReservedListHandler(tornado.web.RequestHandler):
+    '''This handles all requests for the listing of selected articles and voting
+    pages. Note: if nobody voted on anything, the default is to return all
+    articles with local authors at the top.
+
+    '''
+
+    def initialize(self, database,
+                   voting_start,
+                   voting_end,
+                   server_tz,
+                   signer):
+        '''
+        Sets up the database.
+
+        '''
+
+        self.database = database
+        self.voting_start = voting_start
+        self.voting_end = voting_end
+        self.server_tz = server_tz
+        self.signer = signer
+
+
+    def get(self):
+        '''
+        This handles a GET request for the reserved articles list.
+
+        '''
+
+
+class ReservationHandler(tornado.web.RequestHandler):
+    '''
+    This handles all requests for the voting page.
+
+    '''
+
+    def initialize(self,
+                   database,
+                   voting_start,
+                   voting_end,
+                   debug,
+                   signer,
+                   geofence,
+                   countries,
+                   regions):
+        '''
+        Sets up the database.
+
+        '''
+
+        self.database = database
+        self.voting_start = voting_start
+        self.voting_end = voting_end
+        self.debug = debug
+        self.signer = signer
+        self.geofence = geofence
+        self.countries = countries
+        self.regions = regions
+
+    def post(self):
+        '''
+        This handles a POST request for a paper reservation.
+
+        '''
+
+
+
+
 class VotingHandler(tornado.web.RequestHandler):
     '''
     This handles all requests for the voting page.
