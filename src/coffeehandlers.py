@@ -110,6 +110,10 @@ def group_arxiv_dates(dates, npapers):
                 (x,y) for (x,y) in zip(dates, npapers)
                 if (x.year == year and x.month == month)
                 ]
+        for month in yeardict[year].copy():
+            if not yeardict[year][month]:
+                del yeardict[year][month]
+
 
     return yeardict
 
