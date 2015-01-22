@@ -18,25 +18,14 @@
 {% block pagecontent %}
 
 <div class="row">
-  <div class="small-12 columns" id="page-message-bar">
-    <div data-alert class="alert-box success radius">
-      We're now
-      at <a href="http://phn14.astro.princeton.edu/astroph-coffee">http://phn14.astro.princeton.edu/astroph-coffee</a>. You
-      may have been automatically redirected. Please update your
-      bookmarks. <a class="close">&times;</a>
-    </div>
-  </div>
-</div>
-
-<div class="row">
   <div class="small-12 columns">
 
     <p>Every weekday, the {{ coffee_department }} at {{ coffee_institution }}
-      gathers in {{ coffee_building }}'s {{ coffee_room }} to discuss the
-      latest <a href="/astroph-coffee/papers/today">arXiv astro-ph</a>
-      posting at <strong>{{ coffeetime_local }}</strong> ({{ coffeetime_utc }})
-      over coffee. Visitors to the department are always welcome to join these
-      discussions.</p>
+      gathers in <strong>{{ coffee_building }}'s {{ coffee_room }}</strong> to
+      discuss the latest <a href="/astroph-coffee/papers/today">arXiv
+      astro-ph</a> posting at <strong>{{ coffeetime_local }}</strong> ({{
+      coffeetime_utc }}) over coffee. Visitors to the department are always
+      welcome to join these discussions.</p>
 
     <p>This <a href="/astroph-coffee/about">astro-coffee server</a> is meant to
       help organize the discussion. It automatically finds and highlights papers
