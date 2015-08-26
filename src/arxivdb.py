@@ -198,19 +198,19 @@ def insert_articles(arxiv,
 
             if verbose:
                 print('inserting cross-list article %s: %s' %
-                      (key, papers[key]['title']))
+                      (key, crosslists[key]['title']))
 
             params = (arxiv_dt,
                       arxiv_dt.date(),
                       key,
-                      unicode(papers[key]['title']),
+                      unicode(crosslists[key]['title']),
                       'crosslists',
-                      papers[key]['arxiv'],
-                      unicode(','.join(papers[key]['authors'])),
-                      unicode(papers[key]['comments']),
-                      unicode(papers[key]['abstract']),
-                      'http://arxiv.org%s' % papers[key]['link'],
-                      'http://arxiv.org%s' % papers[key]['pdf'],
+                      crosslists[key]['arxiv'],
+                      unicode(','.join(crosslists[key]['authors'])),
+                      unicode(crosslists[key]['comments']),
+                      unicode(crosslists[key]['abstract']),
+                      'http://arxiv.org%s' % crosslists[key]['link'],
+                      'http://arxiv.org%s' % crosslists[key]['pdf'],
                       0,
                       '',
                       '',
