@@ -8,7 +8,7 @@ following components:
 * article abstract and metadata storage in sqlite3
 * frontend built with tornado for viewing and voting on papers
 * an archive of previous astro-ph discussions
-
+* geofencing using the Maxmind GeoLite2 database to restrict voting locations
 
 Everyone gets five votes to use in total per day, with one per paper. The server
 generally operates in two modes:
