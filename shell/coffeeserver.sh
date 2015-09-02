@@ -49,13 +49,13 @@ then
     nohup python $BASEPATH/run/coffeeserver.py --log_file_prefix=$BASEPATH/run/logs/coffeeserver.log --debugmode=$DEBUGFLAG --port=$SERVERPORT > $BASEPATH/run/logs/coffeeserver.stdout 2>&1 &
 
     echo "astroph-coffee server started at:" `date`
-    ps -e --forest -o pid,user,vsz,rss,start_time,stat,args | grep -e 'coffeeserver\.py' | | grep $SERVERPORT | grep -v grep | grep -v emacs | grep -v ^vi
+    ps -e --forest -o pid,user,vsz,rss,start_time,stat,args | grep -e 'coffeeserver\.py' | grep -v grep | grep -v emacs | grep -v ^vi
     deactivate
 
 elif [ $ACTION == "stop" ]
 then
 
-    ps aux | grep -e 'coffeeserver\.py' | grep $SERVERPORT | grep -v ^vi | grep -v ps | grep -v emacs | awk '{ print $2 }' | xargs kill > /dev/null 2>&1
+    ps aux | grep -e 'coffeeserver\.py' | grep -v ^vi | grep -v ps | grep -v emacs | awk '{ print $2 }' | xargs kill > /dev/null 2>&1
     echo "astroph-coffee server stopped at:" `date`
 
 
@@ -63,7 +63,7 @@ elif [ $ACTION == "status" ]
 then
 
     echo "Server status: "
-    ps -e --forest -o pid,user,vsz,rss,start_time,stat,args | grep -e 'coffeeserver\.py' | | grep $SERVERPORT | grep -v grep | grep -v emacs | grep -v ^vi
+    ps -e --forest -o pid,user,vsz,rss,start_time,stat,args | grep -e 'coffeeserver\.py' | grep -v grep | grep -v emacs | grep -v ^vi
     echo
 
 else
