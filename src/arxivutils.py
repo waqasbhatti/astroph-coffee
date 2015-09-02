@@ -21,12 +21,12 @@ from pytz import utc
 
 CHUNKSIZE = 64
 REQUEST_HEADERS = {
-    'User-Agent': ('Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:31.0)'
-                   ' Gecko/20100101 Firefox/31.0')
+    'User-Agent': ('Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:40.0)'
+                   ' Gecko/20100101 Firefox/40.0')
     }
 
 
-def get_page_html(url, fakery=True):
+def get_page_html(url, fakery=False):
     '''
     This connects to the arxiv server and downloads the HTML of the page, while
     faking some activity if requested via the Selenium browser driver.

@@ -49,13 +49,23 @@
             {% set papertitle = paperdate[0].strftime('%A, %B %d %Y') %}
 
             <div class="row small-listing-row">
-              <div class="small-6 columns">
+              <div class="small-5 columns">
                 <a href="/astroph-coffee/archive/{{ paperdate[0].strftime('%Y%m%d') }}">
                   {{ papertitle }}
                 </a>
               </div>
-              <div class="small-6 columns">
+              <div class="small-2 columns">
                 <strong>{{ paperdate[1] }}</strong> papers
+              </div>
+              <div class="small-3 columns">
+                {% if paperdate[2] > 0 %}
+                <strong>{{ paperdate[2] }}</strong> with local authors
+                {% end %}
+              </div>
+              <div class="small-2 columns">
+                {% if paperdate[3] > 0 %}
+                <strong>{{ paperdate[3] }}</strong> with votes
+                {% end %}
               </div>
             </div>
 

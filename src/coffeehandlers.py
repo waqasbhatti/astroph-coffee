@@ -68,7 +68,7 @@ def msgdecode(message, signer):
 
 
 
-def group_arxiv_dates(dates, npapers):
+def group_arxiv_dates(dates, npapers, nlocal, nvoted):
     '''
     This takes a list of datetime.dates and the number of papers corresponding
     to each date and builds a nice dict out of it, allowing the following
@@ -107,13 +107,12 @@ def group_arxiv_dates(dates, npapers):
         yeardict[year] = {}
         for month in unique_months:
             yeardict[year][MONTH_NAMES[month]] = [
-                (x,y) for (x,y) in zip(dates, npapers)
+                (x,y,z,w) for (x,y,z,w) in zip(dates, npapers, nlocal, nvoted)
                 if (x.year == year and x.month == month)
                 ]
         for month in yeardict[year].copy():
             if not yeardict[year][month]:
                 del yeardict[year][month]
-
 
     return yeardict
 
@@ -1323,11 +1322,14 @@ class ArchiveHandler(tornado.web.RequestHandler):
 
             else:
 
-                archive_dates, archive_npapers = arxivdb.get_archive_index(
-                    database=self.database
-                    )
+                (archive_dates, archive_npapers,
+                 archive_nlocal, archive_nvoted) = arxivdb.get_archive_index(
+                     database=self.database
+                 )
                 paper_archives = group_arxiv_dates(archive_dates,
-                                                   archive_npapers)
+                                                   archive_npapers,
+                                                   archive_nlocal,
+                                                   archive_nvoted)
 
                 self.render("archive.html",
                             user_name=user_name,
@@ -1338,11 +1340,14 @@ class ArchiveHandler(tornado.web.RequestHandler):
 
         else:
 
-            archive_dates, archive_npapers = arxivdb.get_archive_index(
-                database=self.database
-                )
+            (archive_dates, archive_npapers,
+             archive_nlocal, archive_nvoted) = arxivdb.get_archive_index(
+                 database=self.database
+             )
             paper_archives = group_arxiv_dates(archive_dates,
-                                               archive_npapers)
+                                               archive_npapers,
+                                               archive_nlocal,
+                                               archive_nvoted)
 
             self.render("archive.html",
                         user_name=user_name,
