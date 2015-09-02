@@ -7,15 +7,16 @@ var coffee = {
     // this handles actual voting
     vote_on_paper: function(arxivid) {
 
+        // filter DOM for what we want
         var arxividfilter = '[data-arxivid="' + arxivid + '"]';
         var votebutton = $('.vote-button').filter(arxividfilter);
         var votetotal = $('.vote-total').filter(arxividfilter);
+        var votepostfix = $('.vote-postfix').filter(arxividfilter);
+        var presenters = $('.article-presenters').filter(arxividfilter);
 
         // use attr instead of data since jquery only knows about the first-ever
         // value on page-load and uses that for .data()
         var votetype = votebutton.attr('data-votetype');
-
-        console.log(votetype + ' vote fired on ' + arxivid);
 
         var xsrftoken = $('#voting-form input').val();
         var messagebar = $('#message-bar');
@@ -30,6 +31,12 @@ var coffee = {
 
                        // update the vote total for this arxivid
                        votetotal.text(data.results['nvotes']);
+                       if (data.results['nvotes'] != 1) {
+                           votepostfix.text('votes')
+                       }
+                       else {
+                           votepostfix.text('vote')
+                       }
 
                        // update the button to show that we've voted
                        if (votetype == 'up') {
@@ -59,7 +66,7 @@ var coffee = {
                            '<div data-alert class="alert-box warning radius">' +
                            message +
                            '<a href="#" class="close">&times;</a></div>'
-                       messagebar.html(alertbox).fadeIn('fast').fadeOut(7500);
+                       messagebar.html(alertbox).fadeIn(52).fadeOut(8000);
                        $(document).foundation();
 
                    }
@@ -70,7 +77,7 @@ var coffee = {
 
                    var alertbox =
                        '<div data-alert class="alert-box alert radius">' +
-                       'Something went wrong with the server, ' +
+                       'Uh oh, something went wrong with the server, ' +
                        'please <a href="/astroph-coffee/about">' +
                        'let us know</a> about this problem!' +
                        '<a href="#" class="close">&times;</a></div>'

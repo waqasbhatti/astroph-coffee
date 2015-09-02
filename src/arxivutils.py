@@ -21,12 +21,12 @@ from pytz import utc
 
 CHUNKSIZE = 64
 REQUEST_HEADERS = {
-    'User-Agent': ('Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:31.0)'
-                   ' Gecko/20100101 Firefox/31.0')
+    'User-Agent': ('Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:40.0)'
+                   ' Gecko/20100101 Firefox/40.0')
     }
 
 
-def get_page_html(url, fakery=True):
+def get_page_html(url, fakery=False):
     '''
     This connects to the arxiv server and downloads the HTML of the page, while
     faking some activity if requested via the Selenium browser driver.
@@ -127,9 +127,9 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
                 ).strip())
 
             # handle internal arxiv links correctly
-            if '<a href="/abs"' in paper_comments:
+            if '<a href="/abs' in paper_comments:
                 paper_comments = paper_comments.replace(
-                    '/abs','http://www.arxiv.org/abs'
+                    '/abs','http://arxiv.org/abs'
                     )
 
         except AttributeError:
@@ -175,9 +175,9 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
             )
 
             # handle internal arxiv links correctly
-            if '<a href="/abs"' in paper_comments:
+            if '<a href="/abs' in paper_comments:
                 paper_comments = paper_comments.replace(
-                    '/abs','http://www.arxiv.org/abs'
+                    '/abs','http://arxiv.org/abs'
                     )
 
         except AttributeError:

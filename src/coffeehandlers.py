@@ -68,7 +68,7 @@ def msgdecode(message, signer):
 
 
 
-def group_arxiv_dates(dates, npapers):
+def group_arxiv_dates(dates, npapers, nlocal, nvoted):
     '''
     This takes a list of datetime.dates and the number of papers corresponding
     to each date and builds a nice dict out of it, allowing the following
@@ -107,9 +107,12 @@ def group_arxiv_dates(dates, npapers):
         yeardict[year] = {}
         for month in unique_months:
             yeardict[year][MONTH_NAMES[month]] = [
-                (x,y) for (x,y) in zip(dates, npapers)
+                (x,y,z,w) for (x,y,z,w) in zip(dates, npapers, nlocal, nvoted)
                 if (x.year == year and x.month == month)
                 ]
+        for month in yeardict[year].copy():
+            if not yeardict[year][month]:
+                del yeardict[year][month]
 
     return yeardict
 
@@ -258,35 +261,44 @@ class CoffeeHandler(tornado.web.RequestHandler):
         # there's no existing user session
         else:
 
-            LOGGER.warning('unknown user, starting a new session for '
-                           '%s, %s' % (ip_address, client_header))
+            if ('crawler' not in client_header.lower() and
+                'bot' not in client_header.lower()):
 
-            sessionok, token = webdb.anon_session_initiate(
-                ip_address,
-                client_header,
-                database=self.database
-            )
-
-            if sessionok and token:
-                self.set_secure_cookie('coffee_session',
-                                       token,
-                                       httponly=True)
-            else:
-                LOGGER.error('could not set session cookie for %s, %s' %
-                             (ip_address, client_header))
-                self.set_status(500)
-                message = ("There was a database error "
-                           "trying to look up user credentials.")
-
-                LOGGER.error('database error while looking up session for '
+                LOGGER.warning('unknown user, starting a new session for '
                                '%s, %s' % (ip_address, client_header))
 
-                self.render("errorpage.html",
-                            user_name=user_name,
-                            local_today=local_today,
-                            error_message=message,
-                            flash_message=flash_message,
-                            new_user=new_user)
+                sessionok, token = webdb.anon_session_initiate(
+                    ip_address,
+                    client_header,
+                    database=self.database
+                    )
+
+                if sessionok and token:
+                    self.set_secure_cookie('coffee_session',
+                                           token,
+                                           httponly=True)
+                else:
+                    LOGGER.error('could not set session cookie for %s, %s' %
+                                 (ip_address, client_header))
+                    self.set_status(500)
+                    message = ("There was a database error "
+                               "trying to look up user credentials.")
+
+                    LOGGER.error('database error while looking up session for '
+                                 '%s, %s' % (ip_address, client_header))
+
+                    self.render("errorpage.html",
+                                user_name=user_name,
+                                local_today=local_today,
+                                error_message=message,
+                                flash_message=flash_message,
+                                new_user=new_user)
+
+            else:
+
+                LOGGER.info('crawler hit from %s: %s' %
+                            (ip_address, client_header))
+
 
         # construct the current dt and use it to figure out the local-to-server
         # voting times
@@ -464,35 +476,43 @@ class ArticleListHandler(tornado.web.RequestHandler):
         # there's no existing user session
         else:
 
-            LOGGER.warning('unknown user, starting a new session for '
-                           '%s, %s' % (ip_address, client_header))
+            if ('crawler' not in client_header.lower() and
+                'bot' not in client_header.lower()):
 
-            sessionok, token = webdb.anon_session_initiate(
-                ip_address,
-                client_header,
-                database=self.database
-            )
-
-            if sessionok and token:
-                self.set_secure_cookie('coffee_session',
-                                       token,
-                                       httponly=True)
-            else:
-                LOGGER.error('could not set session cookie for %s, %s' %
-                             (ip_address, client_header))
-                self.set_status(500)
-                message = ("There was a database error "
-                           "trying to look up user credentials.")
-
-                LOGGER.error('database error while looking up session for '
+                LOGGER.warning('unknown user, starting a new session for '
                                '%s, %s' % (ip_address, client_header))
 
-                self.render("errorpage.html",
-                            user_name=user_name,
-                            local_today=local_today,
-                            error_message=message,
-                            flash_message=flash_message,
-                            new_user=new_user)
+                sessionok, token = webdb.anon_session_initiate(
+                    ip_address,
+                    client_header,
+                    database=self.database
+                    )
+
+                if sessionok and token:
+                    self.set_secure_cookie('coffee_session',
+                                           token,
+                                           httponly=True)
+                else:
+                    LOGGER.error('could not set session cookie for %s, %s' %
+                                 (ip_address, client_header))
+                    self.set_status(500)
+                    message = ("There was a database error "
+                               "trying to look up user credentials.")
+
+                    LOGGER.error('database error while looking up session for '
+                                 '%s, %s' % (ip_address, client_header))
+
+                    self.render("errorpage.html",
+                                user_name=user_name,
+                                local_today=local_today,
+                                error_message=message,
+                                flash_message=flash_message,
+                                new_user=new_user)
+
+            else:
+
+                LOGGER.info('crawler hit from %s: %s' %
+                            (ip_address, client_header))
 
 
         ############################
@@ -606,6 +626,75 @@ class ArticleListHandler(tornado.web.RequestHandler):
 
 
 
+class ReservedListHandler(tornado.web.RequestHandler):
+    '''This handles all requests for the listing of selected articles and voting
+    pages. Note: if nobody voted on anything, the default is to return all
+    articles with local authors at the top.
+
+    '''
+
+    def initialize(self, database,
+                   voting_start,
+                   voting_end,
+                   server_tz,
+                   signer):
+        '''
+        Sets up the database.
+
+        '''
+
+        self.database = database
+        self.voting_start = voting_start
+        self.voting_end = voting_end
+        self.server_tz = server_tz
+        self.signer = signer
+
+
+    def get(self):
+        '''
+        This handles a GET request for the reserved articles list.
+
+        '''
+
+
+class ReservationHandler(tornado.web.RequestHandler):
+    '''
+    This handles all requests for the voting page.
+
+    '''
+
+    def initialize(self,
+                   database,
+                   voting_start,
+                   voting_end,
+                   debug,
+                   signer,
+                   geofence,
+                   countries,
+                   regions):
+        '''
+        Sets up the database.
+
+        '''
+
+        self.database = database
+        self.voting_start = voting_start
+        self.voting_end = voting_end
+        self.debug = debug
+        self.signer = signer
+        self.geofence = geofence
+        self.countries = countries
+        self.regions = regions
+
+    def post(self):
+        '''
+        This handles a POST request for a paper reservation.
+
+        '''
+
+
+
+
 class VotingHandler(tornado.web.RequestHandler):
     '''
     This handles all requests for the voting page.
@@ -617,7 +706,10 @@ class VotingHandler(tornado.web.RequestHandler):
                    voting_start,
                    voting_end,
                    debug,
-                   signer):
+                   signer,
+                   geofence,
+                   countries,
+                   regions):
         '''
         Sets up the database.
 
@@ -628,6 +720,9 @@ class VotingHandler(tornado.web.RequestHandler):
         self.voting_end = voting_end
         self.debug = debug
         self.signer = signer
+        self.geofence = geofence
+        self.countries = countries
+        self.regions = regions
 
 
     def post(self):
@@ -639,7 +734,7 @@ class VotingHandler(tornado.web.RequestHandler):
         votetype: up / down
 
         checks if an existing session is in play. if not, flashes a message
-        saying no dice, bro in a flash message
+        saying 'no dice' in a flash message
 
         - checks if the user has more than five votes used for the utcdate of
           the requested arxivid
@@ -675,8 +770,89 @@ class VotingHandler(tornado.web.RequestHandler):
         user_name = sessioninfo[2]
         todays_utcdate = datetime.now(tz=utc).strftime('%Y-%m-%d')
 
+        user_ip = self.request.remote_ip
+
+        # TESTING
+        # user_ip = '131.111.184.18' # Cambridge UK
+        # user_ip = '71.168.183.215' # FIOS NJ
+        # user_ip = '70.192.88.245' # VZW NJ
+        # user_ip = '70.42.157.5' # VZW NY
+        # user_ip = '69.141.255.240' # Comcast PA
+        # user_ip = '128.112.25.36' # Princeton Univ, NJ
+
+        # if we're asked to geofence, then do so
+        # (unless the request came from INSIDE the building)
+        # FIXME: add exceptions for private network IPv4 addresses
+        geolocked = False
+
+        if self.geofence and user_ip != '127.0.0.1':
+
+            try:
+                geoip = self.geofence.city(user_ip)
+
+                if (geoip.country.iso_code in self.countries and
+                    geoip.subdivisions.most_specific.iso_code
+                    in self.regions):
+                    LOGGER.info('geofencing ok: '
+                                'vote request from inside allowed regions')
+
+                else:
+                    LOGGER.warning(
+                        'geofencing activated: '
+                        'vote request from %s '
+                        'is outside allowed regions' %
+                        ('%s-%s' % (
+                            geoip.country.iso_code,
+                            geoip.subdivisions.most_specific.iso_code
+                            ))
+                        )
+                    message = ("Sorry, you're trying to vote "
+                               "from an IP address that is "
+                               "blocked from voting.")
+
+                    jsondict = {'status':'failed',
+                                'message':message,
+                                'results':None}
+                    geolocked = True
+
+                    self.write(jsondict)
+                    self.finish()
+
+
+            # fail deadly
+            except Exception as e:
+                LOGGER.exception('geofencing failed for IP %s, '
+                                 'blocking request.' % user_ip)
+
+                message = ("Sorry, you're trying to vote "
+                           "from an IP address that is "
+                           "blocked from voting.")
+
+                jsondict = {'status':'failed',
+                            'message':message,
+                            'results':None}
+                geolocked = True
+
+                self.write(jsondict)
+                self.finish()
+
+
+        # check if we're in voting time-limits
+        timenow = datetime.now(tz=utc).timetz()
+
+        # if we are within the time limits, then allow the voting POST request
+        if (self.voting_start < timenow < self.voting_end):
+            in_votetime = True
+        else:
+            in_votetime = False
+
+
         # if all things are satisfied, then process the vote request
-        if arxivid and votetype and sessioninfo[0]:
+        if (arxivid and
+            votetype and
+            sessioninfo[0] and
+            (not geolocked) and
+            in_votetime):
 
             arxivid = xhtml_escape(arxivid)
             votetype = xhtml_escape(votetype)
@@ -743,9 +919,9 @@ class VotingHandler(tornado.web.RequestHandler):
                     self.finish()
 
 
-        else:
+        elif not geolocked:
 
-            message = ("Your vote request could be authorized"
+            message = ("Your vote request could not be authorized"
                        " and has been discarded.")
 
             jsondict = {'status':'failed',
@@ -753,6 +929,7 @@ class VotingHandler(tornado.web.RequestHandler):
                         'results':None}
             self.write(jsondict)
             self.finish()
+
 
 
 
@@ -870,32 +1047,43 @@ class AboutHandler(tornado.web.RequestHandler):
 
         else:
 
-            sessionok, token = webdb.anon_session_initiate(
-                ip_address,
-                client_header,
-                database=self.database
-            )
+            if ('crawler' not in client_header.lower() and
+                'bot' not in client_header.lower()):
 
-            if sessionok and token:
-                self.set_secure_cookie('coffee_session',
-                                       token,
-                                       httponly=True)
-            else:
-                LOGGER.error('could not set session cookie for %s, %s' %
-                             (ip_address, client_header))
-                self.set_status(500)
-                message = ("There was a database error "
-                           "trying to look up user credentials.")
-
-                LOGGER.error('database error while looking up session for '
+                LOGGER.warning('unknown user, starting a new session for '
                                '%s, %s' % (ip_address, client_header))
 
-                self.render("errorpage.html",
-                            user_name=user_name,
-                            local_today=local_today,
-                            error_message=message,
-                            flash_message=flash_message,
-                            new_user=new_user)
+                sessionok, token = webdb.anon_session_initiate(
+                    ip_address,
+                    client_header,
+                    database=self.database
+                    )
+
+                if sessionok and token:
+                    self.set_secure_cookie('coffee_session',
+                                           token,
+                                           httponly=True)
+                else:
+                    LOGGER.error('could not set session cookie for %s, %s' %
+                                 (ip_address, client_header))
+                    self.set_status(500)
+                    message = ("There was a database error "
+                               "trying to look up user credentials.")
+
+                    LOGGER.error('database error while looking up session for '
+                                 '%s, %s' % (ip_address, client_header))
+
+                    self.render("errorpage.html",
+                                user_name=user_name,
+                                local_today=local_today,
+                                error_message=message,
+                                flash_message=flash_message,
+                                new_user=new_user)
+
+            else:
+
+                LOGGER.info('crawler hit from %s: %s' %
+                            (ip_address, client_header))
 
         #########################
         # show the contact page #
@@ -1026,32 +1214,43 @@ class ArchiveHandler(tornado.web.RequestHandler):
 
         else:
 
-            sessionok, token = webdb.anon_session_initiate(
-                ip_address,
-                client_header,
-                database=self.database
-            )
+            if ('crawler' not in client_header.lower() and
+                'bot' not in client_header.lower()):
 
-            if sessionok and token:
-                self.set_secure_cookie('coffee_session',
-                                       token,
-                                       httponly=True)
-            else:
-                LOGGER.error('could not set session cookie for %s, %s' %
-                             (ip_address, client_header))
-                self.set_status(500)
-                message = ("There was a database error "
-                           "trying to look up user credentials.")
-
-                LOGGER.error('database error while looking up session for '
+                LOGGER.warning('unknown user, starting a new session for '
                                '%s, %s' % (ip_address, client_header))
 
-                self.render("errorpage.html",
-                            user_name=user_name,
-                            local_today=local_today,
-                            error_message=message,
-                            flash_message=flash_message,
-                            new_user=new_user)
+                sessionok, token = webdb.anon_session_initiate(
+                    ip_address,
+                    client_header,
+                    database=self.database
+                    )
+
+                if sessionok and token:
+                    self.set_secure_cookie('coffee_session',
+                                           token,
+                                           httponly=True)
+                else:
+                    LOGGER.error('could not set session cookie for %s, %s' %
+                                 (ip_address, client_header))
+                    self.set_status(500)
+                    message = ("There was a database error "
+                               "trying to look up user credentials.")
+
+                    LOGGER.error('database error while looking up session for '
+                                 '%s, %s' % (ip_address, client_header))
+
+                    self.render("errorpage.html",
+                                user_name=user_name,
+                                local_today=local_today,
+                                error_message=message,
+                                flash_message=flash_message,
+                                new_user=new_user)
+
+            else:
+
+                LOGGER.info('crawler hit from %s: %s' %
+                            (ip_address, client_header))
 
         ##################################
         # now handle the archive request #
@@ -1123,11 +1322,14 @@ class ArchiveHandler(tornado.web.RequestHandler):
 
             else:
 
-                archive_dates, archive_npapers = arxivdb.get_archive_index(
-                    database=self.database
-                    )
+                (archive_dates, archive_npapers,
+                 archive_nlocal, archive_nvoted) = arxivdb.get_archive_index(
+                     database=self.database
+                 )
                 paper_archives = group_arxiv_dates(archive_dates,
-                                                   archive_npapers)
+                                                   archive_npapers,
+                                                   archive_nlocal,
+                                                   archive_nvoted)
 
                 self.render("archive.html",
                             user_name=user_name,
@@ -1138,11 +1340,14 @@ class ArchiveHandler(tornado.web.RequestHandler):
 
         else:
 
-            archive_dates, archive_npapers = arxivdb.get_archive_index(
-                database=self.database
-                )
+            (archive_dates, archive_npapers,
+             archive_nlocal, archive_nvoted) = arxivdb.get_archive_index(
+                 database=self.database
+             )
             paper_archives = group_arxiv_dates(archive_dates,
-                                               archive_npapers)
+                                               archive_npapers,
+                                               archive_nlocal,
+                                               archive_nvoted)
 
             self.render("archive.html",
                         user_name=user_name,

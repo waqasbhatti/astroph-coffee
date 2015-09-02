@@ -15,6 +15,8 @@ import ConfigParser
 from datetime import datetime
 from pytz import utc
 
+from tornado.escape import squeeze
+
 # for text searching on author names
 import difflib
 
@@ -43,7 +45,7 @@ def opendb():
 
 def tag_local_authors(arxiv_date,
                       database=None,
-                      match_threshold=0.83,
+                      match_threshold=0.93,
                       update_db=False):
     '''
     This finds all local authors for all papers on the date arxiv_date and tags
@@ -66,6 +68,15 @@ def tag_local_authors(arxiv_date,
     if rows and len(rows) > 0:
         local_authors = list(zip(*rows)[0])
         local_authors = [x.lower() for x in local_authors]
+        local_authors = [x.replace('.',' ') for x in local_authors]
+        local_authors = [squeeze(x) for x in local_authors]
+
+        # this contains firstinitial-lastname pairs
+        local_author_fnames = [x.split() for x in local_authors]
+        local_author_fnames = [''.join([x[0][0],x[-1]])
+                               for x in local_author_fnames]
+        local_authors = [x.replace(' ','') for x in local_authors]
+
     else:
         local_authors = []
 
@@ -85,31 +96,60 @@ def tag_local_authors(arxiv_date,
 
                paper_authors = row[1]
                paper_authors = (paper_authors.split(': ')[-1]).split(',')
-               paper_authors = [x.lower() for x in paper_authors]
 
-               for paper_author in paper_authors:
+               # normalize these names so we can compare them more robustly to
+               # the local authors
+               paper_authors = [x.lower().strip() for x in paper_authors]
+               paper_authors = [x.split('(')[0] for x in paper_authors]
+               paper_authors = [x.strip() for x in paper_authors if len(x) > 1]
+               paper_authors = [x.replace('.',' ') for x in paper_authors]
+               paper_authors = [squeeze(x) for x in paper_authors]
 
-                   matched_author = difflib.get_close_matches(
-                       paper_author,
-                       local_authors,
+               paper_author_fnames = [x.split() for x in paper_authors]
+               paper_author_fnames = [''.join([x[0][0],x[-1]]) for x
+                                      in paper_author_fnames]
+               paper_authors = [x.replace(' ','') for x in paper_authors]
+
+               # match to the flastname first, then if that works, try another
+               # match with fullname. if both work, then we accept this as a
+               # local author match
+               for paper_author, paper_fname in zip(paper_authors,
+                                                    paper_author_fnames):
+
+                   matched_author_fname = difflib.get_close_matches(
+                       paper_fname,
+                       local_author_fnames,
                        n=1,
                        cutoff=match_threshold
                    )
-                   if matched_author:
 
-                       local_author_articles.append((row[0]))
-                       print('%s: %s, matched paper author: %s '
-                             'to local author: %s' % (row[0],
-                                                      paper_authors,
-                                                      paper_author,
-                                                      matched_author))
+                   if matched_author_fname:
 
-                       if update_db:
-                           cursor.execute('update arxiv '
-                                          'set local_authors = ? where '
-                                          'arxiv_id = ?', (True, row[0],))
+                       # this is a bit lower to allow looser matches between
+                       # f. m. lastname in the paper authors list and first
+                       # lastname pairs in the local authors list
+                       matched_author_full = difflib.get_close_matches(
+                           paper_author,
+                           local_authors,
+                           n=1,
+                           cutoff=0.8
+                           )
 
-                       break
+                       if matched_author_full:
+
+                           local_author_articles.append((row[0]))
+                           print('%s: %s, matched paper author: %s '
+                                 'to local author: %s' % (row[0],
+                                                          paper_authors,
+                                                          paper_author,
+                                                          matched_author_full))
+
+                           if update_db:
+                               cursor.execute('update arxiv '
+                                              'set local_authors = ? where '
+                                              'arxiv_id = ?', (True, row[0],))
+
+                           break
 
             if update_db:
                 database.commit()
@@ -138,7 +178,8 @@ def tag_local_authors(arxiv_date,
 def insert_articles(arxiv,
                     database=None,
                     tag_locals=True,
-                    match_threshold=0.83):
+                    match_threshold=0.93,
+                    verbose=False):
     '''
     This inserts all articles in an arxivdict created by
     arxivutils.grab_arxiv_update into the astroph-coffee server database.
@@ -172,8 +213,9 @@ def insert_articles(arxiv,
 
         for key in papers:
 
-            print('inserting astronomy article %s: %s' %
-                  (key, papers[key]['title']))
+            if verbose:
+                print('inserting astronomy article %s: %s' %
+                      (key, papers[key]['title']))
 
             params = (arxiv_dt,
                       arxiv_dt.date(),
@@ -194,20 +236,21 @@ def insert_articles(arxiv,
 
         for key in crosslists:
 
-            print('inserting cross-list article %s: %s' %
-                  (key, papers[key]['title']))
+            if verbose:
+                print('inserting cross-list article %s: %s' %
+                      (key, crosslists[key]['title']))
 
             params = (arxiv_dt,
                       arxiv_dt.date(),
                       key,
-                      unicode(papers[key]['title']),
+                      unicode(crosslists[key]['title']),
                       'crosslists',
-                      papers[key]['arxiv'],
-                      unicode(','.join(papers[key]['authors'])),
-                      unicode(papers[key]['comments']),
-                      unicode(papers[key]['abstract']),
-                      'http://arxiv.org%s' % papers[key]['link'],
-                      'http://arxiv.org%s' % papers[key]['pdf'],
+                      crosslists[key]['arxiv'],
+                      unicode(','.join(crosslists[key]['authors'])),
+                      unicode(crosslists[key]['comments']),
+                      unicode(crosslists[key]['abstract']),
+                      'http://arxiv.org%s' % crosslists[key]['link'],
+                      'http://arxiv.org%s' % crosslists[key]['pdf'],
                       0,
                       '',
                       '',
@@ -272,6 +315,7 @@ def get_articles_for_listing(utcdate=None,
 
 
     local_articles, voted_articles, other_articles = [], [], []
+    articles_excluded_from_voted = []
     articles_excluded_from_other = []
 
     # deal with the local articles first
@@ -297,23 +341,54 @@ def get_articles_for_listing(utcdate=None,
         for row in rows:
             local_articles.append(row)
             articles_excluded_from_other.append(row[0])
+            articles_excluded_from_voted.append(row[0])
 
     # deal with articles that have votes next
-    if astronomyonly:
-        query = ("select arxiv_id, day_serial, title, article_type, "
-                 "authors, comments, abstract, link, pdf, nvotes, voters, "
-                 "presenters, local_authors from arxiv where "
-                 "utcdate = date(?) and nvotes > 0 "
-                 "and article_type = 'astronomy' "
-                 "order by nvotes desc")
-    else:
-        query = ("select arxiv_id, day_serial, title, article_type, "
-                 "authors, comments, abstract, link, pdf, nvotes, voters, "
-                 "presenters, local_authors from arxiv where "
-                 "utcdate = date(?) and nvotes > 0 "
-                 "order by nvotes desc")
+    # finally deal with the other articles
+    if len(articles_excluded_from_voted) > 0:
 
-    query_params = (utcdate,)
+        if astronomyonly:
+            query = ("select arxiv_id, day_serial, title, article_type, "
+                     "authors, comments, abstract, link, pdf, nvotes, voters, "
+                     "presenters, local_authors from arxiv where "
+                     "utcdate = date(?) and "
+                     "arxiv_id not in ({exclude_list}) "
+                     "and nvotes > 0 "
+                     "and article_type = 'astronomy' "
+                     "order by nvotes desc")
+        else:
+            query = ("select arxiv_id, day_serial, title, article_type, "
+                     "authors, comments, abstract, link, pdf, nvotes, voters, "
+                     "presenters, local_authors from arxiv where "
+                     "utcdate = date(?) and "
+                     "arxiv_id not in ({exclude_list}) "
+                     "and nvotes > 0 "
+                     "order by nvotes desc")
+
+        placeholders = ', '.join('?' for x in articles_excluded_from_voted)
+        query = query.format(exclude_list=placeholders)
+        query_params = tuple([utcdate] + articles_excluded_from_voted)
+
+    else:
+
+        if astronomyonly:
+            query = ("select arxiv_id, day_serial, title, article_type, "
+                     "authors, comments, abstract, link, pdf, nvotes, voters, "
+                     "presenters, local_authors from arxiv where "
+                     "utcdate = date(?) "
+                     "and nvotes > 0 "
+                     "and article_type = 'astronomy' "
+                     "order by nvotes desc")
+        else:
+            query = ("select arxiv_id, day_serial, title, article_type, "
+                     "authors, comments, abstract, link, pdf, nvotes, voters, "
+                     "presenters, local_authors from arxiv where "
+                     "utcdate = date(?) "
+                     "and nvotes > 0 "
+                     "order by nvotes desc")
+
+        query_params = (utcdate,)
+
     cursor.execute(query, query_params)
     rows = cursor.fetchall()
 
@@ -321,6 +396,7 @@ def get_articles_for_listing(utcdate=None,
         for row in rows:
             voted_articles.append(row)
             articles_excluded_from_other.append(row[0])
+
 
     # finally deal with the other articles
     if len(articles_excluded_from_other) > 0:
@@ -405,6 +481,7 @@ def get_articles_for_voting(database=None,
 
 
     local_articles, voted_articles, other_articles = [], [], []
+    articles_excluded_from_voted = []
     articles_excluded_from_other = []
 
     # deal with the local articles first
@@ -421,6 +498,7 @@ def get_articles_for_voting(database=None,
                  "presenters, local_authors from arxiv where "
                  "utcdate = date(?) and local_authors = 1 "
                  "order by nvotes desc")
+
     query_params = (utcdate,)
     cursor.execute(query, query_params)
     rows = cursor.fetchall()
@@ -429,23 +507,54 @@ def get_articles_for_voting(database=None,
         for row in rows:
             local_articles.append(row)
             articles_excluded_from_other.append(row[0])
+            articles_excluded_from_voted.append(row[0])
 
     # deal with articles that have votes next
-    if astronomyonly:
-        query = ("select arxiv_id, day_serial, title, article_type, "
-                 "authors, comments, abstract, link, pdf, nvotes, voters, "
-                 "presenters, local_authors from arxiv where "
-                 "utcdate = date(?) and nvotes > 0 "
-                 "and article_type = 'astronomy' "
-                 "order by nvotes desc")
-    else:
-        query = ("select arxiv_id, day_serial, title, article_type, "
-                 "authors, comments, abstract, link, pdf, nvotes, voters, "
-                 "presenters, local_authors from arxiv where "
-                 "utcdate = date(?) and nvotes > 0 "
-                 "order by nvotes desc")
+    # finally deal with the other articles
+    if len(articles_excluded_from_voted) > 0:
 
-    query_params = (utcdate,)
+        if astronomyonly:
+            query = ("select arxiv_id, day_serial, title, article_type, "
+                     "authors, comments, abstract, link, pdf, nvotes, voters, "
+                     "presenters, local_authors from arxiv where "
+                     "utcdate = date(?) and "
+                     "arxiv_id not in ({exclude_list}) "
+                     "and nvotes > 0 "
+                     "and article_type = 'astronomy' "
+                     "order by nvotes desc")
+        else:
+            query = ("select arxiv_id, day_serial, title, article_type, "
+                     "authors, comments, abstract, link, pdf, nvotes, voters, "
+                     "presenters, local_authors from arxiv where "
+                     "utcdate = date(?) and "
+                     "arxiv_id not in ({exclude_list}) "
+                     "and nvotes > 0 "
+                     "order by nvotes desc")
+
+        placeholders = ', '.join('?' for x in articles_excluded_from_voted)
+        query = query.format(exclude_list=placeholders)
+        query_params = tuple([utcdate] + articles_excluded_from_voted)
+
+    else:
+
+        if astronomyonly:
+            query = ("select arxiv_id, day_serial, title, article_type, "
+                     "authors, comments, abstract, link, pdf, nvotes, voters, "
+                     "presenters, local_authors from arxiv where "
+                     "utcdate = date(?) "
+                     "and nvotes > 0 "
+                     "and article_type = 'astronomy' "
+                     "order by nvotes desc")
+        else:
+            query = ("select arxiv_id, day_serial, title, article_type, "
+                     "authors, comments, abstract, link, pdf, nvotes, voters, "
+                     "presenters, local_authors from arxiv where "
+                     "utcdate = date(?) "
+                     "and nvotes > 0 "
+                     "order by nvotes desc")
+
+        query_params = (utcdate,)
+
     cursor.execute(query, query_params)
     rows = cursor.fetchall()
 
@@ -453,6 +562,7 @@ def get_articles_for_voting(database=None,
         for row in rows:
             voted_articles.append(row)
             articles_excluded_from_other.append(row[0])
+
 
     # finally deal with the other articles
     if len(articles_excluded_from_other) > 0:
@@ -526,24 +636,24 @@ def get_archive_index(start_date=None,
         cursor = database.cursor()
         closedb = False
 
-    query = ("select utcdate, count(*) from arxiv "
+    query = ("select utcdate, count(*), sum(local_authors), "
+             "sum(case when nvotes > 0 then 1 else 0 end) from arxiv "
              "where article_type = 'astronomy' "
              "group by utcdate order by utcdate desc")
     cursor.execute(query)
     rows = cursor.fetchall()
 
     if rows and len(rows) > 0:
-        arxivdates, arxivvotes = zip(*rows)
-
+        arxivdates, arxivpapers, arxivlocals, arxivvoted = zip(*rows)
     else:
-        arxivdates, arxivvotes = [], []
+        arxivdates, arxivpapers, arxivlocals, arxivvoted = [], [], [], []
 
     # at the end, close the cursor and DB connection
     if closedb:
         cursor.close()
         database.close()
 
-    return (arxivdates, arxivvotes)
+    return (arxivdates, arxivpapers, arxivlocals, arxivvoted)
 
 
 ## VOTERS AND PRESENTERS
