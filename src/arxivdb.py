@@ -43,7 +43,7 @@ def opendb():
 
 def tag_local_authors(arxiv_date,
                       database=None,
-                      match_threshold=0.83,
+                      match_threshold=0.87,
                       update_db=False):
     '''
     This finds all local authors for all papers on the date arxiv_date and tags
@@ -66,6 +66,12 @@ def tag_local_authors(arxiv_date,
     if rows and len(rows) > 0:
         local_authors = list(zip(*rows)[0])
         local_authors = [x.lower() for x in local_authors]
+
+        # this contains firstinitial-lastname pairs
+        local_author_fnames = [x.split() for x in local_authors]
+        local_author_fnames = [''.join([x[0][0],x[-1]])
+                               for x in local_author_fnames]
+
     else:
         local_authors = []
 
@@ -85,16 +91,26 @@ def tag_local_authors(arxiv_date,
 
                paper_authors = row[1]
                paper_authors = (paper_authors.split(': ')[-1]).split(',')
-               paper_authors = [x.lower() for x in paper_authors]
 
-               for paper_author in paper_authors:
+               # normalize these names so we can compare them more robustly to
+               # the local authors
+               paper_authors = [x.lower().strip() for x in paper_authors]
+               paper_authors = [x.split('(')[0] for x in paper_authors]
+               paper_authors = [x.strip() for x in paper_authors if len(x) > 1]
+               paper_authors = [x.replace('.',' ') for x in paper_authors]
+               paper_author_fnames = [x.split() for x in paper_authors]
+               paper_author_fnames = [''.join([x[0][0],x[-1]]) for x
+                                      in paper_author_fnames]
+
+               for paper_author in paper_author_fnames:
 
                    matched_author = difflib.get_close_matches(
                        paper_author,
-                       local_authors,
+                       local_author_fnames,
                        n=1,
                        cutoff=match_threshold
                    )
+
                    if matched_author:
 
                        local_author_articles.append((row[0]))
