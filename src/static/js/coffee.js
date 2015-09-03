@@ -14,77 +14,199 @@ var coffee = {
         var votepostfix = $('.vote-postfix').filter(arxividfilter);
         var presenters = $('.article-presenters').filter(arxividfilter);
 
+        // check if this paper is reserved for later by the same person and
+        // disallow voting if so
+        var reservebutton = $('.reserve-button').filter(arxividfilter);
         // use attr instead of data since jquery only knows about the first-ever
         // value on page-load and uses that for .data()
+        var reservetype = reservebutton.attr('data-reservetype');
+
+        if (reservetype == 'release') {
+
+            var messagebar = $('#message-bar');
+
+            var message = "You've already reserved this paper for later " +
+                "discussion; release your reservation first and then "+
+                "vote to discuss this paper tomorrow.";
+            var alertbox =
+                '<div data-alert class="alert-box warning radius">' +
+                message +
+                '<a href="#" class="close">&times;</a></div>'
+            messagebar.html(alertbox).fadeIn(52).fadeOut(10000);
+            $(document).foundation();
+
+        }
+
+        else {
+
+            // use attr instead of data since jquery only knows about the
+            // first-ever value on page-load and uses that for .data()
+            var votetype = votebutton.attr('data-votetype');
+
+            var xsrftoken = $('#voting-form input').val();
+            var messagebar = $('#message-bar');
+
+            $.post('/astroph-coffee/vote',
+                   {arxivid: arxivid,
+                    votetype: votetype,
+                    _xsrf: xsrftoken},
+                   function(data) {
+
+                       if (data.status == 'success') {
+
+                           // update the vote total for this arxivid
+                           votetotal.text(data.results['nvotes']);
+                           if (data.results['nvotes'] != 1) {
+                               votepostfix.text('votes')
+                           }
+                           else {
+                               votepostfix.text('vote')
+                           }
+
+                           // update the button to show that we've voted
+                           if (votetype == 'up') {
+
+                               votebutton
+                                   .addClass('alert')
+                                   .html('Remove vote')
+                                   .attr('data-votetype','down');
+
+                           }
+
+                           else if (votetype == 'down') {
+
+                               votebutton
+                                   .removeClass('alert')
+                                   .html('Vote to discuss tomorrow')
+                                   .attr('data-votetype','up');
+
+                           }
+
+                       }
+
+                       else {
+
+                           var message = data.message;
+                           var alertbox =
+                               '<div data-alert class="alert-box warning radius">' +
+                               message +
+                               '<a href="#" class="close">&times;</a></div>'
+                           messagebar.html(alertbox).fadeIn(52).fadeOut(10000);
+                           $(document).foundation();
+
+                       }
+
+
+                   },
+                   'json').fail(function (data) {
+
+                       var alertbox =
+                           '<div data-alert class="alert-box alert radius">' +
+                           'Uh oh, something went wrong with the server, ' +
+                           'please <a href="/astroph-coffee/about">' +
+                           'let us know</a> about this problem!' +
+                           '<a href="#" class="close">&times;</a></div>'
+                       messagebar.html(alertbox);
+                       $(document).foundation();
+
+                   });
+
+        }
+
+    },
+
+    // this handles paper reservation
+    reserve_paper: function(arxivid) {
+
+        // filter DOM for what we want
+        var arxividfilter = '[data-arxivid="' + arxivid + '"]';
+        var reservebutton = $('.reserve-button').filter(arxividfilter);
+
+        // FIXME: get this user's vote on this paper and disallow reservation if
+        // already voted (maybe?)
+        var votebutton = $('.vote-button').filter(arxividfilter);
         var votetype = votebutton.attr('data-votetype');
+
+        // use attr instead of data since jquery only knows about the first-ever
+        // value on page-load and uses that for .data()
+        var reservetype = reservebutton.attr('data-reservetype');
 
         var xsrftoken = $('#voting-form input').val();
         var messagebar = $('#message-bar');
 
-        $.post('/astroph-coffee/vote',
-               {arxivid: arxivid,
-                votetype: votetype,
-                _xsrf: xsrftoken},
-               function(data) {
+        if (votetype == 'down' && reservetype == 'reserve') {
 
-                   if (data.status == 'success') {
+            var message = "You've already voted to discuss this paper " +
+                "tomorrow; remove your vote first and then "+
+                "reserve this paper for later discussion.";
+            var alertbox =
+                '<div data-alert class="alert-box warning radius">' +
+                message +
+                '<a href="#" class="close">&times;</a></div>'
+            messagebar.html(alertbox).fadeIn(52).fadeOut(10000);
+            $(document).foundation();
 
-                       // update the vote total for this arxivid
-                       votetotal.text(data.results['nvotes']);
-                       if (data.results['nvotes'] != 1) {
-                           votepostfix.text('votes')
+        }
+
+        else {
+
+            $.post('/astroph-coffee/reserve',
+                   {arxivid: arxivid,
+                    reservetype: reservetype,
+                    _xsrf: xsrftoken},
+                   function(data) {
+
+                       if (data.status == 'success') {
+
+                           // update the button to show that we've reserved
+                           if (reservetype == 'reserve') {
+
+                               reservebutton
+                                   .addClass('alert')
+                                   .html('Release your reservation')
+                                   .attr('data-reservetype','release');
+
+                           }
+
+                           else if (reservetype == 'release') {
+
+                               reservebutton
+                                   .removeClass('alert')
+                                   .html('Reserve paper for later')
+                                   .attr('data-reservetype','reserve');
+
+                           }
+
                        }
+
                        else {
-                           votepostfix.text('vote')
-                       }
 
-                       // update the button to show that we've voted
-                       if (votetype == 'up') {
-
-                           votebutton
-                               .addClass('alert')
-                               .html('Remove your vote')
-                               .attr('data-votetype','down');
+                           var message = data.message;
+                           var alertbox =
+                               '<div data-alert class="alert-box warning radius">' +
+                               message +
+                               '<a href="#" class="close">&times;</a></div>'
+                           messagebar.html(alertbox).fadeIn(52).fadeOut(10000);
+                           $(document).foundation();
 
                        }
 
-                       else if (votetype == 'down') {
 
-                           votebutton
-                               .removeClass('alert')
-                               .html('Vote for this paper')
-                               .attr('data-votetype','up');
+                   },
+                   'json').fail(function (data) {
 
-                       }
-
-                   }
-
-                   else {
-
-                       var message = data.message;
                        var alertbox =
-                           '<div data-alert class="alert-box warning radius">' +
-                           message +
+                           '<div data-alert class="alert-box alert radius">' +
+                           'Uh oh, something went wrong with the server, ' +
+                           'please <a href="/astroph-coffee/about">' +
+                           'let us know</a> about this problem!' +
                            '<a href="#" class="close">&times;</a></div>'
-                       messagebar.html(alertbox).fadeIn(52).fadeOut(8000);
+                       messagebar.html(alertbox);
                        $(document).foundation();
 
-                   }
+                   });
 
-
-               },
-               'json').fail(function (data) {
-
-                   var alertbox =
-                       '<div data-alert class="alert-box alert radius">' +
-                       'Uh oh, something went wrong with the server, ' +
-                       'please <a href="/astroph-coffee/about">' +
-                       'let us know</a> about this problem!' +
-                       '<a href="#" class="close">&times;</a></div>'
-                   messagebar.html(alertbox);
-                   $(document).foundation();
-
-               });
+        }
 
     },
 
@@ -223,6 +345,15 @@ var coffee = {
             var arxivid = $(this).data('arxivid');
             evt.preventDefault();
             coffee.vote_on_paper(arxivid);
+
+        });
+
+        // handle clicking on the reserve button
+        $('.reserve-button').on('click', function(evt) {
+
+            var arxivid = $(this).data('arxivid');
+            evt.preventDefault();
+            coffee.reserve_paper(arxivid);
 
         });
 

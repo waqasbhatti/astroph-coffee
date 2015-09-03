@@ -17,7 +17,7 @@
 
 {% block pagecontent %}
 
-{% if local_articles or voted_articles %}
+{% if local_articles or voted_articles or reserved_articles %}
 
 <div class="row">
   <div class="small-12 columns">
@@ -25,18 +25,24 @@
     <ul class="inline-list">
 
       {% if local_articles and len(local_articles) > 1 %}
-      <li><a href="#local-papers" class="button secondary radius"><strong>{{ len(local_articles) }}</strong> papers with local authors</a></li>
+      <li><a href="#local-papers" class="button small secondary radius"><strong>{{ len(local_articles) }}</strong> papers with local authors</a></li>
       {% elif local_articles and len(local_articles) == 1 %}
-      <li><a href="#local-papers" class="button secondary radius"><strong>1</strong> paper with local authors</a></li>
+      <li><a href="#local-papers" class="button small secondary radius"><strong>1</strong> paper with local authors</a></li>
       {% end %}
 
       {% if voted_articles and len(voted_articles) > 1 %}
-      <li><a href="#voted-papers" class="button secondary radius"><strong>{{ len(voted_articles) }}</strong> papers with votes</a></li>
+      <li><a href="#voted-papers" class="button small secondary radius"><strong>{{ len(voted_articles) }}</strong> papers with votes for tomorrow</a></li>
       {% elif voted_articles and len(voted_articles) == 1 %}
-      <li><a href="#voted-papers" class="button secondary radius"><strong>{{ len(voted_articles) }}</strong> paper with votes</a></li>
+      <li><a href="#voted-papers" class="button small secondary radius"><strong>{{ len(voted_articles) }}</strong> paper with votes for tomorrow</a></li>
       {% end %}
 
-      <li><a href="#other-papers" class="button secondary radius"><strong>{{ len(other_articles) }}</strong> other papers</a></li>
+      {% if reserved_articles and len(reserved_articles) > 1 %}
+      <li><a href="#reserved-papers" class="button small secondary radius"><strong>{{ len(reserved_articles) }}</strong> papers reserved for later discussion</a></li>
+      {% elif reserved_articles and len(reserved_articles) == 1 %}
+      <li><a href="#reserved-papers" class="button small secondary radius"><strong>{{ len(reserved_articles) }}</strong> paper reserved for later discussion</a></li>
+      {% end %}
+
+      <li><a href="#other-papers" class="button small secondary radius"><strong>{{ len(other_articles) }}</strong> other papers</a></li>
 
     </ul>
 
@@ -142,7 +148,7 @@
             <div class="row">
               <div class="small-12 columns">
                 <a href="{{ article[8] }}"
-                   class="button success radius expand">
+                   class="button small success radius expand">
                   Get paper PDF
                 </a>
               </div>
@@ -152,13 +158,34 @@
               <div class="small-12 columns">
                 {% if user_articles and article[0] in user_articles %}
                 <a href="#" data-arxivid="{{ article[0] }}" data-votetype="down"
-                   class="button radius vote-button expand alert">
+                   class="button small radius vote-button expand alert">
                   Remove your vote
                 </a>
                 {% else %}
                 <a href="#" data-arxivid="{{ article[0] }}" data-votetype="up"
-                   class="button radius vote-button expand">
-                  Vote for this paper
+                   class="button small radius vote-button expand">
+                  Vote to discuss tomorrow
+                </a>
+                {% end %}
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="small-12 columns">
+                {% if user_reserved and article[0] in user_reserved %}
+                <a href="#" data-arxivid="{{ article[0] }}" data-reservetype="release"
+                   class="button small radius reserve-button expand alert">
+                  Release your reservation
+                </a>
+                {% elif article[13] and article[0] not in user_reserved %}
+                <a href="#" data-arxivid="{{ article[0] }}"
+                   class="button small radius expand disabled">
+                  Paper already reserved
+                </a>
+                {% else %}
+                <a href="#" data-arxivid="{{ article[0] }}" data-reservetype="reserve"
+                   class="button small radius reserve-button expand">
+                  Reserve paper for later
                 </a>
                 {% end %}
               </div>
@@ -183,6 +210,153 @@
     {% for article in voted_articles %}
 
     <div class="row small-listing-row voted-paper-listing">
+      <div class="small-12 columns">
+
+        <div class="row">
+
+          <div class="small-12 medium-9 columns">
+
+            <div class="row">
+              <div class="small-12 columns">
+                <h4 class="paper-title" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">{{ article[2] }}</a></h4>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="small-12 columns">
+                <h6 class="subheader">{{ ', '.join((article[4].split(': ')[-1]).split(',')) }}</h6>
+                {% if len(article[5]) > 0 %}
+                <p class="comments-para">{% raw article[5] %}</p>
+                {% end %}
+              </div>
+            </div>
+
+            <div class="row paper-abstract" data-arxivid="{{ article[0] }}">
+              <div class="small-12 columns">
+                <p class="abstract-para-medium">{{ article[6] }}</p>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="small-12 medium-3 columns text-center">
+
+            {% if article[9] > 1 %}
+            <h5>
+              <strong>
+                <span class="vote-total" data-arxivid="{{ article[0] }}">
+                  {{ article[9] }}
+                </span>
+              </strong>
+              <span class="vote-postfix" data-arxivid="{{ article[0] }}">
+                votes
+              </span>
+            </h5>
+            {% elif article[9] == 1 %}
+            <h5>
+              <strong>
+                <span class="vote-total" data-arxivid="{{ article[0] }}">
+                  {{ article[9] }}
+                </span>
+              </strong>
+              <span class="vote-postfix" data-arxivid="{{ article[0] }}">
+                vote
+              </span>
+            </h5>
+            {% elif article[9] == 0 %}
+            <h5>
+              <strong>
+                <span class="vote-total" data-arxivid="{{ article[0] }}">
+                  {{ article[9] }}
+                </span>
+              </strong>
+              <span class="vote-postfix" data-arxivid="{{ article[0] }}">
+                votes
+              </span>
+            </h5>
+            {% end %}
+
+            <div class="row small-listing-row hide">
+              <div class="small-12 columns article-presenters"
+                   data-arxivid="{{ article[0] }}">
+                Presenters: <strong>{{ article[11] }}</strong>
+              </div>
+            </div>
+
+            <div class="row small-listing-row">
+              <div class="small-12 columns">
+                Paper {{ article[1] }} &mdash; <a href="{{ article[7] }}">{{ article[0] }}</a>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="small-12 columns">
+                <a href="{{ article[8] }}"
+                   class="button small success radius expand">
+                  Get paper PDF
+                </a>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="small-12 columns">
+                {% if user_articles and article[0] in user_articles %}
+                <a href="#" data-arxivid="{{ article[0] }}" data-votetype="down"
+                   class="button small radius vote-button expand alert">
+                  Remove your vote
+                </a>
+                {% else %}
+                <a href="#" data-arxivid="{{ article[0] }}" data-votetype="up"
+                   class="button small radius vote-button expand">
+                  Vote to discuss tomorrow
+                </a>
+                {% end %}
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="small-12 columns">
+                {% if user_reserved and article[0] in user_reserved %}
+                <a href="#" data-arxivid="{{ article[0] }}" data-reservetype="release"
+                   class="button small radius reserve-button expand alert">
+                  Release your reservation
+                </a>
+                {% elif article[13] and article[0] not in user_reserved %}
+                <a href="#" data-arxivid="{{ article[0] }}"
+                   class="button small radius expand disabled">
+                  Paper already reserved
+                </a>
+                {% else %}
+                <a href="#" data-arxivid="{{ article[0] }}" data-reservetype="reserve"
+                   class="button small radius reserve-button expand">
+                  Reserve paper for later
+                </a>
+                {% end %}
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    {% end %}
+
+    {% end %}
+
+
+    {% if reserved_articles %}
+
+    <h2 id="reserved-papers">Papers reserved for later discussion</h2>
+
+    <p>These are papers reserved by people for discussion at a later date. All reservations are kept for a week after the date of the reservation. Papers you have reserved may be released during the
+    daily voting period to remove them from this list.</p>
+
+    {% for article in reserved_articles %}
+
+    <div class="row small-listing-row reserved-paper-listing">
       <div class="small-12 columns">
 
         <div class="row">
@@ -265,7 +439,7 @@
             <div class="row">
               <div class="small-12 columns">
                 <a href="{{ article[8] }}"
-                   class="button success radius expand">
+                   class="button small secondary radius expand">
                   Get paper PDF
                 </a>
               </div>
@@ -273,15 +447,10 @@
 
             <div class="row">
               <div class="small-12 columns">
-                {% if user_articles and article[0] in user_articles %}
-                <a href="#" data-arxivid="{{ article[0] }}" data-votetype="down"
-                   class="button radius vote-button expand alert">
-                  Remove your vote
-                </a>
-                {% else %}
-                <a href="#" data-arxivid="{{ article[0] }}" data-votetype="up"
-                   class="button radius vote-button expand">
-                  Vote for this paper
+                {% if user_reserved and article[0] in user_reserved %}
+                <a href="#" data-arxivid="{{ article[0] }}" data-reservetype="release"
+                   class="button small radius reserve-button expand alert">
+                  Release your reservation
                 </a>
                 {% end %}
               </div>
@@ -301,7 +470,7 @@
 
     {% if other_articles %}
 
-    {% if local_articles or voted_articles %}
+    {% if local_articles or voted_articles or reserved_articles %}
     <h2 id="other-papers">All other papers</h2>
     {% end %}
 
@@ -390,7 +559,7 @@
             <div class="row">
               <div class="small-12 columns">
                 <a href="{{ article[8] }}"
-                   class="button success radius expand">
+                   class="button small success radius expand">
                   Get paper PDF
                 </a>
               </div>
@@ -400,13 +569,34 @@
               <div class="small-12 columns">
                 {% if user_articles and article[0] in user_articles %}
                 <a href="#" data-arxivid="{{ article[0] }}" data-votetype="down"
-                   class="button radius vote-button expand alert">
+                   class="button small radius vote-button expand alert">
                   Remove your vote
                 </a>
                 {% else %}
                 <a href="#" data-arxivid="{{ article[0] }}" data-votetype="up"
-                   class="button radius vote-button expand">
-                  Vote for this paper
+                   class="button small radius vote-button expand">
+                  Vote to discuss tomorrow
+                </a>
+                {% end %}
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="small-12 columns">
+                {% if user_reserved and article[0] in user_reserved %}
+                <a href="#" data-arxivid="{{ article[0] }}" data-reservetype="release"
+                   class="button small radius reserve-button expand alert">
+                  Release your reservation
+                </a>
+                {% elif article[13] and article[0] not in user_reserved %}
+                <a href="#" data-arxivid="{{ article[0] }}" data-reservetype="release"
+                   class="button small radius expand disabled">
+                  Paper already reserved
+                </a>
+                {% else %}
+                <a href="#" data-arxivid="{{ article[0] }}" data-reservetype="reserve"
+                   class="button small radius reserve-button expand">
+                  Reserve paper for later
                 </a>
                 {% end %}
               </div>
@@ -422,7 +612,6 @@
     {% end %}
 
     {% end %}
-
 
   </div>
 </div>
