@@ -677,7 +677,7 @@ class ReservationHandler(tornado.web.RequestHandler):
         '''
 
         arxivid = self.get_argument('arxivid', None)
-        votetype = self.get_argument('reservetype', None)
+        reservetype = self.get_argument('reservetype', None)
 
         session_token = self.get_secure_cookie('coffee_session',
                                                max_age_days=30)
@@ -759,7 +759,7 @@ class ReservationHandler(tornado.web.RequestHandler):
         else:
             in_votetime = False
 
-        # if all things are satisfied, then process the vote request
+        # if all things are satisfied, then process the reserve request
         if (arxivid and
             reservetype and
             sessioninfo[0] and
@@ -767,7 +767,7 @@ class ReservationHandler(tornado.web.RequestHandler):
             in_votetime):
 
             arxivid = xhtml_escape(arxivid)
-            reservetype = xhtml_escape(votetype)
+            reservetype = xhtml_escape(reservetype)
 
             LOGGER.info('user: %s, reserving: %s, on: %s' % (user_name,
                                                              reservetype,
