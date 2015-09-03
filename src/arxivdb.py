@@ -12,7 +12,7 @@ import sqlite3
 import os
 import os.path
 import ConfigParser
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from pytz import utc
 
 from tornado.escape import squeeze
@@ -315,6 +315,8 @@ def get_articles_for_listing(utcdate=None,
 
 
     local_articles, voted_articles, other_articles = [], [], []
+    reserved_articles = []
+
     articles_excluded_from_voted = []
     articles_excluded_from_other = []
 
@@ -322,14 +324,16 @@ def get_articles_for_listing(utcdate=None,
     if astronomyonly:
         query = ("select arxiv_id, day_serial, title, article_type, "
                  "authors, comments, abstract, link, pdf, nvotes, voters, "
-                 "presenters, local_authors from arxiv where "
+                 "presenters, local_authors, reserved, reservers from arxiv "
+                 "where "
                  "utcdate = date(?) and local_authors = 1 "
                  "and article_type = 'astronomy' "
                  "order by nvotes desc")
     else:
         query = ("select arxiv_id, day_serial, title, article_type, "
                  "authors, comments, abstract, link, pdf, nvotes, voters, "
-                 "presenters, local_authors from arxiv where "
+                 "presenters, local_authors, reserverd, reservers from arxiv "
+                 "where "
                  "utcdate = date(?) and local_authors = 1 "
                  "order by nvotes desc")
 
@@ -350,7 +354,8 @@ def get_articles_for_listing(utcdate=None,
         if astronomyonly:
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
-                     "presenters, local_authors from arxiv where "
+                     "presenters, local_authors, reserved, reservers from arxiv "
+                     "where "
                      "utcdate = date(?) and "
                      "arxiv_id not in ({exclude_list}) "
                      "and nvotes > 0 "
@@ -359,7 +364,8 @@ def get_articles_for_listing(utcdate=None,
         else:
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
-                     "presenters, local_authors from arxiv where "
+                     "presenters, local_authors, reserved, reservers from arxiv "
+                     "where "
                      "utcdate = date(?) and "
                      "arxiv_id not in ({exclude_list}) "
                      "and nvotes > 0 "
@@ -374,7 +380,8 @@ def get_articles_for_listing(utcdate=None,
         if astronomyonly:
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
-                     "presenters, local_authors from arxiv where "
+                     "presenters, local_authors, reserved, reservers from arxiv "
+                     "where "
                      "utcdate = date(?) "
                      "and nvotes > 0 "
                      "and article_type = 'astronomy' "
@@ -382,7 +389,8 @@ def get_articles_for_listing(utcdate=None,
         else:
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
-                     "presenters, local_authors from arxiv where "
+                     "presenters, local_authors, reserved, reservers from arxiv "
+                     "where "
                      "utcdate = date(?) "
                      "and nvotes > 0 "
                      "order by nvotes desc")
@@ -397,6 +405,37 @@ def get_articles_for_listing(utcdate=None,
             voted_articles.append(row)
             articles_excluded_from_other.append(row[0])
 
+    # get the historical reserved articles list
+    if astronomyonly:
+        query = ("select arxiv_id, day_serial, title, article_type, "
+                 "authors, comments, abstract, link, pdf, nvotes, voters, "
+                 "presenters, local_authors, reserved, reservers from arxiv "
+                 "where "
+                 "(utcdate between date(?) and date(?)) and reserved = 1 "
+                 "and article_type = 'astronomy' "
+                 "order by arxiv_id desc")
+    else:
+        query = ("select arxiv_id, day_serial, title, article_type, "
+                 "authors, comments, abstract, link, pdf, nvotes, voters, "
+                 "presenters, local_authors, reserved, reservers from arxiv "
+                 "where "
+                 "(utcdate between date(?) and date(?)) and reserved = 1 "
+                 "order by arxiv_id desc")
+
+    # fetch all reserved articles up to 7 days older than the given utcdate
+    given_dt = datetime.strptime(utcdate,'%Y-%m-%d')
+    earliest_dt = given_dt - timedelta(days=7)
+    earliest_utcdate = earliest_dt.strftime('%Y-%m-%d')
+
+    query_params = (earliest_utcdate, utcdate)
+    cursor.execute(query, query_params)
+    rows = cursor.fetchall()
+
+    if len(rows) > 0:
+        for row in rows:
+            reserved_articles.append(row)
+            articles_excluded_from_other.append(row[0])
+
 
     # finally deal with the other articles
     if len(articles_excluded_from_other) > 0:
@@ -404,7 +443,8 @@ def get_articles_for_listing(utcdate=None,
         if astronomyonly:
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
-                     "presenters, local_authors from arxiv where "
+                     "presenters, local_authors, reserved, reservers from arxiv "
+                     "where "
                      "utcdate = date(?) and "
                      "arxiv_id not in ({exclude_list}) "
                      "and article_type = 'astronomy' "
@@ -412,7 +452,8 @@ def get_articles_for_listing(utcdate=None,
         else:
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
-                     "presenters, local_authors from arxiv where "
+                     "presenters, local_authors, reserved, reservers from arxiv "
+                     "where "
                      "utcdate = date(?) and "
                      "arxiv_id not in ({exclude_list}) "
                      "order by article_type asc, day_serial asc")
@@ -426,14 +467,16 @@ def get_articles_for_listing(utcdate=None,
         if astronomyonly:
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
-                     "presenters, local_authors from arxiv where "
+                     "presenters, local_authors, reserved, reservers from arxiv "
+                     "where "
                      "utcdate = date(?) "
                      "and article_type = 'astronomy' "
                      "order by day_serial asc")
         else:
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
-                     "presenters, local_authors from arxiv where "
+                     "presenters, local_authors, reserved, reservers from arxiv "
+                     "where "
                      "utcdate = date(?) "
                      "order by article_type asc, day_serial asc")
 
@@ -455,7 +498,8 @@ def get_articles_for_listing(utcdate=None,
     return (utcdate,
             local_articles,
             voted_articles,
-            other_articles)
+            other_articles,
+            reserved_articles)
 
 
 
@@ -481,6 +525,8 @@ def get_articles_for_voting(database=None,
 
 
     local_articles, voted_articles, other_articles = [], [], []
+    reserved_articles = []
+
     articles_excluded_from_voted = []
     articles_excluded_from_other = []
 
@@ -488,14 +534,16 @@ def get_articles_for_voting(database=None,
     if astronomyonly:
         query = ("select arxiv_id, day_serial, title, article_type, "
                  "authors, comments, abstract, link, pdf, nvotes, voters, "
-                 "presenters, local_authors from arxiv where "
+                 "presenters, local_authors, reserved, reservers from arxiv "
+                 "where "
                  "utcdate = date(?) and local_authors = 1 "
                  "and article_type = 'astronomy' "
                  "order by nvotes desc")
     else:
         query = ("select arxiv_id, day_serial, title, article_type, "
                  "authors, comments, abstract, link, pdf, nvotes, voters, "
-                 "presenters, local_authors from arxiv where "
+                 "presenters, local_authors, reserved, reservers from arxiv "
+                 "where "
                  "utcdate = date(?) and local_authors = 1 "
                  "order by nvotes desc")
 
@@ -516,7 +564,8 @@ def get_articles_for_voting(database=None,
         if astronomyonly:
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
-                     "presenters, local_authors from arxiv where "
+                     "presenters, local_authors, reserved, reservers from arxiv "
+                     "where "
                      "utcdate = date(?) and "
                      "arxiv_id not in ({exclude_list}) "
                      "and nvotes > 0 "
@@ -525,7 +574,8 @@ def get_articles_for_voting(database=None,
         else:
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
-                     "presenters, local_authors from arxiv where "
+                     "presenters, local_authors, reserved, reservers from arxiv "
+                     "where "
                      "utcdate = date(?) and "
                      "arxiv_id not in ({exclude_list}) "
                      "and nvotes > 0 "
@@ -540,7 +590,8 @@ def get_articles_for_voting(database=None,
         if astronomyonly:
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
-                     "presenters, local_authors from arxiv where "
+                     "presenters, local_authors, reserved, reservers from arxiv "
+                     "where "
                      "utcdate = date(?) "
                      "and nvotes > 0 "
                      "and article_type = 'astronomy' "
@@ -548,7 +599,8 @@ def get_articles_for_voting(database=None,
         else:
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
-                     "presenters, local_authors from arxiv where "
+                     "presenters, local_authors, reserved, reservers from arxiv "
+                     "where "
                      "utcdate = date(?) "
                      "and nvotes > 0 "
                      "order by nvotes desc")
@@ -563,6 +615,37 @@ def get_articles_for_voting(database=None,
             voted_articles.append(row)
             articles_excluded_from_other.append(row[0])
 
+    # get the historical reserved articles list
+    if astronomyonly:
+        query = ("select arxiv_id, day_serial, title, article_type, "
+                 "authors, comments, abstract, link, pdf, nvotes, voters, "
+                 "presenters, local_authors, reserved, reservers from arxiv "
+                 "where "
+                 "(utcdate between date(?) and date(?)) and reserved = 1 "
+                 "and article_type = 'astronomy' "
+                 "order by arxiv_id desc")
+    else:
+        query = ("select arxiv_id, day_serial, title, article_type, "
+                 "authors, comments, abstract, link, pdf, nvotes, voters, "
+                 "presenters, local_authors, reserved, reservers from arxiv "
+                 "where "
+                 "(utcdate between date(?) and date(?)) and reserved = 1 "
+                 "order by arxiv_id desc")
+
+    # fetch all reserved articles up to 7 days older than the given utcdate
+    given_dt = datetime.strptime(utcdate,'%Y-%m-%d')
+    earliest_dt = given_dt - timedelta(days=7)
+    earliest_utcdate = earliest_dt.strftime('%Y-%m-%d')
+
+    query_params = (earliest_utcdate, utcdate)
+    cursor.execute(query, query_params)
+    rows = cursor.fetchall()
+
+    if len(rows) > 0:
+        for row in rows:
+            reserved_articles.append(row)
+            articles_excluded_from_other.append(row[0])
+
 
     # finally deal with the other articles
     if len(articles_excluded_from_other) > 0:
@@ -570,7 +653,8 @@ def get_articles_for_voting(database=None,
         if astronomyonly:
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
-                     "presenters, local_authors from arxiv where "
+                     "presenters, local_authors, reserved, reservers from arxiv "
+                     "where "
                      "utcdate = date(?) and "
                      "arxiv_id not in ({exclude_list}) "
                      "and article_type = 'astronomy' "
@@ -578,7 +662,8 @@ def get_articles_for_voting(database=None,
         else:
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
-                     "presenters, local_authors from arxiv where "
+                     "presenters, local_authors, reserved, reservers from arxiv "
+                     "where "
                      "utcdate = date(?) and "
                      "arxiv_id not in ({exclude_list}) "
                      "order by article_type asc, day_serial asc")
@@ -592,14 +677,16 @@ def get_articles_for_voting(database=None,
         if astronomyonly:
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
-                     "presenters, local_authors from arxiv where "
+                     "presenters, local_authors, reserved, reservers from arxiv "
+                     "where "
                      "utcdate = date(?) "
                      "and article_type = 'astronomy' "
                      "order by day_serial asc")
         else:
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
-                     "presenters, local_authors from arxiv where "
+                     "presenters, local_authors, reserved, reservers from arxiv "
+                     "where "
                      "utcdate = date(?) "
                      "order by article_type asc, day_serial asc")
 
@@ -617,7 +704,7 @@ def get_articles_for_voting(database=None,
         cursor.close()
         database.close()
 
-    return (local_articles, voted_articles, other_articles)
+    return (local_articles, voted_articles, other_articles, reserved_articles)
 
 
 ## ARTICLE ARCHIVES
@@ -733,8 +820,136 @@ def record_vote(arxivid, username, vote, database=None):
     return returnval
 
 
+def record_reservation(arxivid, username, reservation, database=None):
+    '''This records votes for a paper in the DB. reservation is 'reserve' or
+    'release'. If the arxivid doesn't exist, then returns False. If the
+    reservation is successfully processed, returns the reserved flag for the
+    arxivid.
+
+    '''
+
+    # open the database if needed and get a cursor
+    if not database:
+        database, cursor = opendb()
+        closedb = True
+    else:
+        cursor = database.cursor()
+        closedb = False
+
+    returnval = False
+
+    if reservation == 'reserve':
+
+        # reservations only count ONCE per article
+        query = ("update arxiv set reserved = 1, "
+                 "reservers = ? "
+                 "where arxiv_id = ? and article_type = 'astronomy' and "
+                 "reservers is null")
+        query_params = (username,
+                        arxivid)
+
+    elif reservation == 'release':
+        # reservations only count ONCE per article
+        query = ("update arxiv set reserved = 0, "
+                 "reservers = null "
+                 "where arxiv_id = ? and article_type = 'astronomy' and "
+                 "reservers like ?")
+        query_params = (arxivid, '%{0}%'.format(username))
+
+    else:
+        return False
+
+
+    try:
+
+        cursor.execute(query, query_params)
+        database.commit()
+
+        cursor.execute("select reserved, reservers from arxiv where arxiv_id = ? "
+                       "and article_type = 'astronomy'",
+                       (arxivid,))
+        rows = cursor.fetchone()
+
+        if rows and len(rows) > 0:
+            returnval = rows
+
+    except Exception as e:
+        database.rollback()
+        raise
+        returnval = False
+
+    # at the end, close the cursor and DB connection
+    if closedb:
+        cursor.close()
+        database.close()
+
+    return returnval
+
+
+
+def get_user_reservations(utcdate, username, database=None):
+    '''This gets a user's reserved papers.
+
+    Papers are reserved for up to 7 days, so we check for utcdate - 7 days
+    here. The frontend uses this function to set the current reservation state
+    for the articles on the voting and listing pages.
+
+    The voting page shows all reserved papers from everyone up to today's date
+    and allows unreserving papers that this user reserved.
+
+    The listing page shows all reserved papers as well, but does not allow
+    dereserving (i.e. dereserving only happens during voting periods).
+
+    '''
+
+    # open the database if needed and get a cursor
+    if not database:
+        database, cursor = opendb()
+        closedb = True
+    else:
+        cursor = database.cursor()
+        closedb = False
+
+    # get all the reserved papers by this user for this utcdate - 7 days
+    query = ("select arxiv_id, reservers from arxiv where "
+             "(utcdate between ? and ?) and "
+             "(reserved = 1) and "
+             "(article_type = 'astronomy')")
+
+    # figure out the oldest date
+    given_dt = datetime.strptime(utcdate,'%Y-%m-%d')
+    earliest_dt = given_dt - timedelta(days=7)
+    earliest_utcdate = earliest_dt.strftime('%Y-%m-%d')
+
+    params = (earliest_utcdate, utcdate)
+    cursor.execute(query, params)
+    rows = cursor.fetchall()
+
+    if rows and len(rows) > 0:
+
+        reserved_arxivids = []
+
+        for row in rows:
+            paper, reservers = row
+            reservers = reservers.split(',')
+            if username in reservers:
+                reserved_arxivids.append(paper)
+
+    else:
+
+        reserved_arxivids = []
+
+
+    # at the end, close the cursor and DB connection
+    if closedb:
+        cursor.close()
+        database.close()
+
+    return reserved_arxivids
+
 
 def get_user_votes(utcdate, username, database=None):
+
     '''
     This gets a user's votes for all arxivids on the current utcdate. The
     frontend uses this to set the current voting state for the articles on the

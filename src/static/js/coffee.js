@@ -43,7 +43,7 @@ var coffee = {
 
                            votebutton
                                .addClass('alert')
-                               .html('Remove your vote')
+                               .html('Remove vote')
                                .attr('data-votetype','down');
 
                        }
@@ -52,7 +52,7 @@ var coffee = {
 
                            votebutton
                                .removeClass('alert')
-                               .html('Vote for this paper')
+                               .html('Vote for paper')
                                .attr('data-votetype','up');
 
                        }

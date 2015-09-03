@@ -526,8 +526,9 @@ class ArticleListHandler(tornado.web.RequestHandler):
         if (self.voting_start < timenow < self.voting_end):
 
             # get the articles for today
-            local_articles, voted_articles, other_articles = (
-                arxivdb.get_articles_for_voting(database=self.database)
+            (local_articles, voted_articles,
+             other_articles, reserved_articles) = (
+                 arxivdb.get_articles_for_voting(database=self.database)
             )
 
             # if today's papers aren't ready yet, redirect to the papers display
@@ -536,10 +537,11 @@ class ArticleListHandler(tornado.web.RequestHandler):
                 LOGGER.warning('no papers for today yet, '
                                'redirecting to previous day papers')
 
-                latestdate, local_articles, voted_articles, other_articles = (
-                    arxivdb.get_articles_for_listing(
-                        database=self.database
-                    )
+                (latestdate, local_articles,
+                 voted_articles, other_articles, reserved_articles) = (
+                     arxivdb.get_articles_for_listing(
+                         database=self.database
+                     )
                 )
                 todays_date = datetime.strptime(latestdate,
                                                 '%Y-%m-%d').strftime('%A, %b %d %Y')
@@ -560,6 +562,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
                             local_articles=local_articles,
                             voted_articles=voted_articles,
                             other_articles=other_articles,
+                            reserved_articles=reserved_articles,
                             flash_message=flash_message,
                             new_user=new_user)
 
@@ -570,7 +573,13 @@ class ArticleListHandler(tornado.web.RequestHandler):
                 user_articles = arxivdb.get_user_votes(todays_utcdate,
                                                        user_name,
                                                        database=self.database)
-                LOGGER.info('user has votes on: %s' % user_articles)
+                user_reserved = arxivdb.get_user_reservations(
+                    todays_utcdate,
+                    user_name,
+                    database=self.database
+                )
+                LOGGER.info('user has votes on: %s, has reservations on: %s'
+                            % (user_articles, user_reserved))
 
                 # show the listing page
                 self.render("voting.html",
@@ -580,26 +589,30 @@ class ArticleListHandler(tornado.web.RequestHandler):
                             local_articles=local_articles,
                             voted_articles=voted_articles,
                             other_articles=other_articles,
+                            reserved_articles=reserved_articles,
                             flash_message=flash_message,
                             new_user=new_user,
-                            user_articles=user_articles)
+                            user_articles=user_articles,
+                            user_reserved=user_reserved)
 
         # otherwise, show the article list
         else:
 
             # get the articles for today
-            latestdate, local_articles, voted_articles, other_articles = (
-                arxivdb.get_articles_for_listing(utcdate=todays_utcdate,
-                                                 database=self.database)
+            (latestdate, local_articles,
+             voted_articles, other_articles, reserved_articles) = (
+                 arxivdb.get_articles_for_listing(utcdate=todays_utcdate,
+                                                  database=self.database)
             )
 
             # if today's papers aren't ready yet, show latest papers
             if not local_articles and not voted_articles and not other_articles:
 
-                latestdate, local_articles, voted_articles, other_articles = (
-                    arxivdb.get_articles_for_listing(
-                        database=self.database
-                    )
+                (latestdate, local_articles,
+                 voted_articles, other_articles, reserved_articles) = (
+                     arxivdb.get_articles_for_listing(
+                         database=self.database
+                     )
                 )
                 todays_date = datetime.strptime(latestdate,
                                                 '%Y-%m-%d').strftime('%A, %b %d %Y')
@@ -621,40 +634,10 @@ class ArticleListHandler(tornado.web.RequestHandler):
                         local_articles=local_articles,
                         voted_articles=voted_articles,
                         other_articles=other_articles,
+                        reserved_articles=reserved_articles,
                         flash_message=flash_message,
                         new_user=new_user)
 
-
-
-class ReservedListHandler(tornado.web.RequestHandler):
-    '''This handles all requests for the listing of selected articles and voting
-    pages. Note: if nobody voted on anything, the default is to return all
-    articles with local authors at the top.
-
-    '''
-
-    def initialize(self, database,
-                   voting_start,
-                   voting_end,
-                   server_tz,
-                   signer):
-        '''
-        Sets up the database.
-
-        '''
-
-        self.database = database
-        self.voting_start = voting_start
-        self.voting_end = voting_end
-        self.server_tz = server_tz
-        self.signer = signer
-
-
-    def get(self):
-        '''
-        This handles a GET request for the reserved articles list.
-
-        '''
 
 
 class ReservationHandler(tornado.web.RequestHandler):
@@ -686,12 +669,219 @@ class ReservationHandler(tornado.web.RequestHandler):
         self.countries = countries
         self.regions = regions
 
+
     def post(self):
         '''
         This handles a POST request for a paper reservation.
 
         '''
 
+        arxivid = self.get_argument('arxivid', None)
+        votetype = self.get_argument('reservetype', None)
+
+        session_token = self.get_secure_cookie('coffee_session',
+                                               max_age_days=30)
+
+        sessioninfo = webdb.session_check(session_token,
+                                          database=self.database)
+        user_name = sessioninfo[2]
+        todays_utcdate = datetime.now(tz=utc).strftime('%Y-%m-%d')
+
+        user_ip = self.request.remote_ip
+
+        # if we're asked to geofence, then do so
+        # (unless the request came from INSIDE the building)
+        # FIXME: add exceptions for private network IPv4 addresses
+        geolocked = False
+
+        if self.geofence and user_ip != '127.0.0.1':
+
+            try:
+                geoip = self.geofence.city(user_ip)
+
+                if (geoip.country.iso_code in self.countries and
+                    geoip.subdivisions.most_specific.iso_code
+                    in self.regions):
+                    LOGGER.info('geofencing ok: '
+                                'reservation request '
+                                'from inside allowed regions')
+
+                else:
+                    LOGGER.warning(
+                        'geofencing activated: '
+                        'vote request from %s '
+                        'is outside allowed regions' %
+                        ('%s-%s' % (
+                            geoip.country.iso_code,
+                            geoip.subdivisions.most_specific.iso_code
+                            ))
+                        )
+                    message = ("Sorry, you're trying to vote "
+                               "from an IP address that is "
+                               "blocked from voting.")
+
+                    jsondict = {'status':'failed',
+                                'message':message,
+                                'results':None}
+                    geolocked = True
+
+                    self.write(jsondict)
+                    self.finish()
+
+
+            # fail deadly
+            except Exception as e:
+                LOGGER.exception('geofencing failed for IP %s, '
+                                 'blocking request.' % user_ip)
+
+                message = ("Sorry, you're trying to vote "
+                           "from an IP address that is "
+                           "blocked from voting.")
+
+                jsondict = {'status':'failed',
+                            'message':message,
+                            'results':None}
+                geolocked = True
+
+                self.write(jsondict)
+                self.finish()
+
+        #############################
+        ## PROCESS THE RESERVATION ##
+        #############################
+
+        # check if we're in voting time-limits
+        timenow = datetime.now(tz=utc).timetz()
+
+        # if we are within the time limits, then allow the voting POST request
+        if (self.voting_start < timenow < self.voting_end):
+            in_votetime = True
+        else:
+            in_votetime = False
+
+        # if all things are satisfied, then process the vote request
+        if (arxivid and
+            reservetype and
+            sessioninfo[0] and
+            (not geolocked) and
+            in_votetime):
+
+            arxivid = xhtml_escape(arxivid)
+            reservetype = xhtml_escape(votetype)
+
+            LOGGER.info('user: %s, reserving: %s, on: %s' % (user_name,
+                                                             reservetype,
+                                                             arxivid))
+
+            if 'arXiv:' not in arxivid or reservetype not in ('reserve',
+                                                              'release'):
+
+                message = ("Your paper reservation request "
+                           "used invalid arguments "
+                           "and has been discarded.")
+
+                jsondict = {'status':'failed',
+                            'message':message,
+                            'results':None}
+                self.write(jsondict)
+                self.finish()
+
+            else:
+
+                # first, check how many reservations this user has
+                user_reservations = arxivdb.get_user_reservations(
+                    todays_utcdate,
+                    user_name,
+                    database=self.database
+                )
+
+                # make sure it's less than 5 or we're not adding another
+                # reservation
+                if len(user_reservations) < 5 or reservetype != 'reserve':
+
+                    reserve_outcome = arxivdb.record_reservation(
+                        arxivid,
+                        user_name,
+                        reservetype,
+                        database=self.database
+                    )
+
+                    if reserve_outcome is False or None:
+
+                        message = ("That article doesn't exist, "
+                                   "and your reservation "
+                                   "has been discarded.")
+
+                        jsondict = {'status':'failed',
+                                    'message':message,
+                                    'results':None}
+                        self.write(jsondict)
+                        self.finish()
+
+                    else:
+
+                        if (reserve_outcome[0] == 1 and
+                            reserve_outcome[1] == user_name):
+
+                            message = ("Reservation successfully recorded for %s"
+                                       % arxivid)
+
+                            jsondict = {'status':'success',
+                                        'message':message,
+                                        'results':{'reserved':reserve_outcome[0]}}
+
+                        elif (reserve_outcome[0] == 1 and
+                              reserve_outcome[1] != user_name):
+
+                            message = ("Someeone else already reserved that paper!")
+
+                            jsondict = {'status':'failed',
+                                        'message':message,
+                                        'results':{'reserved':reserve_outcome[0]}}
+
+                        elif (reserve_outcome[0] == 0):
+
+                            message = ("Release successfully recorded for %s"
+                                       % arxivid)
+
+                            jsondict = {'status':'success',
+                                        'message':message,
+                                        'results':{'reserved':reserve_outcome[0]}}
+
+                        else:
+
+                            message = ("That article doesn't exist, "
+                                       "or your reservation "
+                                       "has been discarded because of a problem.")
+
+                            jsondict = {'status':'failed',
+                                        'message':message,
+                                        'results':None}
+
+                        self.write(jsondict)
+                        self.finish()
+
+                else:
+
+                    message = ("You've reserved 5 articles already.")
+
+                    jsondict = {'status':'failed',
+                                'message':message,
+                                'results':None}
+                    self.write(jsondict)
+                    self.finish()
+
+
+        elif not geolocked:
+
+            message = ("Your reservation request could not be authorized"
+                       " and has been discarded.")
+
+            jsondict = {'status':'failed',
+                        'message':message,
+                        'results':None}
+            self.write(jsondict)
+            self.finish()
 
 
 
@@ -1266,19 +1456,17 @@ class ArchiveHandler(tornado.web.RequestHandler):
                 listingdate = '%s-%s-%s' % (year, month, day)
 
                 # get the articles for today
-                latestdate, local_articles, voted_articles, other_articles = (
-                    arxivdb.get_articles_for_listing(utcdate=listingdate,
-                                                     database=self.database)
+                (latestdate, local_articles,
+                 voted_articles, other_articles, reserved_articles) = (
+                     arxivdb.get_articles_for_listing(utcdate=listingdate,
+                                                      database=self.database)
                 )
 
                 # if this date's papers aren't available, show the archive index
                 if (not local_articles and
                     not voted_articles and
-                    not other_articles):
-
-                    archive_dates, archive_npapers = arxivdb.get_archive_index(
-                        database=self.database
-                        )
+                    not other_articles and
+                    not reserved_articles):
 
                     flash_message = (
                         "<div data-alert class=\"alert-box radius\">"
@@ -1287,14 +1475,21 @@ class ArchiveHandler(tornado.web.RequestHandler):
                         "<a href=\"#\" class=\"close\">&times;</a></div>"
                         ) % listingdate
 
+                    (archive_dates, archive_npapers,
+                     archive_nlocal, archive_nvoted) = arxivdb.get_archive_index(
+                         database=self.database
+                     )
+                    paper_archives = group_arxiv_dates(archive_dates,
+                                                       archive_npapers,
+                                                       archive_nlocal,
+                                                       archive_nvoted)
+
                     self.render("archive.html",
                                 user_name=user_name,
                                 flash_message=flash_message,
                                 new_user=new_user,
-                                archive_dates=archive_dates,
-                                archive_npapers=archive_npapers,
+                                paper_archives=paper_archives,
                                 local_today=local_today)
-
 
                 else:
 
@@ -1317,6 +1512,7 @@ class ArchiveHandler(tornado.web.RequestHandler):
                                 local_articles=local_articles,
                                 voted_articles=voted_articles,
                                 other_articles=other_articles,
+                                reserved_articles=reserved_articles,
                                 flash_message=flash_message,
                                 new_user=new_user)
 

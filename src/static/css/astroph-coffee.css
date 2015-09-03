@@ -57,6 +57,10 @@ footer li {
     font-family: "open_sansregular", "Open Sans", "Droid Sans", "Helvetica", "Arial", sans-serif;
 }
 
+.reserve-button, .vote-button {
+    margin-bottom: 0.75rem;
+}
+
 /* top-bar styles */
 
 .top-bar input, .top-bar .button, .top-bar button {
