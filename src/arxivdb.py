@@ -206,8 +206,8 @@ def insert_articles(arxiv,
     query = ("insert or replace into arxiv (utctime, utcdate, "
              "day_serial, title, article_type,"
              "arxiv_id, authors, comments, abstract, link, pdf, "
-             "nvotes, voters, presenters, local_authors) values "
-             "(?,?, ?,?,?, ?,?,?,?,?,?, ?,?,?,?)")
+             "nvotes, voters, presenters, local_authors, reserved) values "
+             "(?,?, ?,?,?, ?,?,?,?,?,?, ?,?,?,?, 0)")
 
     try:
 
