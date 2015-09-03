@@ -20,6 +20,8 @@ create table arxiv (
        voters text,
        presenters text,
        local_authors boolean default false,
+       reservers text,
+       reserved integer default 0,
        primary key(utcdate, day_serial, article_type, arxiv_id)
 );
 
