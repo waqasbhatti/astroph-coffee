@@ -27,7 +27,7 @@ var coffee = {
 
             var message = "You've already reserved this paper for later " +
                 "discussion; release your reservation first and then "+
-                "vote to discuss this paper tomorrow.";
+                "vote to discuss this paper at next astro-coffee.";
             var alertbox =
                 '<div data-alert class="alert-box warning radius">' +
                 message +
@@ -77,7 +77,7 @@ var coffee = {
 
                                votebutton
                                    .removeClass('alert')
-                                   .html('Vote to discuss tomorrow')
+                                   .html('Vote for next astro-coffee')
                                    .attr('data-votetype','up');
 
                            }
@@ -137,7 +137,7 @@ var coffee = {
         if (votetype == 'down' && reservetype == 'reserve') {
 
             var message = "You've already voted to discuss this paper " +
-                "tomorrow; remove your vote first and then "+
+                "at next astro-coffee; remove your vote first and then "+
                 "reserve this paper for later discussion.";
             var alertbox =
                 '<div data-alert class="alert-box warning radius">' +
@@ -172,7 +172,7 @@ var coffee = {
 
                                reservebutton
                                    .removeClass('alert')
-                                   .html('Reserve paper for later')
+                                   .html('Reserve for later discussion')
                                    .attr('data-reservetype','reserve');
 
                            }
