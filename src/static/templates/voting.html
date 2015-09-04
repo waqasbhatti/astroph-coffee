@@ -31,9 +31,9 @@
       {% end %}
 
       {% if voted_articles and len(voted_articles) > 1 %}
-      <li><a href="#voted-papers" class="button small secondary radius"><strong>{{ len(voted_articles) }}</strong> papers with votes for tomorrow</a></li>
+      <li><a href="#voted-papers" class="button small secondary radius"><strong>{{ len(voted_articles) }}</strong> voted papers for next astro-coffee</a></li>
       {% elif voted_articles and len(voted_articles) == 1 %}
-      <li><a href="#voted-papers" class="button small secondary radius"><strong>{{ len(voted_articles) }}</strong> paper with votes for tomorrow</a></li>
+      <li><a href="#voted-papers" class="button small secondary radius"><strong>{{ len(voted_articles) }}</strong> voted paper with for next astro-coffee</a></li>
       {% end %}
 
       {% if reserved_articles and len(reserved_articles) > 1 %}
@@ -164,7 +164,7 @@
                 {% else %}
                 <a href="#" data-arxivid="{{ article[0] }}" data-votetype="up"
                    class="button small radius vote-button expand">
-                  Vote to discuss tomorrow
+                  Vote for next astro-coffee
                 </a>
                 {% end %}
               </div>
@@ -185,7 +185,7 @@
                 {% else %}
                 <a href="#" data-arxivid="{{ article[0] }}" data-reservetype="reserve"
                    class="button small radius reserve-button expand">
-                  Reserve paper for later
+                  Reserve for later discussion
                 </a>
                 {% end %}
               </div>
@@ -308,7 +308,7 @@
                 {% else %}
                 <a href="#" data-arxivid="{{ article[0] }}" data-votetype="up"
                    class="button small radius vote-button expand">
-                  Vote to discuss tomorrow
+                  Vote for next astro-coffee
                 </a>
                 {% end %}
               </div>
@@ -329,7 +329,7 @@
                 {% else %}
                 <a href="#" data-arxivid="{{ article[0] }}" data-reservetype="reserve"
                    class="button small radius reserve-button expand">
-                  Reserve paper for later
+                  Reserve for later discussion
                 </a>
                 {% end %}
               </div>
@@ -575,7 +575,7 @@
                 {% else %}
                 <a href="#" data-arxivid="{{ article[0] }}" data-votetype="up"
                    class="button small radius vote-button expand">
-                  Vote to discuss tomorrow
+                  Vote for next astro-coffee
                 </a>
                 {% end %}
               </div>
@@ -596,7 +596,7 @@
                 {% else %}
                 <a href="#" data-arxivid="{{ article[0] }}" data-reservetype="reserve"
                    class="button small radius reserve-button expand">
-                  Reserve paper for later
+                  Reserve for later discussion
                 </a>
                 {% end %}
               </div>
