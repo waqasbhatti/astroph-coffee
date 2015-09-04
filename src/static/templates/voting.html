@@ -184,7 +184,7 @@
                 </a>
                 {% else %}
                 <a href="#" data-arxivid="{{ article[0] }}" data-reservetype="reserve"
-                   class="button small radius reserve-button expand">
+                   class="button secondary small radius reserve-button expand">
                   Reserve for later discussion
                 </a>
                 {% end %}
@@ -309,27 +309,6 @@
                 <a href="#" data-arxivid="{{ article[0] }}" data-votetype="up"
                    class="button small radius vote-button expand">
                   Vote for next astro-coffee
-                </a>
-                {% end %}
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="small-12 columns">
-                {% if user_reserved and article[0] in user_reserved %}
-                <a href="#" data-arxivid="{{ article[0] }}" data-reservetype="release"
-                   class="button small radius reserve-button expand alert">
-                  Release your reservation
-                </a>
-                {% elif article[13] and article[0] not in user_reserved %}
-                <a href="#" data-arxivid="{{ article[0] }}"
-                   class="button small radius expand disabled">
-                  Paper already reserved
-                </a>
-                {% else %}
-                <a href="#" data-arxivid="{{ article[0] }}" data-reservetype="reserve"
-                   class="button small radius reserve-button expand">
-                  Reserve for later discussion
                 </a>
                 {% end %}
               </div>
@@ -595,7 +574,7 @@
                 </a>
                 {% else %}
                 <a href="#" data-arxivid="{{ article[0] }}" data-reservetype="reserve"
-                   class="button small radius reserve-button expand">
+                   class="button secondary small radius reserve-button expand">
                   Reserve for later discussion
                 </a>
                 {% end %}
