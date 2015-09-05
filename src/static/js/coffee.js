@@ -68,7 +68,7 @@ var coffee = {
 
                                votebutton
                                    .addClass('alert')
-                                   .html('Remove vote')
+                                   .html('Remove your vote')
                                    .attr('data-votetype','down');
 
                            }
@@ -77,7 +77,8 @@ var coffee = {
 
                                votebutton
                                    .removeClass('alert')
-                                   .html('Vote for next astro-coffee')
+                                   .html('<strong>Vote</strong> for ' +
+                                         'next astro-coffee')
                                    .attr('data-votetype','up');
 
                            }
@@ -162,6 +163,7 @@ var coffee = {
                            if (reservetype == 'reserve') {
 
                                reservebutton
+                                   .removeClass('secondary')
                                    .addClass('alert')
                                    .html('Release your reservation')
                                    .attr('data-reservetype','release');
@@ -172,7 +174,9 @@ var coffee = {
 
                                reservebutton
                                    .removeClass('alert')
-                                   .html('Reserve for later discussion')
+                                   .addClass('secondary')
+                                   .html('<strong>Reserve</strong> ' +
+                                         'for later discussion')
                                    .attr('data-reservetype','reserve');
 
                            }
