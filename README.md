@@ -22,7 +22,7 @@ server generally operates in two modes:
    to seven days if they want to talk about the papers at a later discussion
    session.
 
-   ![Voting mode image](src/static/images/voting-th.png?raw=true)
+   ![Voting mode image](src/static/images/voting.png?raw=true)
 
 
 2. Display mode: this is active outside the voting period. Local papers are
@@ -32,7 +32,7 @@ server generally operates in two modes:
    reversed-order of their original arXiv appearance. Finally, all other papers
    are listed below the local, voted, and reserved papers.
 
-   ![Display mode image](src/static/images/listing-th.png?raw=true)
+   ![Display mode image](src/static/images/listing.png?raw=true)
 
 
 An archive of all paper astracts is also provided in reverse chronological
