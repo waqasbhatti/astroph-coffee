@@ -361,7 +361,7 @@
 
             <div class="row small-listing-row">
               <div class="small-12 columns">
-                Paper {{ article[1] }} &mdash; <a href="{{ article[7] }}">{{ article[0] }}</a>
+               {{ article[-1].strftime('%m/%d/%Y') }}: <a href="{{ article[7] }}">{{ article[0] }}</a>
               </div>
             </div>
 
@@ -402,7 +402,7 @@
 
             <div class="row small-listing-row">
               <div class="small-12 columns">
-                Paper {{ article[1] }} &mdash; <a href="{{ article[7] }}">{{ article[0] }}</a>
+                 {{ article[-1].strftime('%m/%d/%Y') }}: <a href="{{ article[7] }}">{{ article[0] }}</a>
               </div>
             </div>
 

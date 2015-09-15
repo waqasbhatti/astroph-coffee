@@ -409,16 +409,16 @@ def get_articles_for_listing(utcdate=None,
     if astronomyonly:
         query = ("select arxiv_id, day_serial, title, article_type, "
                  "authors, comments, abstract, link, pdf, nvotes, voters, "
-                 "presenters, local_authors, reserved, reservers from arxiv "
-                 "where "
+                 "presenters, local_authors, reserved, reservers, utcdate "
+                 "from arxiv where "
                  "(utcdate between date(?) and date(?)) and reserved = 1 "
                  "and article_type = 'astronomy' "
                  "order by arxiv_id desc")
     else:
         query = ("select arxiv_id, day_serial, title, article_type, "
                  "authors, comments, abstract, link, pdf, nvotes, voters, "
-                 "presenters, local_authors, reserved, reservers from arxiv "
-                 "where "
+                 "presenters, local_authors, reserved, reservers, utcdate "
+                 "from arxiv where "
                  "(utcdate between date(?) and date(?)) and reserved = 1 "
                  "order by arxiv_id desc")
 
@@ -494,6 +494,8 @@ def get_articles_for_listing(utcdate=None,
     if closedb:
         cursor.close()
         database.close()
+
+    print([x[-1] for x in reserved_articles])
 
     return (utcdate,
             local_articles,
