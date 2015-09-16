@@ -294,10 +294,6 @@ class CoffeeHandler(tornado.web.RequestHandler):
                                 flash_message=flash_message,
                                 new_user=new_user)
 
-            else:
-
-                LOGGER.info('crawler hit from %s: %s' %
-                            (ip_address, client_header))
 
 
         # construct the current dt and use it to figure out the local-to-server
@@ -509,10 +505,6 @@ class ArticleListHandler(tornado.web.RequestHandler):
                                 flash_message=flash_message,
                                 new_user=new_user)
 
-            else:
-
-                LOGGER.info('crawler hit from %s: %s' %
-                            (ip_address, client_header))
 
 
         ############################
@@ -1270,10 +1262,6 @@ class AboutHandler(tornado.web.RequestHandler):
                                 flash_message=flash_message,
                                 new_user=new_user)
 
-            else:
-
-                LOGGER.info('crawler hit from %s: %s' %
-                            (ip_address, client_header))
 
         #########################
         # show the contact page #
@@ -1437,10 +1425,6 @@ class ArchiveHandler(tornado.web.RequestHandler):
                                 flash_message=flash_message,
                                 new_user=new_user)
 
-            else:
-
-                LOGGER.info('crawler hit from %s: %s' %
-                            (ip_address, client_header))
 
         ##################################
         # now handle the archive request #
