@@ -132,7 +132,7 @@ def tag_local_authors(arxiv_date,
                            paper_author,
                            local_authors,
                            n=1,
-                           cutoff=0.8
+                           cutoff=0.7
                            )
 
                        if matched_author_full:
