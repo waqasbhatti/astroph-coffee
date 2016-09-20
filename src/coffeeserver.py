@@ -165,6 +165,11 @@ if __name__ == '__main__':
     # this is used to get the interval for which reserved papers stay active
     RESERVE_INTERVAL = CONF.get('times','reserve_interval_days')
 
+
+    # the local website admin info
+    ADMINCONTACT = CONF.get('places','admincontact')
+    ADMINEMAIL = CONF.get('places','adminemail')
+
     ##################
     ## URL HANDLERS ##
     ##################
@@ -233,6 +238,12 @@ if __name__ == '__main__':
          {'database':DATABASE}),
         (r'/astroph-coffee/about/',coffeehandlers.AboutHandler,
          {'database':DATABASE}),
+        (r'/astroph-coffee/local-authors',coffeehandlers.LocalListHandler,
+         {'database':DATABASE,
+          'admincontact':ADMINCONTACT, 'adminemail':ADMINEMAIL}),
+        (r'/astroph-coffee/local-authors/',coffeehandlers.LocalListHandler,
+         {'database':DATABASE,
+          'admincontact':ADMINCONTACT, 'adminemail':ADMINEMAIL}),
     ]
 
     #######################

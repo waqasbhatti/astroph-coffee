@@ -22,7 +22,21 @@ from datetime import datetime
 CONF = ConfigParser.ConfigParser()
 CONF.read('conf/astroph.conf')
 
+# get the database path out of the conf file
 DBPATH = CONF.get('sqlite3','database')
+
+# get the local author special affilation tags and their definitions.  this
+# handles local authors that are primarily affiliated with another institution
+# or department, but should be included in the local author list anyway for each
+# tag defined in SPECAFFILS, the coffeeserver will search for a match in the
+# "email" field of the local_authors table, and then display the corresponding
+# definition in SPECDEFS in parens in the local author list at
+# /astroph-coffee/local-authors.
+SPECAFFILS = CONF.get('localauthors','special_affil_tags')
+SPECAFFILS = SPECAFFILS.split(', ')
+SPECDEFS = CONF.get('localauthors','special_affil_defs')
+SPECDEFS = SPECDEFS.split(', ')
+
 
 def opendb():
     '''
@@ -87,6 +101,59 @@ def add_local_authors(user_data_file, database=None):
     if closedb:
         cursor.close()
         database.close()
+
+
+def get_local_authors(database=None):
+    '''
+    This gets an alphabetically sorted list of local authors.
+
+    '''
+
+    # open the database if needed and get a cursor
+    if not database:
+        database, cursor = opendb()
+        closedb = True
+    else:
+        cursor = database.cursor()
+        closedb = False
+
+    query = 'select author, email from local_authors'
+
+    try:
+
+        cursor.execute(query)
+        rows = cursor.fetchall()
+
+        # now sort by the last name
+        authors = [[x[0].split(), x[1]] for x in rows]
+        sortedauthors = sorted(authors, key = lambda x: x[0][-1])
+        sortedauthors = [[' '.join(x[0]), x[1]] for x in sortedauthors]
+
+        taggedauthors = sortedauthors[::]
+
+        for ind, elem in enumerate(sortedauthors):
+
+            name, email = elem
+
+            for tag, defn in zip(SPECAFFILS, SPECDEFS):
+                if tag in email:
+                    taggedauthors[ind][0] = '%s (%s)' % (name, defn)
+
+        returnval = [x[0] for x in taggedauthors]
+
+    except Exception as e:
+
+        print("can't get a list of author names")
+        returnval = None
+
+
+    # at the end, close the cursor and DB connection
+    if closedb:
+        cursor.close()
+        database.close()
+
+    return returnval
+
 
 
 ## SESSIONS

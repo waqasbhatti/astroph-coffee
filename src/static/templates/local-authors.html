@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block pagetitle %}List of local authors{% end %}
+
+{% block pageheader %}
+
+{% include "topbar.html" %}
+
+<div class="row">
+  <div class="small-12 columns">
+    <h1>List of local authors</h1>
+  </div>
+</div>
+
+{% end %}
+
+
+{% block pagecontent %}
+
+<div class="row">
+  <div class="small-12 columns">
+
+    <p>Below is a list of all potential local authors the astro-coffee server
+      knows about. If your name is missing from this list, if you'd like to
+      correct an entry, or if the astro-coffee server didn't pick up a local
+      author for an <a href="/astroph-coffee/papers/today">article listing</a>,
+      please let <a href="mailto:{{ adminemail }}">{{ admincontact }}</a>
+      know.</p>
+
+  </div>
+</div>
+
+<div class="row">
+
+  <div class="small-12 medium-4 columns">
+    <div class="column-author-list">
+      {% for name in authorlist[:45] %}
+      {{ name }}<br>
+      {% end %}
+    </div>
+  </div>
+
+  <div class="small-12 medium-4 columns">
+    <div class="column-author-list">
+      {% for name in authorlist[45:90] %}
+      {{ name }}<br>
+      {% end %}
+    </div>
+  </div>
+
+  <div class="small-12 medium-4 columns">
+    <div class="column-author-list">
+      {% for name in authorlist[90:] %}
+      {{ name }}<br>
+      {% end %}
+    </div>
+  </div>
+
+</div>
+
+{% end %}
