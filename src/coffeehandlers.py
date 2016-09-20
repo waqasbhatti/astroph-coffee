@@ -1546,13 +1546,15 @@ class LocalListHandler(tornado.web.RequestHandler):
     '''
 
 
-    def initialize(self, database):
+    def initialize(self, database, admincontact, adminemail):
         '''
         This sets up the database.
 
         '''
 
         self.database = database
+        self.admincontact = admincontact
+        self.adminemail = adminemail
 
 
     def get(self):
@@ -1686,11 +1688,40 @@ class LocalListHandler(tornado.web.RequestHandler):
                                 new_user=new_user)
 
 
-        #########################
-        # show the contact page #
-        #########################
-        self.render("about.html",
-                    local_today=local_today,
-                    user_name=user_name,
-                    flash_message=flash_message,
-                    new_user=new_user)
+        ###############################
+        # show the local authors page #
+        ###############################
+
+        authorlist = webdb.get_local_authors()
+
+        print('admin = %s' % self.admincontact)
+        print('email = %s' % self.adminemail)
+
+
+        if authorlist:
+
+            self.render("local-authors.html",
+                        local_today=local_today,
+                        user_name=user_name,
+                        flash_message=flash_message,
+                        new_user=new_user,
+                        authorlist=authorlist,
+                        admincontact=self.admincontact,
+                        adminemail=self.adminemail)
+
+        else:
+
+
+            LOGGER.error('could not get the author list!')
+            message = ("There was a database error "
+                       "trying to look up local authors. "
+                       "Please "
+                       "<a href=\"/astroph-coffee/about\">"
+                       "let us know</a> about this problem!")
+
+            self.render("errorpage.html",
+                        user_name=user_name,
+                        local_today=local_today,
+                        error_message=message,
+                        flash_message=flash_message,
+                        new_user=new_user)

@@ -145,7 +145,6 @@ def get_local_authors(database=None):
 
         print("can't get a list of author names")
         returnval = None
-        raise
 
 
     # at the end, close the cursor and DB connection
