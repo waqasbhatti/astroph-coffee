@@ -35,7 +35,7 @@ server generally operates in two modes:
    ![Display mode image](src/static/images/listing.png?raw=true)
 
 
-An archive of all paper astracts is also provided in reverse chronological
+An archive of all paper abstracts is also provided in reverse chronological
 order, grouped by month and year to make it easy to see what people were
 interested in talking about on previous days.
 
