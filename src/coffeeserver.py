@@ -233,6 +233,10 @@ if __name__ == '__main__':
          {'database':DATABASE}),
         (r'/astroph-coffee/about/',coffeehandlers.AboutHandler,
          {'database':DATABASE}),
+        (r'/astroph-coffee/local-authors',coffeehandlers.LocalListHandler,
+         {'database':DATABASE}),
+        (r'/astroph-coffee/local-authors/',coffeehandlers.LocalListHandler,
+         {'database':DATABASE}),
     ]
 
     #######################
