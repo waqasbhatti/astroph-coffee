@@ -422,9 +422,9 @@ def get_articles_for_listing(utcdate=None,
                  "(utcdate between date(?) and date(?)) and reserved = 1 "
                  "order by arxiv_id desc")
 
-    # fetch all reserved articles up to 7 days older than the given utcdate
+    # fetch all reserved articles up to 3 days older than the given utcdate
     given_dt = datetime.strptime(utcdate,'%Y-%m-%d')
-    earliest_dt = given_dt - timedelta(days=7)
+    earliest_dt = given_dt - timedelta(days=3)
     earliest_utcdate = earliest_dt.strftime('%Y-%m-%d')
 
     query_params = (earliest_utcdate, utcdate)
@@ -892,7 +892,7 @@ def record_reservation(arxivid, username, reservation, database=None):
 def get_user_reservations(utcdate, username, database=None):
     '''This gets a user's reserved papers.
 
-    Papers are reserved for up to 3 days, so we check for utcdate - 7 days
+    Papers are reserved for up to 3 days, so we check for utcdate - 3 days
     here. The frontend uses this function to set the current reservation state
     for the articles on the voting and listing pages.
 
