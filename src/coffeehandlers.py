@@ -1694,10 +1694,6 @@ class LocalListHandler(tornado.web.RequestHandler):
 
         authorlist = webdb.get_local_authors()
 
-        print('admin = %s' % self.admincontact)
-        print('email = %s' % self.adminemail)
-
-
         if authorlist:
 
             self.render("local-authors.html",
@@ -1710,7 +1706,6 @@ class LocalListHandler(tornado.web.RequestHandler):
                         adminemail=self.adminemail)
 
         else:
-
 
             LOGGER.error('could not get the author list!')
             message = ("There was a database error "
