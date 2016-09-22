@@ -892,7 +892,7 @@ def record_reservation(arxivid, username, reservation, database=None):
 def get_user_reservations(utcdate, username, database=None):
     '''This gets a user's reserved papers.
 
-    Papers are reserved for up to 7 days, so we check for utcdate - 7 days
+    Papers are reserved for up to 3 days, so we check for utcdate - 7 days
     here. The frontend uses this function to set the current reservation state
     for the articles on the voting and listing pages.
 
@@ -920,7 +920,7 @@ def get_user_reservations(utcdate, username, database=None):
 
     # figure out the oldest date
     given_dt = datetime.strptime(utcdate,'%Y-%m-%d')
-    earliest_dt = given_dt - timedelta(days=7)
+    earliest_dt = given_dt - timedelta(days=3)
     earliest_utcdate = earliest_dt.strftime('%Y-%m-%d')
 
     params = (earliest_utcdate, utcdate)
