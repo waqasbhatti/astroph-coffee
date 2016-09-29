@@ -634,9 +634,9 @@ def get_articles_for_voting(database=None,
                  "(utcdate between date(?) and date(?)) and reserved = 1 "
                  "order by arxiv_id desc")
 
-    # fetch all reserved articles up to 7 days older than the given utcdate
+    # fetch all reserved articles up to 3 days older than the given utcdate
     given_dt = datetime.strptime(utcdate,'%Y-%m-%d')
-    earliest_dt = given_dt - timedelta(days=7)
+    earliest_dt = given_dt - timedelta(days=3)
     earliest_utcdate = earliest_dt.strftime('%Y-%m-%d')
 
     query_params = (earliest_utcdate, utcdate)
