@@ -1227,21 +1227,16 @@ class EditHandler(tornado.web.RequestHandler):
 
         user_ip = self.request.remote_ip
 
-        # if we're asked to geofence, then do so
-        # (unless the request came from INSIDE the building)
-        # FIXME: add exceptions for private network IPv4 addresses
-        geolocked = False
-
-        # check the network as well
+        # check the network
         try:
             userip_addrobj = ipaddress.ip_address(user_ip.decode())
             trustedip = any([(userip_addrobj in x) for x in self.editips])
         except:
             trustedip = False
 
-        #############################
-        ## PROCESS THE RESERVATION ##
-        #############################
+        ######################
+        ## PROCESS THE EDIT ##
+        ######################
 
         # check if we're in voting time-limits
         timenow = datetime.now(tz=utc).timetz()
@@ -1263,8 +1258,8 @@ class EditHandler(tornado.web.RequestHandler):
                                                              reservetype,
                                                              arxivid))
 
-            if 'arXiv:' not in arxivid or editttype not in ('reserve',
-                                                              'release'):
+            if 'arXiv:' not in arxivid or editttype not in ('local',
+                                                            'notlocal'):
 
                 message = ("Your paper reservation request "
                            "used invalid arguments "
@@ -1276,6 +1271,23 @@ class EditHandler(tornado.web.RequestHandler):
                 self.write(jsondict)
                 self.finish()
 
+            else:
+
+                # process the edit
+                pass
+
+        # if we're not allowed to edit, discard the request
+        else:
+
+            message = ("Your edit request could not be authorized "
+                       "(probably because the voting window is over) "
+                       "and has been discarded.")
+
+            jsondict = {'status':'failed',
+                        'message':message,
+                        'results':None}
+            self.write(jsondict)
+            self.finish()
 
 
 
