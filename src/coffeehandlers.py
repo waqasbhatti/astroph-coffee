@@ -22,6 +22,8 @@ from tornado.escape import xhtml_escape, xhtml_unescape, url_unescape
 import arxivdb
 import webdb
 
+import ipaddress
+
 ######################
 ## USEFUL CONSTANTS ##
 ######################
@@ -657,7 +659,11 @@ class ReservationHandler(tornado.web.RequestHandler):
         self.voting_end = voting_end
         self.debug = debug
         self.signer = signer
-        self.geofence = geofence
+
+        self.geofence = geofence[0]
+        self.ipaddrs = geofence[1]
+        self.editips = geofence[2]
+
         self.countries = countries
         self.regions = regions
 
@@ -681,10 +687,18 @@ class ReservationHandler(tornado.web.RequestHandler):
 
         user_ip = self.request.remote_ip
 
+
         # if we're asked to geofence, then do so
         # (unless the request came from INSIDE the building)
         # FIXME: add exceptions for private network IPv4 addresses
         geolocked = False
+
+        # check the network as well
+        try:
+            userip_addrobj = ipaddress.ip_address(user_ip.decode())
+            trustedip = any([(userip_addrobj in x) for x in self.ipaddrs])
+        except:
+            trustedip = False
 
         if self.geofence and user_ip != '127.0.0.1':
 
@@ -755,7 +769,7 @@ class ReservationHandler(tornado.web.RequestHandler):
         if (arxivid and
             reservetype and
             sessioninfo[0] and
-            (not geolocked) and
+            ((not geolocked) or trustedip) and
             in_votetime):
 
             arxivid = xhtml_escape(arxivid)
@@ -864,7 +878,7 @@ class ReservationHandler(tornado.web.RequestHandler):
                     self.finish()
 
 
-        elif not geolocked:
+        elif ((not geolocked) or trustedip):
 
             message = ("Your reservation request could not be authorized"
                        " and has been discarded.")
@@ -875,6 +889,17 @@ class ReservationHandler(tornado.web.RequestHandler):
             self.write(jsondict)
             self.finish()
 
+
+        else:
+
+            message = ("Your reservation request could not be authorized"
+                       " and has been discarded.")
+
+            jsondict = {'status':'failed',
+                        'message':message,
+                        'results':None}
+            self.write(jsondict)
+            self.finish()
 
 
 class VotingHandler(tornado.web.RequestHandler):
@@ -902,7 +927,11 @@ class VotingHandler(tornado.web.RequestHandler):
         self.voting_end = voting_end
         self.debug = debug
         self.signer = signer
-        self.geofence = geofence
+
+        self.geofence = geofence[0]
+        self.ipaddrs = geofence[1]
+        self.editips = geofence[2]
+
         self.countries = countries
         self.regions = regions
 
@@ -967,10 +996,20 @@ class VotingHandler(tornado.web.RequestHandler):
         # FIXME: add exceptions for private network IPv4 addresses
         geolocked = False
 
+        # check the network as well
+        try:
+            userip_addrobj = ipaddress.ip_address(user_ip.decode())
+            trustedip = any([(userip_addrobj in x) for x in self.ipaddrs])
+        except:
+            trustedip = False
+
         if self.geofence and user_ip != '127.0.0.1':
 
             try:
+
+                # check the geoip location
                 geoip = self.geofence.city(user_ip)
+
 
                 if (geoip.country.iso_code in self.countries and
                     geoip.subdivisions.most_specific.iso_code
@@ -1033,7 +1072,7 @@ class VotingHandler(tornado.web.RequestHandler):
         if (arxivid and
             votetype and
             sessioninfo[0] and
-            (not geolocked) and
+            (not geolocked or trustedip) and
             in_votetime):
 
             arxivid = xhtml_escape(arxivid)
@@ -1101,7 +1140,7 @@ class VotingHandler(tornado.web.RequestHandler):
                     self.finish()
 
 
-        elif not geolocked:
+        elif (not geolocked or trustedip):
 
             message = ("Your vote request could not be authorized"
                        " and has been discarded.")
@@ -1111,6 +1150,131 @@ class VotingHandler(tornado.web.RequestHandler):
                         'results':None}
             self.write(jsondict)
             self.finish()
+
+        else:
+
+            message = ("Your reservation request could not be authorized"
+                       " and has been discarded.")
+
+            jsondict = {'status':'failed',
+                        'message':message,
+                        'results':None}
+            self.write(jsondict)
+            self.finish()
+
+
+class EditHandler(tornado.web.RequestHandler):
+    '''This handles all requests for the editing function.
+
+    This allows users in the trustedip range to edit the arxiv listing for the
+    current day.
+
+    The allowable edits are:
+
+    - paper is local author
+    - paper is not local author
+
+
+    '''
+
+    def initialize(self,
+                   database,
+                   voting_start,
+                   voting_end,
+                   debug,
+                   signer,
+                   geofence,
+                   countries,
+                   regions):
+        '''
+        Sets up the database.
+
+        '''
+
+        self.database = database
+        self.voting_start = voting_start
+        self.voting_end = voting_end
+        self.debug = debug
+        self.signer = signer
+
+        self.geofence = geofence[0]
+        self.ipaddrs = geofence[1]
+        self.editips = geofence[2]
+
+        self.countries = countries
+        self.regions = regions
+
+
+
+
+
+    def post(self):
+        '''
+        This handles a POST request for a paper reservation.
+
+        '''
+
+        arxivid = self.get_argument('arxivid', None)
+        edittype = self.get_argument('edittype', None)
+
+        session_token = self.get_secure_cookie('coffee_session',
+                                               max_age_days=30)
+
+        sessioninfo = webdb.session_check(session_token,
+                                          database=self.database)
+        user_name = sessioninfo[2]
+        todays_utcdate = datetime.now(tz=utc).strftime('%Y-%m-%d')
+
+        user_ip = self.request.remote_ip
+
+        # if we're asked to geofence, then do so
+        # (unless the request came from INSIDE the building)
+        # FIXME: add exceptions for private network IPv4 addresses
+        geolocked = False
+
+        # check the network as well
+        try:
+            userip_addrobj = ipaddress.ip_address(user_ip.decode())
+            trustedip = any([(userip_addrobj in x) for x in self.editips])
+        except:
+            trustedip = False
+
+        #############################
+        ## PROCESS THE RESERVATION ##
+        #############################
+
+        # check if we're in voting time-limits
+        timenow = datetime.now(tz=utc).timetz()
+
+        # if we are within the time limits, then allow the voting POST request
+        if (self.voting_start < timenow < self.voting_end):
+            in_votetime = True
+        else:
+            in_votetime = False
+
+        # editing only checks its cidr and if we're in vote mode
+        if (arxivid and edittype and sessioninfo[0] and
+            trustedip and in_votetime):
+
+            arxivid = xhtml_escape(arxivid)
+            edittype = xhtml_escape(edittype)
+
+            LOGGER.info('user: %s, reserving: %s, on: %s' % (user_name,
+                                                             reservetype,
+                                                             arxivid))
+
+            if 'arXiv:' not in arxivid or editttype not in ('reserve',
+                                                              'release'):
+
+                message = ("Your paper reservation request "
+                           "used invalid arguments "
+                           "and has been discarded.")
+
+                jsondict = {'status':'failed',
+                            'message':message,
+                            'results':None}
+                self.write(jsondict)
+                self.finish()
 
 
 

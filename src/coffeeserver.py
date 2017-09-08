@@ -23,6 +23,7 @@ from itsdangerous import Signer
 
 # for geofencing
 import geoip2.database
+import ipaddress
 
 
 # setup signal trapping on SIGINT
@@ -148,16 +149,40 @@ if __name__ == '__main__':
 
     # get the geofencing config
     GEOFENCE_ACTIVE = CONF.get('geofence','active')
+
     if GEOFENCE_ACTIVE == 'True':
+
+        # check geographical regions
         GEOFENCE_DB = CONF.get('geofence','database')
         LOGGER.info('geofence active, using database: %s' % GEOFENCE_DB)
         GEOFENCE_DB = geoip2.database.Reader(GEOFENCE_DB)
-        GEOFENCE_COUNTRIES = CONF.get('geofence','allowed_countries').split(',')
-        GEOFENCE_REGIONS = CONF.get('geofence','allowed_subdivisions').split(',')
+        GEOFENCE_COUNTRIES = [
+            x.strip() for x in
+            CONF.get('geofence','allowed_countries').split(',')
+        ]
+        GEOFENCE_REGIONS = (
+            [x.strip() for x in
+             CONF.get('geofence','allowed_subdivisions').split(',')]
+        )
+
+        # check the IP address restrictions for people always allowed to
+        # vote/reserve papers
+        GEOFENCE_IPS = CONF.get('geofence', 'allowed_cidr')
+        GEOFENCE_IPS = [ipaddress.IPv4Network(x.strip().decode())
+                        for x in GEOFENCE_IPS.split(',')]
+
+        # check the IP address restrictions for people always allowed to
+        # vote/reserve papers
+        EDITOR_IPS = CONF.get('geofence', 'edit_cidr')
+        EDITOR_IPS = [ipaddress.IPv4Network(x.strip().decode())
+                        for x in EDITOR_IPS.split(',')]
+
     else:
+
         GEOFENCE_DB = None
         GEOFENCE_COUNTRIES = None
         GEOFENCE_REGIONS = None
+        GEOFENCE_IPS = None
 
     # this is used to sign flash messages so they can't be forged
     FLASHSIGNER = Signer(SESSIONSECRET)
@@ -222,7 +247,7 @@ if __name__ == '__main__':
           'voting_end':VOTING_END,
           'debug':DEBUG,
           'signer':FLASHSIGNER,
-          'geofence':GEOFENCE_DB,
+          'geofence': (GEOFENCE_DB, GEOFENCE_IPS, EDITOR_IPS),
           'countries':GEOFENCE_COUNTRIES,
           'regions':GEOFENCE_REGIONS}),
         (r'/astroph-coffee/reserve',coffeehandlers.ReservationHandler,
@@ -231,7 +256,16 @@ if __name__ == '__main__':
           'voting_end':VOTING_END,
           'debug':DEBUG,
           'signer':FLASHSIGNER,
-          'geofence':GEOFENCE_DB,
+          'geofence': (GEOFENCE_DB, GEOFENCE_IPS, EDITOR_IPS),
+          'countries':GEOFENCE_COUNTRIES,
+          'regions':GEOFENCE_REGIONS}),
+        (r'/astroph-coffee/edit',coffeehandlers.EditHandler,
+         {'database':DATABASE,
+          'voting_start':VOTING_START,
+          'voting_end':VOTING_END,
+          'debug':DEBUG,
+          'signer':FLASHSIGNER,
+          'geofence': (GEOFENCE_DB, GEOFENCE_IPS, EDITOR_IPS),
           'countries':GEOFENCE_COUNTRIES,
           'regions':GEOFENCE_REGIONS}),
         (r'/astroph-coffee/about',coffeehandlers.AboutHandler,
