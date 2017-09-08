@@ -12,5 +12,6 @@ pip install selenium -U
 pip install pytz -U
 pip install itsdangerous -U
 pip install geoip2 -U
+pip install py2-ipaddress -U
 
 deactivate
