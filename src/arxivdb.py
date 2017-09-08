@@ -889,6 +889,74 @@ def record_reservation(arxivid, username, reservation, database=None):
 
 
 
+def record_edit(arxivid, username, edittype, database=None):
+    '''This records votes for a paper in the DB. reservation is 'reserve' or
+    'release'. If the arxivid doesn't exist, then returns False. If the
+    reservation is successfully processed, returns the reserved flag for the
+    arxivid.
+
+    '''
+
+    # open the database if needed and get a cursor
+    if not database:
+        database, cursor = opendb()
+        closedb = True
+    else:
+        cursor = database.cursor()
+        closedb = False
+
+    returnval = False
+
+    # FIXME: finish this local/nonlocal query
+    if edittype == 'local':
+
+        # edittypes only count ONCE per article
+        query = ("update arxiv set reserved = 1, "
+                 "reservers = ? "
+                 "where arxiv_id = ? and article_type = 'astronomy' and "
+                 "reservers is null")
+        query_params = (username,
+                        arxivid)
+
+    elif edittype == 'nonlocal':
+        # edittypes only count ONCE per article
+        query = ("update arxiv set reserved = 0, "
+                 "reservers = null "
+                 "where arxiv_id = ? and article_type = 'astronomy' and "
+                 "reservers like ?")
+        query_params = (arxivid, '%{0}%'.format(username))
+
+    else:
+        return False
+
+
+    try:
+
+        cursor.execute(query, query_params)
+        database.commit()
+
+        cursor.execute("select reserved, reservers from arxiv where arxiv_id = ? "
+                       "and article_type = 'astronomy'",
+                       (arxivid,))
+        rows = cursor.fetchone()
+
+        if rows and len(rows) > 0:
+            returnval = rows
+
+    except Exception as e:
+        database.rollback()
+        raise
+        returnval = False
+
+    # at the end, close the cursor and DB connection
+    if closedb:
+        cursor.close()
+        database.close()
+
+    return returnval
+
+
+
 def get_user_reservations(utcdate, username, database=None):
     '''This gets a user's reserved papers.
 
