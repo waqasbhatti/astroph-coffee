@@ -148,32 +148,32 @@ if __name__ == '__main__':
     COFFEE_INSTITUTION = CONF.get('places','institution')
 
     # get the geofencing config
-    GEOFENCE_ACTIVE = CONF.get('geofence','active')
+    GEOFENCE_ACTIVE = CONF.get('access_control','active')
 
     if GEOFENCE_ACTIVE == 'True':
 
         # check geographical regions
-        GEOFENCE_DB = CONF.get('geofence','database')
+        GEOFENCE_DB = CONF.get('access_control','database')
         LOGGER.info('geofence active, using database: %s' % GEOFENCE_DB)
         GEOFENCE_DB = geoip2.database.Reader(GEOFENCE_DB)
         GEOFENCE_COUNTRIES = [
             x.strip() for x in
-            CONF.get('geofence','allowed_countries').split(',')
+            CONF.get('access_control','allowed_countries').split(',')
         ]
         GEOFENCE_REGIONS = (
             [x.strip() for x in
-             CONF.get('geofence','allowed_subdivisions').split(',')]
+             CONF.get('access_control','allowed_subdivisions').split(',')]
         )
 
         # check the IP address restrictions for people always allowed to
         # vote/reserve papers
-        GEOFENCE_IPS = CONF.get('geofence', 'allowed_cidr')
+        GEOFENCE_IPS = CONF.get('access_control', 'allowed_cidr')
         GEOFENCE_IPS = [ipaddress.IPv4Network(x.strip().decode())
                         for x in GEOFENCE_IPS.split(',')]
 
         # check the IP address restrictions for people always allowed to
         # vote/reserve papers
-        EDITOR_IPS = CONF.get('geofence', 'edit_cidr')
+        EDITOR_IPS = CONF.get('access_control', 'edit_cidr')
         EDITOR_IPS = [ipaddress.IPv4Network(x.strip().decode())
                         for x in EDITOR_IPS.split(',')]
 

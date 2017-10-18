@@ -2,11 +2,35 @@
 
 {% block pagetitle %}Vote on papers for {{ todays_date }}{% end %}
 
+{% block topjs %}
+<!-- mathjax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+  tex2jax: {
+  inlineMath: [['$','$'], ['$$','$$']],
+  processEscapes: true,
+  processEnvironments: false,
+  processClass: "mathjax",
+  ignoreClass: "no-mathjax"
+  },
+  asciimath2jax: {
+    delimiters: [['$','$']],
+  processClass: "mathjax",
+  ignoreClass: "no-mathjax"
+  }
+  });
+</script>
+<script
+  type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+{% end %}
+
 {% block pageheader %}
 
 {% include "topbar-voting.html" %}
 
-<div class="row">
+<div class="row no-mathjax">
   <div class="small-12 columns">
     <h1>Vote on papers for {{ todays_date }}</h1>
   </div>
@@ -19,7 +43,7 @@
 
 {% if local_articles or voted_articles or reserved_articles %}
 
-<div class="row">
+<div class="row no-mathjax">
   <div class="small-12 columns">
 
     <ul class="inline-list">
@@ -89,7 +113,7 @@
 
             <div class="row paper-abstract" data-arxivid="{{ article[0] }}">
               <div class="small-12 columns">
-                <p class="abstract-para-medium">{{ article[6] }}</p>
+                <p class="abstract-para-medium mathjax">{{ article[6] }}</p>
               </div>
             </div>
 
@@ -233,7 +257,7 @@
 
             <div class="row paper-abstract" data-arxivid="{{ article[0] }}">
               <div class="small-12 columns">
-                <p class="abstract-para-medium">{{ article[6] }}</p>
+                <p class="abstract-para-medium mathjax">{{ article[6] }}</p>
               </div>
             </div>
 
@@ -360,7 +384,7 @@
 
             <div class="row paper-abstract hide" data-arxivid="{{ article[0] }}">
               <div class="small-12 columns">
-                <p class="abstract-para-medium">{{ article[6] }}</p>
+                <p class="abstract-para-medium mathjax">{{ article[6] }}</p>
               </div>
             </div>
 
@@ -480,7 +504,7 @@
 
             <div class="row paper-abstract hide" data-arxivid="{{ article[0] }}">
               <div class="small-12 columns">
-                <p class="abstract-para-medium">{{ article[6] }}</p>
+                <p class="abstract-para-medium mathjax">{{ article[6] }}</p>
               </div>
             </div>
 

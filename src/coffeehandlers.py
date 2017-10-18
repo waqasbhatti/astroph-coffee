@@ -1280,7 +1280,7 @@ class EditHandler(tornado.web.RequestHandler):
         else:
 
             message = ("Your edit request could not be authorized "
-                       "(probably because the voting window is over) "
+                       "(probably because the voting window is over)"
                        "and has been discarded.")
 
             jsondict = {'status':'failed',
