@@ -19,7 +19,7 @@ install:
 	mkdir -p $(BINDIR)/cache
 
 	# copy over our files
-	rsync -au ./src/* $(BINDIR)
+	rsync -auv ./src/* $(BINDIR)
 
 	# make the database using the sqlite3 command
 	sqlite3 $(BINDIR)/data/astroph.sqlite < src/data/astroph-sqlite.sql
@@ -45,4 +45,4 @@ clean:
 
 update:
 	# copy over the source files
-	rsync -au ./src/* $(BINDIR)
+	rsync -auv ./src/* $(BINDIR)
