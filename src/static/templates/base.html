@@ -22,18 +22,19 @@
     <link href="{{ static_url("css/astroph-coffee.css") }}"
           type="text/css" rel="stylesheet">
 
-
     {% block pagecss %}
     {% end %}
 
     <script src="{{ static_url("js/vendor/modernizr.js") }}"></script>
 
+    {% block topjs %}
+    {% end %}
 </head>
 
 <body>
 
   {% block pageheader %}
-  <div class="row">
+  <div class="row no-mathjax">
     <div class="small-12 columns">
       <h1>Astro Coffee</h1>
     </div>
@@ -45,7 +46,7 @@
   {% end %}
 
 
-  <footer class="row">
+  <footer class="row no-mathjax">
 
     <div class="large-12 columns">
 
