@@ -106,11 +106,11 @@ footer li {
 }
 
 p.abstract-para-large {
-    font-size: large;
+    font-size: 20px;
 }
 
 p.abstract-para-medium {
-    font-size: medium;
+    font-size: 18px;
 }
 
 p.abstract-para-small {
@@ -134,7 +134,7 @@ input[type="checkbox"] {
 
 /* default row max-width set to 65 em == 1040 px */
 .row {
-    max-width: 64em;
+    max-width: 60em;
 }
 
 /* overriding link colors */
@@ -150,7 +150,7 @@ a:hover, a:focus {
 /* overriding line-height */
 
 p {
-    line-height: 1.4;
+    line-height: 1.5;
 }
 
 p.normal {
