@@ -43,6 +43,27 @@ def opendb():
 
 ## LOCAL AUTHORS
 
+def get_local_authors(cursor):
+    query = 'select author from local_authors'
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    if rows and len(rows) > 0:
+        local_authors = list(zip(*rows)[0])
+        local_authors = [x.lower() for x in local_authors]
+        local_authors = [x.replace('.',' ') for x in local_authors]
+        local_authors = [squeeze(x) for x in local_authors]
+
+        # this contains firstinitial-lastname pairs
+        local_author_fnames = [x.split() for x in local_authors]
+        local_author_fnames = [''.join([x[0][0],x[-1]])
+                               for x in local_author_fnames]
+        local_authors = [x.replace(' ','') for x in local_authors]
+
+    else:
+        local_authors = []
+
+    return local_authors, local_author_fnames
+
 def tag_local_authors(arxiv_date,
                       database=None,
                       match_threshold=0.93,
@@ -62,23 +83,7 @@ def tag_local_authors(arxiv_date,
         closedb = False
 
     # get all local authors first
-    query = 'select author from local_authors'
-    cursor.execute(query)
-    rows = cursor.fetchall()
-    if rows and len(rows) > 0:
-        local_authors = list(zip(*rows)[0])
-        local_authors = [x.lower() for x in local_authors]
-        local_authors = [x.replace('.',' ') for x in local_authors]
-        local_authors = [squeeze(x) for x in local_authors]
-
-        # this contains firstinitial-lastname pairs
-        local_author_fnames = [x.split() for x in local_authors]
-        local_author_fnames = [''.join([x[0][0],x[-1]])
-                               for x in local_author_fnames]
-        local_authors = [x.replace(' ','') for x in local_authors]
-
-    else:
-        local_authors = []
+    local_authors, local_author_fnames = get_local_authors(cursor)
 
     if len(local_authors) > 0:
 
@@ -341,11 +346,22 @@ def get_articles_for_listing(utcdate=None,
     cursor.execute(query, query_params)
     rows = cursor.fetchall()
 
+    flagged_local_authors = []
     if len(rows) > 0:
+        local_authors, _ = get_local_authors(cursor)
         for row in rows:
             local_articles.append(row)
+
             articles_excluded_from_other.append(row[0])
             articles_excluded_from_voted.append(row[0])
+
+            paper_authors = (row[4].split(': ')[-1]).split(',')
+            for author in paper_authors:
+                matched_author_full = difflib.get_close_matches(author,
+                                                                local_authors,
+                                                                n=1, cutoff=0.7)
+                if matched_author_full:
+                    flagged_local_authors.append(author)
 
     # deal with articles that have votes next
     # finally deal with the other articles
@@ -499,6 +515,7 @@ def get_articles_for_listing(utcdate=None,
 
     return (utcdate,
             local_articles,
+            flagged_local_authors,
             voted_articles,
             other_articles,
             reserved_articles)

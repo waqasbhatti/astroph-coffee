@@ -75,7 +75,10 @@
 
             <div class="row">
               <div class="small-12 columns">
-                <h6 class="subheader">{{ ', '.join((article[4].split(': ')[-1]).split(',')) }}</h6>
+                {% set authors_raw = (article[4].split(': ')[-1]).split(',') %}
+                {% set authors = [a if a not in flagged_local_authors else '<b>{0}</b>'.format(a) for a in authors_raw] %}
+
+                <h6 class="subheader">{{ ', '.join(authors) }}</h6>
                 {% if len(article[5]) > 0 %}
                 <p class="comments-para">{% raw article[5] %}</p>
                 {% end %}

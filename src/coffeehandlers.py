@@ -529,7 +529,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
                 LOGGER.warning('no papers for today yet, '
                                'redirecting to previous day papers')
 
-                (latestdate, local_articles,
+                (latestdate, local_articles, flagged_local_authors,
                  voted_articles, other_articles, reserved_articles) = (
                      arxivdb.get_articles_for_listing(
                          database=self.database
@@ -552,6 +552,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
                             local_today=local_today,
                             todays_date=todays_date,
                             local_articles=local_articles,
+                            flagged_local_authors=flagged_local_authors,
                             voted_articles=voted_articles,
                             other_articles=other_articles,
                             reserved_articles=reserved_articles,
@@ -591,7 +592,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
         else:
 
             # get the articles for today
-            (latestdate, local_articles,
+            (latestdate, local_articles, flagged_local_authors,
              voted_articles, other_articles, reserved_articles) = (
                  arxivdb.get_articles_for_listing(utcdate=todays_utcdate,
                                                   database=self.database)
@@ -624,6 +625,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
                         local_today=local_today,
                         todays_date=todays_date,
                         local_articles=local_articles,
+                        flagged_local_author=flagged_local_authors,
                         voted_articles=voted_articles,
                         other_articles=other_articles,
                         reserved_articles=reserved_articles,
@@ -1440,7 +1442,7 @@ class ArchiveHandler(tornado.web.RequestHandler):
                 listingdate = '%s-%s-%s' % (year, month, day)
 
                 # get the articles for today
-                (latestdate, local_articles,
+                (latestdate, local_articles, flagged_local_authors,
                  voted_articles, other_articles, reserved_articles) = (
                      arxivdb.get_articles_for_listing(utcdate=listingdate,
                                                       database=self.database)
@@ -1494,6 +1496,7 @@ class ArchiveHandler(tornado.web.RequestHandler):
                                 local_today=local_today,
                                 todays_date=archive_datestr,
                                 local_articles=local_articles,
+                                flagged_local_authors=flagged_local_authors,
                                 voted_articles=voted_articles,
                                 other_articles=other_articles,
                                 reserved_articles=reserved_articles,
