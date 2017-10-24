@@ -575,7 +575,31 @@ class ArticleListHandler(tornado.web.RequestHandler):
                 LOGGER.info('user has votes on: %s, has reservations on: %s'
                             % (user_articles, user_reserved))
 
-                # show the listing page
+                # preprocess the local papers to highlight local author names
+                if len(local_articles) > 0:
+
+                    for lind in range(len(local_articles)):
+
+                        author_list = local_articles[lind][4]
+                        author_list = author_list.split(': ')[-1].split(',')
+
+                        local_indices = local_articles[lind][-1]
+
+                        if local_indices and len(local_indices) > 0:
+
+                            local_indices = [
+                                int(x) for x in local_indices.split(',')
+                            ]
+
+                            for li in local_indices:
+                                author_list[li] = '<strong>%s</strong>' % (
+                                    author_list[li]
+                                )
+
+                            # update this article's local authors
+                            local_articles[lind][4] = ', '.join(author_list)
+
+                # show the voting page
                 self.render("voting.html",
                             user_name=user_name,
                             local_today=local_today,
@@ -608,8 +632,10 @@ class ArticleListHandler(tornado.web.RequestHandler):
                          database=self.database
                      )
                 )
-                todays_date = datetime.strptime(latestdate,
-                                                '%Y-%m-%d').strftime('%A, %b %d %Y')
+                todays_date = datetime.strptime(
+                    latestdate,
+                    '%Y-%m-%d'
+                ).strftime('%A, %b %d %Y')
 
                 flash_message = (
                     "<div data-alert class=\"alert-box radius\">"
@@ -619,6 +645,29 @@ class ArticleListHandler(tornado.web.RequestHandler):
                     "<a href=\"#\" class=\"close\">&times;</a></div>"
                 )
 
+            # preprocess the local papers to highlight local author names
+            if len(local_articles) > 0:
+
+                for lind in range(len(local_articles)):
+
+                    author_list = local_articles[lind][4]
+                    author_list = author_list.split(': ')[-1].split(',')
+
+                    local_indices = local_articles[lind][-1]
+
+                    if local_indices and len(local_indices) > 0:
+
+                        local_indices = [
+                            int(x) for x in local_indices.split(',')
+                        ]
+
+                        for li in local_indices:
+                            author_list[li] = '<strong>%s</strong>' % (
+                                author_list[li]
+                            )
+
+                        # update this article's local authors
+                        local_articles[lind][4] = ', '.join(author_list)
 
             # show the listing page
             self.render("listing.html",
@@ -1663,6 +1712,31 @@ class ArchiveHandler(tornado.web.RequestHandler):
                         year=int(year),
                         tzinfo=utc
                         ).strftime('%A, %b %d %Y')
+
+
+                    # preprocess the local papers to highlight local author names
+                    if len(local_articles) > 0:
+
+                        for lind in range(len(local_articles)):
+
+                            author_list = local_articles[lind][4]
+                            author_list = author_list.split(': ')[-1].split(',')
+
+                            local_indices = local_articles[lind][-1]
+
+                            if local_indices and len(local_indices) > 0:
+
+                                local_indices = [
+                                    int(x) for x in local_indices.split(',')
+                                ]
+
+                                for li in local_indices:
+                                    author_list[li] = '<strong>%s</strong>' % (
+                                        author_list[li]
+                                    )
+
+                                # update this article's local authors
+                                local_articles[lind][4] = ', '.join(author_list)
 
                     # show the listing page
                     self.render("archivelisting.html",

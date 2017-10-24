@@ -100,7 +100,9 @@
 
             <div class="row">
               <div class="small-12 columns">
-                <h6 class="subheader">{{ ', '.join((article[4].split(': ')[-1]).split(',')) }}</h6>
+                <h6 class="subheader">
+                  {% raw article[4] %}
+                </h6>
                 {% if len(article[5]) > 0 %}
                 <p class="comments-para">{% raw article[5] %}</p>
                 {% end %}
@@ -341,8 +343,9 @@
     <h2 id="reserved-papers">Papers reserved for later discussion</h2>
 
     <p>These are papers reserved by people for discussion at a later date. All
-    reservations are kept for 3 days after the date of the reservation. Papers you have reserved may be released during the
-    daily voting period to remove them from this list.</p>
+      reservations are kept for 5 days after the date of the reservation.
+      Papers you have reserved may be released during the daily voting period to
+      remove them from this list.</p>
 
     {% for article in reserved_articles %}
 
@@ -388,7 +391,7 @@
 
             <div class="row small-listing-row">
               <div class="small-12 columns">
-                {{ article[-1].strftime('%m/%d/%Y') }}: <a href="{{ article[7] }}">{{ article[0] }}</a>
+                {{ article[-2].strftime('%m/%d/%Y') }}: <a href="{{ article[7] }}">{{ article[0] }}</a>
               </div>
             </div>
 
@@ -429,7 +432,7 @@
 
             <div class="row small-listing-row">
               <div class="small-12 columns">
-                 {{ article[-1].strftime('%m/%d/%Y') }}: <a href="{{ article[7] }}">{{ article[0] }}</a>
+                 {{ article[-2].strftime('%m/%d/%Y') }}: <a href="{{ article[7] }}">{{ article[0] }}</a>
               </div>
             </div>
 
