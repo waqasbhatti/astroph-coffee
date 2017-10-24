@@ -22,7 +22,7 @@ create table arxiv (
        local_authors boolean default false,
        reservers text,
        reserved integer default 0,
-       local_author_names text,
+       local_author_indices text,
        primary key(utcdate, day_serial, article_type, arxiv_id)
 );
 
