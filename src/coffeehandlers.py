@@ -186,7 +186,12 @@ class CoffeeHandler(tornado.web.RequestHandler):
         session_token = self.get_secure_cookie('coffee_session',
                                                max_age_days=30)
         ip_address = self.request.remote_ip
-        client_header = self.request.headers['User-Agent'] or 'none'
+
+        if 'User-Agent' in self.request.headers:
+            client_header = self.request.headers['User-Agent'] or 'none'
+        else:
+            client_header = 'none'
+
         local_today = datetime.now(tz=utc).strftime('%Y-%m-%d %H:%M %Z')
 
         user_name = 'anonuser@%s' % ip_address
@@ -393,7 +398,10 @@ class ArticleListHandler(tornado.web.RequestHandler):
         session_token = self.get_secure_cookie('coffee_session',
                                                max_age_days=30)
         ip_address = self.request.remote_ip
-        client_header = self.request.headers['User-Agent'] or 'none'
+        if 'User-Agent' in self.request.headers:
+            client_header = self.request.headers['User-Agent'] or 'none'
+        else:
+            client_header = 'none'
 
         local_today = datetime.now(tz=utc).strftime('%Y-%m-%d %H:%M %Z')
         todays_date = datetime.now(tz=utc).strftime('%A, %b %d %Y')
@@ -1384,7 +1392,12 @@ class AboutHandler(tornado.web.RequestHandler):
         session_token = self.get_secure_cookie('coffee_session',
                                                max_age_days=30)
         ip_address = self.request.remote_ip
-        client_header = self.request.headers['User-Agent'] or 'none'
+
+        if 'User-Agent' in self.request.headers:
+            client_header = self.request.headers['User-Agent'] or 'none'
+        else:
+            client_header = 'none'
+
         user_name = 'anonuser@%s' % ip_address
         new_user = True
 
@@ -1548,7 +1561,12 @@ class ArchiveHandler(tornado.web.RequestHandler):
         session_token = self.get_secure_cookie('coffee_session',
                                                max_age_days=30)
         ip_address = self.request.remote_ip
-        client_header = self.request.headers['User-Agent'] or 'none'
+
+        if 'User-Agent' in self.request.headers:
+            client_header = self.request.headers['User-Agent'] or 'none'
+        else:
+            client_header = 'none'
+
         user_name = 'anonuser@%s' % ip_address
         new_user = True
 
@@ -1834,7 +1852,12 @@ class LocalListHandler(tornado.web.RequestHandler):
         session_token = self.get_secure_cookie('coffee_session',
                                                max_age_days=30)
         ip_address = self.request.remote_ip
-        client_header = self.request.headers['User-Agent'] or 'none'
+
+        if 'User-Agent' in self.request.headers:
+            client_header = self.request.headers['User-Agent'] or 'none'
+        else:
+            client_header = 'none'
+
         user_name = 'anonuser@%s' % ip_address
         new_user = True
 
