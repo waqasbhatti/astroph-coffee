@@ -596,8 +596,8 @@ class ArticleListHandler(tornado.web.RequestHandler):
                                     author_list[li]
                                 )
 
-                            # update this article's local authors
-                            local_articles[lind][4] = ', '.join(author_list)
+                        # update this article's local authors
+                        local_articles[lind][4] = ', '.join(author_list)
 
                 # show the voting page
                 self.render("voting.html",
@@ -666,8 +666,8 @@ class ArticleListHandler(tornado.web.RequestHandler):
                                 author_list[li]
                             )
 
-                        # update this article's local authors
-                        local_articles[lind][4] = ', '.join(author_list)
+                    # update this article's local authors
+                    local_articles[lind][4] = ', '.join(author_list)
 
             # show the listing page
             self.render("listing.html",
@@ -1735,8 +1735,8 @@ class ArchiveHandler(tornado.web.RequestHandler):
                                         author_list[li]
                                     )
 
-                                # update this article's local authors
-                                local_articles[lind][4] = ', '.join(author_list)
+                            # update this article's local authors
+                            local_articles[lind][4] = ', '.join(author_list)
 
                     # show the listing page
                     self.render("archivelisting.html",
