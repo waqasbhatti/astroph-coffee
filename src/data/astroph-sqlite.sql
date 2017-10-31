@@ -23,6 +23,7 @@ create table arxiv (
        reservers text,
        reserved integer default 0,
        local_author_indices text,
+       local_author_specaffils text,
        primary key(utcdate, day_serial, article_type, arxiv_id)
 );
 
