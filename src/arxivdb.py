@@ -28,7 +28,8 @@ DBPATH = CONF.get('sqlite3','database')
 
 AFFIL_TAGS = CONF.get('localauthors','special_affil_tags')
 AFFIL_DEFS = CONF.get('localauthors','special_affil_defs')
-AFFIL_DICT = {x:y for x,y in zip(AFFIL_TAGS, AFFIL_DEFS)}
+AFFIL_DICT = {x.strip():y.strip()
+              for x,y in zip(AFFIL_TAGS.split(','), AFFIL_DEFS.split(','))}
 
 def opendb():
     '''
@@ -243,7 +244,7 @@ def tag_local_authors(arxiv_date,
                                  'to local author: %s' % (row[0],
                                                           paper_authors,
                                                           paper_author,
-                                                          matched_author_full))
+                                                          matched_author_full[0]))
 
                            # update the paper author index column so we can
                            # highlight them in the frontend
@@ -252,13 +253,16 @@ def tag_local_authors(arxiv_date,
                            # also update the affilation tag for this author
 
                            # get the index to the local author list
-                           local_authind = local_authors.index(matched_author_full)
+                           local_authind = local_authors.index(
+                               matched_author_full[0]
+                           )
 
                            # get the corresponding email
-                           local_matched_email = author_emails[local_authind]
+                           local_matched_email = local_emails[local_authind]
 
                            # split to get the affil tag
                            local_matched_affil = local_matched_email.split('@')[-1]
+                           print(local_matched_affil)
 
                            if local_matched_affil in AFFIL_DICT:
                                local_matched_author_affils.append(
@@ -291,7 +295,10 @@ def tag_local_authors(arxiv_date,
                         'local_author_specaffils = ? '
                         'where '
                         'arxiv_id = ?',
-                        (True, local_author_indices, row[0],)
+                        (True,
+                         local_author_indices,
+                         local_author_special_affils,
+                         row[0])
                     )
 
 
