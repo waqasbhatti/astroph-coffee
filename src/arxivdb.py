@@ -26,6 +26,11 @@ CONF.read('conf/astroph.conf')
 
 DBPATH = CONF.get('sqlite3','database')
 
+AFFIL_TAGS = CONF.get('localauthors','special_affil_tags')
+AFFIL_DEFS = CONF.get('localauthors','special_affil_defs')
+AFFIL_DICT = {x.strip():y.strip()
+              for x,y in zip(AFFIL_TAGS.split(','), AFFIL_DEFS.split(','))}
+
 def opendb():
     '''
     This just opens a connection to the database and returns it + a cursor.
@@ -60,11 +65,11 @@ def get_local_authors_from_db(database=None):
         closedb = False
 
     # get all local authors first
-    query = 'select author from local_authors'
+    query = 'select author, email from local_authors'
     cursor.execute(query)
     rows = cursor.fetchall()
     if rows and len(rows) > 0:
-        local_authors = list(zip(*rows)[0])
+        local_authors, author_emails = list(zip(*rows))
         local_authors = [x.lower() for x in local_authors]
         local_authors = [x.replace('.',' ') for x in local_authors]
         local_authors = [squeeze(x) for x in local_authors]
@@ -76,14 +81,14 @@ def get_local_authors_from_db(database=None):
         local_authors = [x.replace(' ','') for x in local_authors]
 
     else:
-        local_authors, local_author_fnames = [], []
+        local_authors, local_author_fnames, author_emails = [], [], []
 
     # at the end, close the cursor and DB connection
     if closedb:
         cursor.close()
         database.close()
 
-    return local_authors, local_author_fnames
+    return local_authors, local_author_fnames, author_emails
 
 
 
@@ -165,7 +170,7 @@ def tag_local_authors(arxiv_date,
         closedb = False
 
     # get all local authors first and normalize their form
-    local_authors, local_author_fnames = (
+    local_authors, local_author_fnames, local_emails = (
         get_local_authors_from_db(database=database)
     )
 
@@ -201,6 +206,7 @@ def tag_local_authors(arxiv_date,
 
 
                local_matched_author_inds = []
+               local_matched_author_affils = []
 
                # match to the flastname first, then if that works, try another
                # match with fullname. if both work, then we accept this as a
@@ -238,9 +244,30 @@ def tag_local_authors(arxiv_date,
                                  'to local author: %s' % (row[0],
                                                           paper_authors,
                                                           paper_author,
-                                                          matched_author_full))
+                                                          matched_author_full[0]))
+
+                           # update the paper author index column so we can
+                           # highlight them in the frontend
                            local_matched_author_inds.append(paper_author_ind)
 
+                           # also update the affilation tag for this author
+
+                           # get the index to the local author list
+                           local_authind = local_authors.index(
+                               matched_author_full[0]
+                           )
+
+                           # get the corresponding email
+                           local_matched_email = local_emails[local_authind]
+
+                           # split to get the affil tag
+                           local_matched_affil = local_matched_email.split('@')[-1]
+                           print(local_matched_affil)
+
+                           if local_matched_affil in AFFIL_DICT:
+                               local_matched_author_affils.append(
+                                   AFFIL_DICT[local_matched_affil]
+                               )
 
                 #
                 # done with all authors for this paper
@@ -257,14 +284,21 @@ def tag_local_authors(arxiv_date,
                     local_author_indices = (
                         ','.join(['%s' % x for x in local_matched_author_inds])
                     )
+                    local_author_special_affils = ','.join(
+                        local_matched_author_affils
+                    )
 
                     cursor.execute(
                         'update arxiv '
                         'set local_authors = ?, '
-                        'local_author_indices = ? '
+                        'local_author_indices = ?, '
+                        'local_author_specaffils = ? '
                         'where '
                         'arxiv_id = ?',
-                        (True, local_author_indices, row[0],)
+                        (True,
+                         local_author_indices,
+                         local_author_special_affils,
+                         row[0])
                     )
 
 
