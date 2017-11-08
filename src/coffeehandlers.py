@@ -545,8 +545,10 @@ class ArticleListHandler(tornado.web.RequestHandler):
                          database=self.database
                      )
                 )
-                todays_date = datetime.strptime(latestdate,
-                                                '%Y-%m-%d').strftime('%A, %b %d %Y')
+                todays_date = datetime.strptime(
+                    latestdate,
+                    '%Y-%m-%d'
+                ).strftime('%A, %b %d %Y')
 
                 flash_message = (
                     "<div data-alert class=\"alert-box radius\">"
@@ -591,7 +593,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
                         author_list = local_articles[lind][4]
                         author_list = author_list.split(': ')[-1].split(',')
 
-                        local_indices = local_articles[lind][-1]
+                        local_indices = local_articles[lind][-2]
 
                         if local_indices and len(local_indices) > 0:
 
@@ -661,7 +663,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
                     author_list = local_articles[lind][4]
                     author_list = author_list.split(': ')[-1].split(',')
 
-                    local_indices = local_articles[lind][-1]
+                    local_indices = local_articles[lind][-2]
 
                     if local_indices and len(local_indices) > 0:
 
@@ -1740,7 +1742,7 @@ class ArchiveHandler(tornado.web.RequestHandler):
                             author_list = local_articles[lind][4]
                             author_list = author_list.split(': ')[-1].split(',')
 
-                            local_indices = local_articles[lind][-1]
+                            local_indices = local_articles[lind][-2]
 
                             if local_indices and len(local_indices) > 0:
 
