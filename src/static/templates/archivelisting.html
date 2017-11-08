@@ -24,7 +24,8 @@
   Ha: "\\mathrm{H}\\alpha",
   MEarth:"M_{\\oplus}",
   farcs:".^{\\prime\\prime}",
-  MJup:"M_{\\mathrm{J}}"
+  MJup:"M_{\\mathrm{J}}",
+  mjup:"M_{\\mathrm{J}}"
   }
   }
   });
@@ -102,7 +103,11 @@
 
             <div class="row">
               <div class="small-12 columns">
+                {% if article[-1] and len(article[-1]) > 0 %}
+                <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">[{{ article[-1] }}] {{ article[2] }}</a></h4>
+                {% else %}
                 <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">{{ article[2] }}</a></h4>
+                {% end %}
               </div>
             </div>
 
@@ -233,7 +238,11 @@
 
             <div class="row">
               <div class="small-12 columns">
+                {% if article[-1] and len(article[-1]) > 0 %}
+                <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">[{{ article[-1] }}] {{ article[2] }}</a></h4>
+                {% else %}
                 <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">{{ article[2] }}</a></h4>
+                {% end %}
               </div>
             </div>
 
@@ -364,7 +373,11 @@
 
             <div class="row">
               <div class="small-12 columns">
+                {% if article[-1] and len(article[-1]) > 0 %}
+                <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">[{{ article[-1] }}] {{ article[2] }}</a></h4>
+                {% else %}
                 <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">{{ article[2] }}</a></h4>
+                {% end %}
               </div>
             </div>
 
@@ -397,7 +410,7 @@
 
             <div class="row small-listing-row">
               <div class="small-12 columns">
-               {{ article[-2].strftime('%m/%d/%Y') }}: <a href="{{ article[7] }}">{{ article[0] }}</a>
+               {{ article[-3].strftime('%m/%d/%Y') }}: <a href="{{ article[7] }}">{{ article[0] }}</a>
               </div>
             </div>
 
@@ -438,7 +451,7 @@
 
             <div class="row small-listing-row">
               <div class="small-12 columns">
-                 {{ article[-2].strftime('%m/%d/%Y') }}: <a href="{{ article[7] }}">{{ article[0] }}</a>
+                 {{ article[-3].strftime('%m/%d/%Y') }}: <a href="{{ article[7] }}">{{ article[0] }}</a>
               </div>
             </div>
 
@@ -494,7 +507,11 @@
 
             <div class="row">
               <div class="small-12 columns">
+                {% if article[-1] and len(article[-1]) > 0 %}
+                <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">[{{ article[-1] }}] {{ article[2] }}</a></h4>
+                {% else %}
                 <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">{{ article[2] }}</a></h4>
+                {% end %}
               </div>
             </div>
 

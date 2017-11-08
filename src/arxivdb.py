@@ -234,17 +234,21 @@ def tag_local_authors(arxiv_date,
                            local_authors,
                            n=1,
                            cutoff=0.7
-                           )
+                       )
 
                        # if the full author matches, append their index to the
                        # tracker
                        if matched_author_full:
 
-                           print('%s: %s, matched paper author: %s '
-                                 'to local author: %s' % (row[0],
-                                                          paper_authors,
-                                                          paper_author,
-                                                          matched_author_full[0]))
+                           print(
+                               '%s: %s, matched paper author: %s '
+                               'to local author: %s' % (
+                                   row[0],
+                                   paper_authors,
+                                   paper_author,
+                                   matched_author_full
+                               )
+                           )
 
                            # update the paper author index column so we can
                            # highlight them in the frontend
@@ -253,22 +257,30 @@ def tag_local_authors(arxiv_date,
                            # also update the affilation tag for this author
 
                            # get the index to the local author list
-                           local_authind = local_authors.index(
-                               matched_author_full[0]
-                           )
+                           for lmai in matched_author_full:
 
-                           # get the corresponding email
-                           local_matched_email = local_emails[local_authind]
-
-                           # split to get the affil tag
-                           local_matched_affil = local_matched_email.split('@')[-1]
-                           print(local_matched_affil)
-
-                           if local_matched_affil in AFFIL_DICT:
-                               local_matched_author_affils.append(
-                                   AFFIL_DICT[local_matched_affil]
+                               local_authind = local_authors.index(
+                                   matched_author_full[0]
                                )
 
+                               # get the corresponding email
+                               local_matched_email = local_emails[local_authind]
+
+                               # split to get the affil tag
+                               local_matched_affil = (
+                                   local_matched_email.split('@')[-1]
+                               )
+
+                               if local_matched_affil in AFFIL_DICT:
+                                   local_matched_author_affils.append(
+                                       AFFIL_DICT[local_matched_affil]
+                                   )
+
+                           # now that we have all the special affils, compress
+                           # them into only the unique ones
+                           local_matched_author_affils = list(set(
+                               local_matched_author_affils
+                           ))
                 #
                 # done with all authors for this paper
                 #
@@ -481,7 +493,7 @@ def get_articles_for_listing(utcdate=None,
         query = ("select arxiv_id, day_serial, title, article_type, "
                  "authors, comments, abstract, link, pdf, nvotes, voters, "
                  "presenters, local_authors, reserved, reservers, "
-                 "local_author_indices from arxiv "
+                 "local_author_indices, local_author_specaffils from arxiv "
                  "where "
                  "utcdate = date(?) and local_authors = 1 "
                  "and article_type = 'astronomy' "
@@ -490,7 +502,7 @@ def get_articles_for_listing(utcdate=None,
         query = ("select arxiv_id, day_serial, title, article_type, "
                  "authors, comments, abstract, link, pdf, nvotes, voters, "
                  "presenters, local_authors, reserved, reservers, "
-                 "local_author_indices from arxiv "
+                 "local_author_indices, local_author_specaffils from arxiv "
                  "where "
                  "utcdate = date(?) and local_authors = 1 "
                  "order by nvotes desc")
@@ -513,7 +525,7 @@ def get_articles_for_listing(utcdate=None,
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
                      "presenters, local_authors, reserved, reservers, "
-                     "local_author_indices from arxiv "
+                     "local_author_indices, local_author_specaffils from arxiv "
                      "where "
                      "utcdate = date(?) and "
                      "arxiv_id not in ({exclude_list}) "
@@ -524,7 +536,7 @@ def get_articles_for_listing(utcdate=None,
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
                      "presenters, local_authors, reserved, reservers, "
-                     "local_author_indices from arxiv "
+                     "local_author_indices, local_author_specaffils from arxiv "
                      "where "
                      "utcdate = date(?) and "
                      "arxiv_id not in ({exclude_list}) "
@@ -541,7 +553,7 @@ def get_articles_for_listing(utcdate=None,
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
                      "presenters, local_authors, reserved, reservers, "
-                     "local_author_indices from arxiv "
+                     "local_author_indices, local_author_specaffils from arxiv "
                      "where "
                      "utcdate = date(?) "
                      "and nvotes > 0 "
@@ -551,7 +563,7 @@ def get_articles_for_listing(utcdate=None,
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
                      "presenters, local_authors, reserved, reservers, "
-                     "local_author_indices from arxiv "
+                     "local_author_indices, local_author_specaffils from arxiv "
                      "where "
                      "utcdate = date(?) "
                      "and nvotes > 0 "
@@ -572,7 +584,7 @@ def get_articles_for_listing(utcdate=None,
         query = ("select arxiv_id, day_serial, title, article_type, "
                  "authors, comments, abstract, link, pdf, nvotes, voters, "
                  "presenters, local_authors, reserved, reservers, utcdate, "
-                 "local_author_indices "
+                 "local_author_indices, local_author_specaffils "
                  "from arxiv where "
                  "(utcdate between date(?) and date(?)) and reserved = 1 "
                  "and article_type = 'astronomy' "
@@ -581,7 +593,7 @@ def get_articles_for_listing(utcdate=None,
         query = ("select arxiv_id, day_serial, title, article_type, "
                  "authors, comments, abstract, link, pdf, nvotes, voters, "
                  "presenters, local_authors, reserved, reservers, utcdate, "
-                 "local_author_indices "
+                 "local_author_indices, local_author_specaffils "
                  "from arxiv where "
                  "(utcdate between date(?) and date(?)) and reserved = 1 "
                  "order by arxiv_id desc")
@@ -608,7 +620,7 @@ def get_articles_for_listing(utcdate=None,
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
                      "presenters, local_authors, reserved, reservers, "
-                     "local_author_indices from arxiv "
+                     "local_author_indices, local_author_specaffils from arxiv "
                      "where "
                      "utcdate = date(?) and "
                      "arxiv_id not in ({exclude_list}) "
@@ -618,7 +630,7 @@ def get_articles_for_listing(utcdate=None,
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
                      "presenters, local_authors, reserved, reservers, "
-                     "local_author_indices from arxiv "
+                     "local_author_indices, local_author_specaffils from arxiv "
                      "where "
                      "utcdate = date(?) and "
                      "arxiv_id not in ({exclude_list}) "
@@ -634,7 +646,7 @@ def get_articles_for_listing(utcdate=None,
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
                      "presenters, local_authors, reserved, reservers, "
-                     "local_author_indices from arxiv "
+                     "local_author_indices, local_author_specaffils from arxiv "
                      "where "
                      "utcdate = date(?) "
                      "and article_type = 'astronomy' "
@@ -643,7 +655,7 @@ def get_articles_for_listing(utcdate=None,
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
                      "presenters, local_authors, reserved, reservers, "
-                     "local_author_indices from arxiv "
+                     "local_author_indices, local_author_specaffils from arxiv "
                      "where "
                      "utcdate = date(?) "
                      "order by article_type asc, day_serial asc")
@@ -703,7 +715,7 @@ def get_articles_for_voting(database=None,
         query = ("select arxiv_id, day_serial, title, article_type, "
                  "authors, comments, abstract, link, pdf, nvotes, voters, "
                  "presenters, local_authors, reserved, reservers, "
-                 "local_author_indices from arxiv "
+                 "local_author_indices, local_author_specaffils from arxiv "
                  "where "
                  "utcdate = date(?) and local_authors = 1 "
                  "and article_type = 'astronomy' "
@@ -712,7 +724,7 @@ def get_articles_for_voting(database=None,
         query = ("select arxiv_id, day_serial, title, article_type, "
                  "authors, comments, abstract, link, pdf, nvotes, voters, "
                  "presenters, local_authors, reserved, reservers, "
-                 "local_author_indices from arxiv "
+                 "local_author_indices, local_author_specaffils from arxiv "
                  "where "
                  "utcdate = date(?) and local_authors = 1 "
                  "order by nvotes desc")
@@ -735,7 +747,7 @@ def get_articles_for_voting(database=None,
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
                      "presenters, local_authors, reserved, reservers, "
-                     "local_author_indices from arxiv "
+                     "local_author_indices, local_author_specaffils from arxiv "
                      "where "
                      "utcdate = date(?) and "
                      "arxiv_id not in ({exclude_list}) "
@@ -746,7 +758,7 @@ def get_articles_for_voting(database=None,
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
                      "presenters, local_authors, reserved, reservers, "
-                     "local_author_indices from arxiv "
+                     "local_author_indices, local_author_specaffils from arxiv "
                      "where "
                      "utcdate = date(?) and "
                      "arxiv_id not in ({exclude_list}) "
@@ -763,7 +775,7 @@ def get_articles_for_voting(database=None,
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
                      "presenters, local_authors, reserved, reservers, "
-                     "local_author_indices from arxiv "
+                     "local_author_indices, local_author_specaffils from arxiv "
                      "where "
                      "utcdate = date(?) "
                      "and nvotes > 0 "
@@ -773,7 +785,7 @@ def get_articles_for_voting(database=None,
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
                      "presenters, local_authors, reserved, reservers, "
-                     "local_author_indices from arxiv "
+                     "local_author_indices, local_author_specaffils from arxiv "
                      "where "
                      "utcdate = date(?) "
                      "and nvotes > 0 "
@@ -794,7 +806,8 @@ def get_articles_for_voting(database=None,
         query = ("select arxiv_id, day_serial, title, article_type, "
                  "authors, comments, abstract, link, pdf, nvotes, voters, "
                  "presenters, local_authors, reserved, reservers, utcdate, "
-                 "local_author_indices from arxiv where "
+                 "local_author_indices, local_author_specaffils "
+                 "from arxiv where "
                  "(utcdate between date(?) and date(?)) and reserved = 1 "
                  "and article_type = 'astronomy' "
                  "order by arxiv_id desc")
@@ -802,7 +815,8 @@ def get_articles_for_voting(database=None,
         query = ("select arxiv_id, day_serial, title, article_type, "
                  "authors, comments, abstract, link, pdf, nvotes, voters, "
                  "presenters, local_authors, reserved, reservers, utcdate, "
-                 "local_author_indices from arxiv where "
+                 "local_author_indices, local_author_specaffils "
+                 "from arxiv where "
                  "(utcdate between date(?) and date(?)) and reserved = 1 "
                  "order by arxiv_id desc")
 
@@ -828,7 +842,7 @@ def get_articles_for_voting(database=None,
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
                      "presenters, local_authors, reserved, reservers, "
-                     "local_author_indices from arxiv "
+                     "local_author_indices, local_author_specaffils from arxiv "
                      "where "
                      "utcdate = date(?) and "
                      "arxiv_id not in ({exclude_list}) "
@@ -838,7 +852,7 @@ def get_articles_for_voting(database=None,
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
                      "presenters, local_authors, reserved, reservers, "
-                     "local_author_indices from arxiv "
+                     "local_author_indices, local_author_specaffils from arxiv "
                      "where "
                      "utcdate = date(?) and "
                      "arxiv_id not in ({exclude_list}) "
@@ -854,7 +868,7 @@ def get_articles_for_voting(database=None,
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
                      "presenters, local_authors, reserved, reservers, "
-                     "local_author_indices from arxiv "
+                     "local_author_indices, local_author_specaffils from arxiv "
                      "where "
                      "utcdate = date(?) "
                      "and article_type = 'astronomy' "
@@ -863,7 +877,7 @@ def get_articles_for_voting(database=None,
             query = ("select arxiv_id, day_serial, title, article_type, "
                      "authors, comments, abstract, link, pdf, nvotes, voters, "
                      "presenters, local_authors, reserved, reservers, "
-                     "local_author_indices from arxiv "
+                     "local_author_indices, local_author_specaffils from arxiv "
                      "where "
                      "utcdate = date(?) "
                      "order by article_type asc, day_serial asc")
