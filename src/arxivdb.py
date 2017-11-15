@@ -94,6 +94,7 @@ def get_local_authors_from_db(database=None):
 
 def force_localauthor_tag(arxivid,
                           local_author_indices,
+                          specaffils=None,
                           database=None):
     '''This is a function used to correct the listing if the coffee-server
     misses any local authors the first time it retrieves the day's papers.
@@ -108,9 +109,22 @@ def force_localauthor_tag(arxivid,
         cursor = database.cursor()
         closedb = False
 
-    query = ("update arxiv set local_authors = 1, local_author_indices = ? "
-             "where arxiv_id = ?")
-    params = (','.join(['%s' % x for x in local_author_indices]), arxivid)
+    if specaffils is not None:
+
+        query = ("update arxiv set local_authors = 1, "
+                 "local_author_indices = ?, "
+                 "local_author_specaffils = ? "
+                 "where arxiv_id = ?")
+        params = (','.join(['%s' % x for x in local_author_indices]),
+                  '/'.join(['%s' % x for x in specaffils]),
+                  arxivid)
+
+    else:
+
+        query = ("update arxiv set local_authors = 1, local_author_indices = ? "
+                 "where arxiv_id = ?")
+        params = (','.join(['%s' % x for x in local_author_indices]), arxivid)
+
     cursor.execute(query, params)
 
     database.commit()
