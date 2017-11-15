@@ -467,7 +467,7 @@ def insert_articles(arxiv,
 
 def get_articles_for_listing(utcdate=None,
                              database=None,
-                             astronomyonly=True):
+                             astronomyonly=False):
     '''
 
     This grabs all articles from the database for the given date for listing at
@@ -700,7 +700,7 @@ def get_articles_for_listing(utcdate=None,
 
 
 def get_articles_for_voting(database=None,
-                            astronomyonly=True):
+                            astronomyonly=False):
     '''
     This grabs all articles from the database for today's date to show for
     voting. The articles are sorted in arxiv_id order with papers and
@@ -936,7 +936,6 @@ def get_archive_index(start_date=None,
 
     query = ("select utcdate, count(*), sum(local_authors), "
              "sum(case when nvotes > 0 then 1 else 0 end) from arxiv "
-             "where article_type = 'astronomy' "
              "group by utcdate order by utcdate desc")
     cursor.execute(query)
     rows = cursor.fetchall()
@@ -984,7 +983,7 @@ def record_vote(arxivid, username, vote, database=None):
         # votes only count ONCE per article
         query = ("update arxiv set nvotes = (nvotes + ?), "
                  "voters = (voters || ? || ',') "
-                 "where arxiv_id = ? and article_type = 'astronomy' and "
+                 "where arxiv_id = ? and "
                  "voters not like ?")
         query_params = (voteval,
                         username,
@@ -995,7 +994,7 @@ def record_vote(arxivid, username, vote, database=None):
         # votes only count ONCE per article
         query = ("update arxiv set nvotes = (nvotes + ?), "
                  "voters = replace(voters, (? || ','), '') "
-                 "where arxiv_id = ? and article_type = 'astronomy' and "
+                 "where arxiv_id = ? and "
                  "voters like ?")
         query_params = (voteval,
                         username,
@@ -1011,8 +1010,7 @@ def record_vote(arxivid, username, vote, database=None):
         cursor.execute(query, query_params)
         database.commit()
 
-        cursor.execute("select nvotes from arxiv where arxiv_id = ? "
-                       "and article_type = 'astronomy'",
+        cursor.execute("select nvotes from arxiv where arxiv_id = ?",
                        (arxivid,))
         rows = cursor.fetchone()
 
@@ -1054,7 +1052,7 @@ def record_reservation(arxivid, username, reservation, database=None):
         # reservations only count ONCE per article
         query = ("update arxiv set reserved = 1, "
                  "reservers = ? "
-                 "where arxiv_id = ? and article_type = 'astronomy' and "
+                 "where arxiv_id = ? and "
                  "reservers is null")
         query_params = (username,
                         arxivid)
@@ -1063,7 +1061,7 @@ def record_reservation(arxivid, username, reservation, database=None):
         # reservations only count ONCE per article
         query = ("update arxiv set reserved = 0, "
                  "reservers = null "
-                 "where arxiv_id = ? and article_type = 'astronomy' and "
+                 "where arxiv_id = ? and "
                  "reservers like ?")
         query_params = (arxivid, '%{0}%'.format(username))
 
@@ -1077,8 +1075,7 @@ def record_reservation(arxivid, username, reservation, database=None):
         database.commit()
 
         cursor.execute("select reserved, reservers from arxiv "
-                       "where arxiv_id = ? "
-                       "and article_type = 'astronomy'",
+                       "where arxiv_id = ?",
                        (arxivid,))
         rows = cursor.fetchone()
 
@@ -1120,13 +1117,13 @@ def record_edit(arxivid, username, edittype, database=None):
 
         # edittypes only count ONCE per article
         query = ("update arxiv set local_authors = 1 "
-                 "where arxiv_id = ? and article_type = 'astronomy'")
+                 "where arxiv_id = ? ")
         query_params = (arxivid, )
 
     elif edittype == 'isnotlocal':
         # edittypes only count ONCE per article
         query = ("update arxiv set local_authors = 0 "
-                 "where arxiv_id = ? and article_type = 'astronomy'")
+                 "where arxiv_id = ? ")
         query_params = (arxivid, )
 
     else:
@@ -1140,7 +1137,7 @@ def record_edit(arxivid, username, edittype, database=None):
 
         cursor.execute("select arxiv_id, local_authors from arxiv "
                        "where arxiv_id = ? "
-                       "and article_type = 'astronomy'",
+                       "",
                        (arxivid,))
         rows = cursor.fetchone()
 
@@ -1187,8 +1184,7 @@ def get_user_reservations(utcdate, username, database=None):
     # get all the reserved papers by this user for this utcdate - 7 days
     query = ("select arxiv_id, reservers from arxiv where "
              "(utcdate between ? and ?) and "
-             "(reserved = 1) and "
-             "(article_type = 'astronomy')")
+             "(reserved = 1)")
 
     # figure out the oldest date
     given_dt = datetime.strptime(utcdate,'%Y-%m-%d')
@@ -1246,7 +1242,7 @@ def get_user_votes(utcdate, username, database=None):
      # unfortunately, FTS is disabled in default Python (thanks OSes other than
     # Linux!)
     query = ("select arxiv_id, voters from arxiv "
-             "where utcdate = ? and nvotes > 0 and article_type = 'astronomy'")
+             "where utcdate = ? and nvotes > 0 ")
     query_params = (utcdate,)
 
     cursor.execute(query, query_params)
