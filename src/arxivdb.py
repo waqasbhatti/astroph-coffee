@@ -150,7 +150,9 @@ def force_localauthor_untag(arxivid, database=None):
         cursor = database.cursor()
         closedb = False
 
-    query = ("update arxiv set local_authors = 0, local_author_indices = '' "
+    query = ("update arxiv set local_authors = 0, "
+             "local_author_indices = '', "
+             "local_author_specaffils = '' "
              "where arxiv_id = ?")
     params = (arxivid, )
     cursor.execute(query, params)
