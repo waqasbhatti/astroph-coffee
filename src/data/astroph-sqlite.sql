@@ -56,10 +56,6 @@ create virtual table arxiv_fts using fts4(
        link,
        pdf,
        nvotes,
-       notindexed=day_serial,
-       notindexed=link,
-       notindexed=pdf,
-       notindexed=nvotes,
        tokenize=porter
 );
 
