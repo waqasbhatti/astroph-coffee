@@ -43,20 +43,24 @@ create table sessions (
 );
 
 
--- create the FTS5 index
-create virtual table arxiv_fts using fts5(
+-- create the FTS4 index
+create virtual table arxiv_fts using fts4(
        content="arxiv",
        utcdate,
-       day_serial unindexed,
+       day_serial,
        title,
        article_type,
        arxiv_id,
        authors,
        abstract,
-       link unindexed,
-       pdf unindexed,
-       nvotes unindexed,
-       tokenize="porter unicode61"
+       link,
+       pdf,
+       nvotes,
+       notindexed=day_serial,
+       notindexed=link,
+       notindexed=pdf,
+       notindexed=nvotes,
+       tokenize=porter
 );
 
 -- create the required triggers to update the FTS index whenever stuff is

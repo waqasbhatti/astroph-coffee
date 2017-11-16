@@ -2,9 +2,9 @@
 DEBUG
 *sqlite
 testfiles/
-run/*
-run/logs/*.log
-run/pids/
+*run/*
+*run/logs/*.log
+*run/pids/
 dist/
 *egg*
 *build*
