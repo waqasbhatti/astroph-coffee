@@ -401,15 +401,24 @@ def insert_articles(arxiv,
                 print('inserting astronomy article %s: %s' %
                       (key, papers[key]['title']))
 
+            u_title = unicode(papers[key]['title'])
+            u_authors = unicode(','.join(papers[key]['authors']))
+            u_comments = unicode(papers[key]['comments'])
+            u_abstract = unicode(papers[key]['abstract'])
+
+            # get rid of the initial 'Authors: ' bit
+            u_authors = u_authors.replace('Authors:','')
+            u_authors = u_authors.strip()
+
             params = (arxiv_dt,
                       arxiv_dt.date(),
                       key,
-                      unicode(papers[key]['title']),
+                      u_title,
                       'astronomy',
                       papers[key]['arxiv'],
-                      unicode(','.join(papers[key]['authors'])),
-                      unicode(papers[key]['comments']),
-                      unicode(papers[key]['abstract']),
+                      u_authors,
+                      u_comments,
+                      u_abstract,
                       'http://arxiv.org%s' % papers[key]['link'],
                       'http://arxiv.org%s' % papers[key]['pdf'],
                       0,
