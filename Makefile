@@ -1,5 +1,5 @@
-# set this to the directory where you want astroph-coffee modules installed
-BINDIR=run
+# directory where you want lcserver modules installed
+BINDIR=coffee-run
 
 ACTIVATE_SCRIPT=$(BINDIR)/bin/activate
 DEACTIVATE_SCRIPT=$(BINDIR)/bin/deactivate
@@ -22,7 +22,7 @@ install:
 	rsync -auv ./src/* $(BINDIR)
 
 	# make the database using the sqlite3 command
-	sqlite3 $(BINDIR)/data/astroph.sqlite < src/data/astroph-sqlite.sql
+	sqlite3 $(BINDIR)/data/astroph.sqlite < $(BINDIR)/data/astroph-sqlite.sql
 
 	# install our python dependencies
 	./shell/install_extern.sh $(BINDIR)
