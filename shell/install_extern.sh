@@ -51,6 +51,7 @@ CFLAGS="-DSQLITE_ENABLE_COLUMN_METADATA \
 -DSQLITE_TEMP_STORE=3 \
 -O2 \
 -fPIC" LIBS="-lm" python setup.py build_static
+
 python setup.py install
 
 cd -
