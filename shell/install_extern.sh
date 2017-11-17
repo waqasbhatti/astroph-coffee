@@ -5,6 +5,7 @@ BINDIR=`readlink -e $1`
 source $BINDIR/bin/activate
 
 # install latest versions of needed packages
+pip install pip -U
 pip install tornado -U
 pip install requests -U
 pip install BeautifulSoup4 -U
@@ -14,9 +15,16 @@ pip install itsdangerous -U
 pip install geoip2 -U
 pip install py2-ipaddress -U
 
-# build pysqlite using the sqlite3 amalgamation
 cd pysqlite
 
+# build the sqlite3 command-line binary
+gcc -Os -I. -DSQLITE_THREADSAFE=0 -DSQLITE_ENABLE_FTS4 \
+   -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_JSON1 \
+   -DSQLITE_ENABLE_RTREE -DSQLITE_ENABLE_EXPLAIN_COMMENTS \
+   -DHAVE_USLEEP -DHAVE_READLINE \
+   shell.c sqlite3.c -ldl -lm -o $BINDIR/sqlite3
+
+# build pysqlite using the sqlite3 amalgamation
 CFLAGS="-DSQLITE_ENABLE_COLUMN_METADATA \
 -DSQLITE_ENABLE_DBSTAT_VTAB \
 -DSQLITE_ENABLE_FTS3 \

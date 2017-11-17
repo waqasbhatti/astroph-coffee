@@ -21,11 +21,11 @@ install:
 	# copy over our files
 	rsync -auv ./src/* $(BINDIR)
 
-	# make the database using the sqlite3 command
-	sqlite3 $(BINDIR)/data/astroph.sqlite < $(BINDIR)/data/astroph-sqlite.sql
-
 	# install our python dependencies
 	./shell/install_extern.sh $(BINDIR)
+
+	# make the database using the bundled sqlite3 shell we compiled
+	$(BINDIR)/sqlite3 $(BINDIR)/data/astroph.sqlite < $(BINDIR)/data/astroph-sqlite.sql
 
 	@echo 'astroph-coffee server installed to:'
 	@echo $(value BINDIR)
