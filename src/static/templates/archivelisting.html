@@ -104,13 +104,8 @@
             <div class="row">
               <div class="small-12 columns">
                 {% set local_specaffil = article[-1] %}
-                {% set local_atype = article[3] %}
-                {% if local_specaffil and len(local_specaffil) > 0 and local_atype != 'crosslists' %}
+                {% if local_specaffil and len(local_specaffil) > 0 %}
                 <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">[{{ local_specaffil }}] {{ article[2] }}</a></h4>
-                {% elif local_specaffil and len(local_specaffil) > 0 and local_atype == 'crosslists' %}
-                <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">[cross-list] [{{ local_specaffil }}] {{ article[2] }}</a></h4>
-                {% elif local_atype == 'crosslists' %}
-                <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">[cross-list] {{ article[2] }}</a></h4>
                 {% else %}
                 <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">{{ article[2] }}</a></h4>
                 {% end %}
@@ -245,13 +240,8 @@
             <div class="row">
               <div class="small-12 columns">
                 {% set local_specaffil = article[-1] %}
-                {% set local_atype = article[3] %}
-                {% if local_specaffil and len(local_specaffil) > 0 and local_atype != 'crosslists' %}
+                {% if local_specaffil and len(local_specaffil) > 0 %}
                 <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">[{{ local_specaffil }}] {{ article[2] }}</a></h4>
-                {% elif local_specaffil and len(local_specaffil) > 0 and local_atype == 'crosslists' %}
-                <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">[cross-list] [{{ local_specaffil }}] {{ article[2] }}</a></h4>
-                {% elif local_atype == 'crosslists' %}
-                <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">[cross-list] {{ article[2] }}</a></h4>
                 {% else %}
                 <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">{{ article[2] }}</a></h4>
                 {% end %}
@@ -386,13 +376,8 @@
             <div class="row">
               <div class="small-12 columns">
                 {% set local_specaffil = article[-1] %}
-                {% set local_atype = article[3] %}
-                {% if local_specaffil and len(local_specaffil) > 0 and local_atype != 'crosslists' %}
+                {% if local_specaffil and len(local_specaffil) > 0 %}
                 <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">[{{ local_specaffil }}] {{ article[2] }}</a></h4>
-                {% elif local_specaffil and len(local_specaffil) > 0 and local_atype == 'crosslists' %}
-                <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">[cross-list] [{{ local_specaffil }}] {{ article[2] }}</a></h4>
-                {% elif local_atype == 'crosslists' %}
-                <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">[cross-list] {{ article[2] }}</a></h4>
                 {% else %}
                 <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">{{ article[2] }}</a></h4>
                 {% end %}
@@ -526,13 +511,8 @@
             <div class="row">
               <div class="small-12 columns">
                 {% set local_specaffil = article[-1] %}
-                {% set local_atype = article[3] %}
-                {% if local_specaffil and len(local_specaffil) > 0 and local_atype != 'crosslists' %}
+                {% if local_specaffil and len(local_specaffil) > 0 %}
                 <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">[{{ local_specaffil }}] {{ article[2] }}</a></h4>
-                {% elif local_specaffil and len(local_specaffil) > 0 and local_atype == 'crosslists' %}
-                <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">[cross-list] [{{ local_specaffil }}] {{ article[2] }}</a></h4>
-                {% elif local_atype == 'crosslists' %}
-                <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">[cross-list] {{ article[2] }}</a></h4>
                 {% else %}
                 <h4 class="paper-title mathjax" data-arxivid="{{ article[0] }}"><a href="#" title="click to see/hide abstract">{{ article[2] }}</a></h4>
                 {% end %}

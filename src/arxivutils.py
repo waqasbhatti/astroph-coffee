@@ -121,7 +121,9 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
         paper_pdf = paper_links[1]['href']
 
         try:
-            comment_contents = data.find('div',class_='list-comments').contents[2:]
+            comment_contents = data.find(
+                'div',class_='list-comments'
+            ).contents[2:]
             paper_comments = squeeze(' '.join(
                 [str(x).lstrip('\n').rstrip('\n') for x in comment_contents]
                 ).strip())
@@ -166,8 +168,25 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
         cross_link, arxiv_id = cross_links[0]['href'], cross_links[0].text
         cross_pdf = cross_links[1]['href']
 
+        # figure out which original arxiv this came from
         try:
-            comment_contents = data.find('div',class_='list-comments').contents[2:]
+            cltext = link.text
+            cltext_xlind_start = cltext.index('cross-list')
+            cltext_xlind_end = cltext.index('[pdf') - 2
+
+            # annotate the title with the original arxiv category
+            cltext = cltext[cltext_xlind_start:cltext_xlind_end]
+            cross_title = u'[%s] %s' % (cltext, cross_title)
+
+        # if the cross-list doesn't say where it came from, just add a
+        # [cross-list] annotation
+        except:
+            cross_title = u'[cross-list] %s' % cross_title
+
+        try:
+            comment_contents = data.find(
+                'div',class_='list-comments'
+            ).contents[2:]
             cross_comments = squeeze(
                 ' '.join(
                     [str(x).lstrip('\n').rstrip('\n') for x in comment_contents]
