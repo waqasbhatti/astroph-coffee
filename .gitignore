@@ -1,6 +1,5 @@
 *.pyc
 DEBUG
-*.sqlite
 testfiles/
 *run/*
 *run/logs/*.log
@@ -8,10 +7,8 @@ testfiles/
 dist/
 *egg*
 *build*
-*#*#*
 *.pkl
 *~
-*dump*
 docs/users.txt
 *bundled*
 *tmp*
