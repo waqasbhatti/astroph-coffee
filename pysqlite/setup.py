@@ -147,7 +147,7 @@ class MyBuildExt(build_ext):
                 ("SQLITE_ENABLE_FTS4", "1"),
                 ("SQLITE_ENABLE_FTS5", "1"),
                 ("SQLITE_ENABLE_JSON1", "1"),
-                ("SQLITE_ENABLE_RTREE", "1")
+                ("SQLITE_ENABLE_RTREE", "1"),
                 ("SQLITE_ENABLE_SECURE_DELETE", "1"),
                 ("SQLITE_ENABLE_STAT4", "1"),
                 ("SQLITE_ENABLE_UNLOCK_NOTIFY", "1"),
