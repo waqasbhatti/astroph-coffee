@@ -14,27 +14,7 @@ pip install itsdangerous -U
 pip install geoip2 -U
 pip install py2-ipaddress -U
 
-
-# # install pysqlite
-# cd sqlite-3.21.0
-
-# CFLAGS="-DSQLITE_ENABLE_COLUMN_METADATA \
-# -DSQLITE_ENABLE_DBSTAT_VTAB \
-# -DSQLITE_ENABLE_FTS3 \
-# -DSQLITE_ENABLE_FTS3_PARENTHESIS \
-# -DSQLITE_ENABLE_FTS4 \
-# -DSQLITE_ENABLE_FTS5 \
-# -DSQLITE_ENABLE_JSON1 \
-# -DSQLITE_ENABLE_STAT4 \
-# -DSQLITE_ENABLE_UPDATE_DELETE_LIMIT \
-# -DSQLITE_SECURE_DELETE \
-# -DSQLITE_SOUNDEX \
-# -DSQLITE_TEMP_STORE=3 \
-# -O2 \
-# -fPIC" LIBS="-lm" ./configure --prefix=$BINDIR --enable-static --enable-shared
-
-# cd -
-
+# build pysqlite using the sqlite3 amalgamation
 cd pysqlite
 
 CFLAGS="-DSQLITE_ENABLE_COLUMN_METADATA \

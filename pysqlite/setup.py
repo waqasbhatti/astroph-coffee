@@ -34,6 +34,7 @@ import glob
 import os
 import re
 import shutil
+import os.path
 
 from distutils.core import setup, Extension, Command
 from distutils.command.build import build
@@ -109,7 +110,8 @@ class DocBuilder(Command):
         os.makedirs("build/doc")
         rc = os.system("sphinx-build doc/sphinx build/doc")
         if rc != 0:
-            sys.stdout.write("Is sphinx installed? If not, try 'sudo pip sphinx'.\n")
+            sys.stdout.write("Is sphinx installed? "
+                             "If not, try 'sudo pip sphinx'.\n")
 
 class AmalgamationBuilder(build):
     description = "Build a statically built pysqlite using the amalgamtion."
@@ -122,7 +124,8 @@ class MyBuildExt(build_ext):
     amalgamation = False
 
     def _pkgconfig(self, flag, package):
-        status, output = commands.getstatusoutput("pkg-config %s %s" % (flag, package))
+        status, output = commands.getstatusoutput("pkg-config %s %s" %
+                                                  (flag, package))
         return output
 
     def _pkgconfig_include_dirs(self, package):
@@ -139,24 +142,34 @@ class MyBuildExt(build_ext):
     def build_extension(self, ext):
         if self.amalgamation:
             ext.define_macros += [
-                    ("SQLITE_ENABLE_FTS3", "1"),
-                    ("SQLITE_ENABLE_FTS3_PARENTHESIS", "1"),
-                    ("SQLITE_ENABLE_FTS4", "1"),
-                    ("SQLITE_ENABLE_FTS5", "1"),
-                    ("SQLITE_ENABLE_RTREE", "1")]
+                ("SQLITE_ENABLE_FTS3", "1"),
+                ("SQLITE_ENABLE_FTS3_PARENTHESIS", "1"),
+                ("SQLITE_ENABLE_FTS4", "1"),
+                ("SQLITE_ENABLE_FTS5", "1"),
+                ("SQLITE_ENABLE_JSON1", "1"),
+                ("SQLITE_ENABLE_RTREE", "1")
+                ("SQLITE_ENABLE_SECURE_DELETE", "1"),
+                ("SQLITE_ENABLE_STAT4", "1"),
+                ("SQLITE_ENABLE_UNLOCK_NOTIFY", "1"),
+                ("SQLITE_SOUNDEX", "1"),
+                ("SQLITE_TEMP_STORE", "2"),
+                ("SQLITE_THREADSAFE", "1"),
+            ]
             ext.sources.append("sqlite3.c")
         try:
-            # ext.include_dirs = self._pkgconfig_include_dirs("sqlite3")
-            # ext.library_dirs = self._pkgconfig_library_dirs("sqlite3")
-            ext.include_dirs = ['.']
-            ext.library_dirs = ['.']
+
+            # we'll get sqlite3.c and sqlite3.h from the current directory
+            ext.include_dirs = [os.path.abspath(os.path.dirname(__file__))]
+            ext.library_dirs = [os.path.abspath(os.path.dirname(__file__))]
 
         except OSError:
             pass # no pkg_config installed
+
         build_ext.build_extension(self, ext)
 
     def __setattr__(self, k, v):
-        # Make sure we don't link against the SQLite library, no matter what setup.cfg says
+        # Make sure we don't link against the SQLite library, no matter what
+        # setup.cfg says
         if self.amalgamation and k == "libraries":
             v = None
         self.__dict__[k] = v
@@ -176,7 +189,8 @@ def get_setup_args():
     f.close()
 
     if not PYSQLITE_VERSION:
-        sys.stdout.write("Fatal error: PYSQLITE_VERSION could not be detected!\n")
+        sys.stdout.write("Fatal error: PYSQLITE_VERSION "
+                         "could not be detected!\n")
         sys.exit(1)
 
     data_files = [("pysqlite2-doc",
