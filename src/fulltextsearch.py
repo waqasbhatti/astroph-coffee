@@ -73,10 +73,6 @@ def okapi_bm25(matchinfo_array, search_column, k1=1.2, b=0.75):
 
         https://en.wikipedia.org/wiki/Okapi_BM25
 
-    Inspired by:
-    - https://github.com/neozenith/sqlite-okapi-bm25/blob/master/okapi_bm25.c
-    - https://sqlite.org/fts5.html#the_bm25_function
-
     We'd ordinarily use the built-in version, but FTS5 doesn't work on older
     sqlite3 installations we're stuck with on CentOS 7.
 

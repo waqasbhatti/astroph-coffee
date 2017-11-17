@@ -105,13 +105,13 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
         paper_title = squeeze(
             data.find_all(
                 'div',class_='list-title'
-            )[0].text.strip('\n').split('Title: ')[-1]
+            )[0].text.strip('\n').replace('Title: ','',1)
         )
 
         paper_authors = (
             data.find_all(
                 'div',class_='list-authors'
-            )[0].text.strip('\n').split('Authors: ')[-1]
+            )[0].text.strip('\n').replace('Authors: ','',1)
             )
         paper_authors = [squeeze(x.lstrip('\n').rstrip('\n'))
                          for x in paper_authors.split(', ')]
@@ -129,7 +129,7 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
             # handle internal arxiv links correctly
             if '<a href="/abs' in paper_comments:
                 paper_comments = paper_comments.replace(
-                    '/abs','http://arxiv.org/abs'
+                    '/abs','https://arxiv.org/abs'
                     )
 
         except AttributeError:
@@ -151,13 +151,13 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
         cross_title = squeeze(
             data.find_all(
                 'div',class_='list-title'
-            )[0].text.strip('\n').lstrip('Title: ')
+            )[0].text.strip('\n').replace('Title: ','',1)
         )
 
         cross_authors = (
             data.find_all(
                 'div',class_='list-authors'
-            )[0].text.strip('\n').lstrip('Authors: ')
+            )[0].text.strip('\n').replace('Authors: ','',1)
             )
         cross_authors = [squeeze(x.lstrip('\n').rstrip('\n'))
                          for x in cross_authors.split(', ')]
@@ -177,7 +177,7 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
             # handle internal arxiv links correctly
             if '<a href="/abs' in paper_comments:
                 paper_comments = paper_comments.replace(
-                    '/abs','http://arxiv.org/abs'
+                    '/abs','https://arxiv.org/abs'
                     )
 
         except AttributeError:
@@ -197,7 +197,7 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
 
 
 def arxiv_update(url='http://arxiv.org/list/astro-ph/new',
-                 fakery=True,
+                 fakery=False,
                  pickledict=False):
     '''
     This rolls up all the functions above.
