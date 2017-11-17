@@ -105,13 +105,13 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
         paper_title = squeeze(
             data.find_all(
                 'div',class_='list-title'
-            )[0].text.strip('\n').replace('Title: ','',1)
+            )[0].text.strip('\n').replace('Title:','',1)
         )
 
         paper_authors = (
             data.find_all(
                 'div',class_='list-authors'
-            )[0].text.strip('\n').replace('Authors: ','',1)
+            )[0].text.strip('\n').replace('Authors:','',1)
             )
         paper_authors = [squeeze(x.lstrip('\n').rstrip('\n'))
                          for x in paper_authors.split(', ')]
@@ -151,13 +151,13 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
         cross_title = squeeze(
             data.find_all(
                 'div',class_='list-title'
-            )[0].text.strip('\n').replace('Title: ','',1)
+            )[0].text.strip('\n').replace('Title:','',1)
         )
 
         cross_authors = (
             data.find_all(
                 'div',class_='list-authors'
-            )[0].text.strip('\n').replace('Authors: ','',1)
+            )[0].text.strip('\n').replace('Authors:','',1)
             )
         cross_authors = [squeeze(x.lstrip('\n').rstrip('\n'))
                          for x in cross_authors.split(', ')]
@@ -224,8 +224,8 @@ def arxiv_update(url='http://arxiv.org/list/astro-ph/new',
 
     if pickledict:
         import cPickle as pickle
-        pickle_fpath = 'data/%s-UT-arxiv.pickle' % now.strftime('%Y-%m-%d')
+        pickle_fpath = 'data/%s-UT-arxiv.pkl' % now.strftime('%Y-%m-%d')
         with open(pickle_fpath,'wb') as fd:
-            pickle.dump(arxiv, fd)
+            pickle.dump(arxiv, fd, pickle.HIGHEST_PROTOCOL)
 
     return arxiv
