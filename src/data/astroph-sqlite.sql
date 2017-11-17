@@ -27,6 +27,8 @@ create table arxiv (
        primary key(utcdate, day_serial, article_type, arxiv_id)
 );
 
+create index arxiv_idx on arxiv(arxiv_id);
+
 create table users (
        useremail text,
        registered boolean,
@@ -56,7 +58,7 @@ create virtual table arxiv_fts using fts4(
        link,
        pdf,
        nvotes,
-       tokenize=porter
+       tokenize=unicode61
 );
 
 -- create the required triggers to update the FTS index whenever stuff is
