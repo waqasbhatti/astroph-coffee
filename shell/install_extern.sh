@@ -21,8 +21,7 @@ cd pysqlite
 gcc -Os -I. -DSQLITE_THREADSAFE=0 -DSQLITE_ENABLE_FTS4 \
    -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_JSON1 \
    -DSQLITE_ENABLE_RTREE -DSQLITE_ENABLE_EXPLAIN_COMMENTS \
-   -DHAVE_USLEEP -DHAVE_READLINE \
-   shell.c sqlite3.c -ldl -lm -o $BINDIR/sqlite3
+   -DHAVE_USLEEP shell.c sqlite3.c -ldl -lm -o $BINDIR/sqlite3
 
 # build pysqlite using the sqlite3 amalgamation
 CFLAGS="-DSQLITE_ENABLE_COLUMN_METADATA \
