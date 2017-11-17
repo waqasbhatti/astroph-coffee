@@ -152,6 +152,9 @@ def okapi_bm25_values(matchinfo_rows, search_column, k1=1.2, b=0.75):
 
     are good starting values. See the wikipedia page for more info.
 
+    NOTE: this doesn't work with FTS5 tables. There's no matchinfo function any
+    more.
+
     '''
 
     # get the arrays from the rows
