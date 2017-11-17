@@ -407,7 +407,7 @@ def insert_articles(arxiv,
             u_abstract = unicode(papers[key]['abstract'])
 
             # get rid of the initial 'Authors: ' bit
-            u_authors = u_authors.replace('Authors:','')
+            u_authors = u_authors.replace('Authors:','',1)
             u_authors = u_authors.strip()
 
             params = (arxiv_dt,
