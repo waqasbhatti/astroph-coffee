@@ -1,5 +1,5 @@
 # directory where you want lcserver modules installed
-BINDIR=coffee-run
+BINDIR=run
 
 ACTIVATE_SCRIPT=$(BINDIR)/bin/activate
 DEACTIVATE_SCRIPT=$(BINDIR)/bin/deactivate

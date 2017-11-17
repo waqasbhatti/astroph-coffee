@@ -46,7 +46,7 @@ then
     source $BASEPATH/run/bin/activate
 
     # start the server
-    nohup python $BASEPATH/coffee-run/coffeeserver.py --log_file_prefix=$BASEPATH/run/logs/coffeeserver.log --debugmode=$DEBUGFLAG --port=$SERVERPORT > $BASEPATH/run/logs/coffeeserver.stdout 2>&1 &
+    nohup python $BASEPATH/run/coffeeserver.py --log_file_prefix=$BASEPATH/cofee-run/logs/coffeeserver.log --debugmode=$DEBUGFLAG --port=$SERVERPORT > $BASEPATH/cofee-run/logs/coffeeserver.stdout 2>&1 &
 
     echo "astroph-coffee server started at:" `date`
     ps -e --forest -o pid,user,vsz,rss,start_time,stat,args | grep -e 'coffeeserver\.py' | grep -v grep | grep -v emacs | grep -v ^vi
