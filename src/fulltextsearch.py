@@ -29,7 +29,7 @@ from arxivdb import opendb
 
 def phrase_query_paginated(querystr,
                            getcolumns,
-                           sortcol='arxiv_id',
+                           sortcol='utcdate',
                            sortorder='desc',
                            pagestarter=None,
                            pagelimit=100,
@@ -77,7 +77,7 @@ def phrase_query_paginated(querystr,
                              pageop=pageop,
                              pagestarter=pagestarter,
                              sortorder=sortorder)
-        queryparams = (pagestarter, querystr)
+        queryparams = (querystr, pagestarter)
 
     else:
 
