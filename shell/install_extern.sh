@@ -17,11 +17,13 @@ pip install py2-ipaddress -U
 
 cd pysqlite
 
+echo "Building sqlite3 command shell..."
+
 # build the sqlite3 command-line binary
-gcc -Os -I. -DSQLITE_THREADSAFE=0 -DSQLITE_ENABLE_FTS4 \
+cc -O2 -I. -DSQLITE_THREADSAFE=0 -DSQLITE_ENABLE_FTS4 \
    -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_JSON1 \
    -DSQLITE_ENABLE_RTREE -DSQLITE_ENABLE_EXPLAIN_COMMENTS \
-   -DHAVE_USLEEP shell.c sqlite3.c -ldl -lm -o $BINDIR/sqlite3
+   -DHAVE_USLEEP shell.c sqlite3.c -ldl -lm -o $BINDIR/bin/sqlite3
 
 # build pysqlite using the sqlite3 amalgamation
 CFLAGS="-DSQLITE_ENABLE_COLUMN_METADATA \

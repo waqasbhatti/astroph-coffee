@@ -25,7 +25,7 @@ install:
 	./shell/install_extern.sh $(BINDIR)
 
 	# make the database using the bundled sqlite3 shell we compiled
-	$(BINDIR)/sqlite3 $(BINDIR)/data/astroph.sqlite < $(BINDIR)/data/astroph-sqlite.sql
+	$(BINDIR)/bin/sqlite3 $(BINDIR)/data/astroph.sqlite < $(BINDIR)/data/astroph-sqlite.sql
 
 	@echo 'astroph-coffee server installed to:'
 	@echo $(value BINDIR)
