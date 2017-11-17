@@ -1,7 +1,7 @@
-#-*- coding: ISO-8859-1 -*-
+#-*- coding: utf-8 -*-
 # setup.py: the distutils script
 #
-# Copyright (C) 2004-2015 Gerhard Häring <gh@ghaering.de>
+# Copyright (C) 2004-2015 Gerhard HÃ¤ring <gh@ghaering.de>
 #
 # This file is part of pysqlite.
 #
@@ -126,12 +126,12 @@ class MyBuildExt(build_ext):
         return output
 
     def _pkgconfig_include_dirs(self, package):
-        return [x.strip() for x in 
+        return [x.strip() for x in
                 self._pkgconfig("--cflags-only-I",
                                 package).replace("-I", " ").split()]
 
     def _pkgconfig_library_dirs(self, package):
-        return [x.strip() for x in 
+        return [x.strip() for x in
                 self._pkgconfig("--libs-only-L",
                                 package).replace("-L", " ").split()]
 
@@ -142,11 +142,15 @@ class MyBuildExt(build_ext):
                     ("SQLITE_ENABLE_FTS3", "1"),
                     ("SQLITE_ENABLE_FTS3_PARENTHESIS", "1"),
                     ("SQLITE_ENABLE_FTS4", "1"),
+                    ("SQLITE_ENABLE_FTS5", "1"),
                     ("SQLITE_ENABLE_RTREE", "1")]
             ext.sources.append("sqlite3.c")
         try:
-            ext.include_dirs = self._pkgconfig_include_dirs("sqlite3")
-            ext.library_dirs = self._pkgconfig_library_dirs("sqlite3")
+            # ext.include_dirs = self._pkgconfig_include_dirs("sqlite3")
+            # ext.library_dirs = self._pkgconfig_library_dirs("sqlite3")
+            ext.include_dirs = ['.']
+            ext.library_dirs = ['.']
+
         except OSError:
             pass # no pkg_config installed
         build_ext.build_extension(self, ext)

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BINDIR=$1
+BINDIR=`readlink -e $1`
 
 source $BINDIR/bin/activate
 
@@ -15,7 +15,26 @@ pip install geoip2 -U
 pip install py2-ipaddress -U
 
 
-# install pysqlite
+# # install pysqlite
+# cd sqlite-3.21.0
+
+# CFLAGS="-DSQLITE_ENABLE_COLUMN_METADATA \
+# -DSQLITE_ENABLE_DBSTAT_VTAB \
+# -DSQLITE_ENABLE_FTS3 \
+# -DSQLITE_ENABLE_FTS3_PARENTHESIS \
+# -DSQLITE_ENABLE_FTS4 \
+# -DSQLITE_ENABLE_FTS5 \
+# -DSQLITE_ENABLE_JSON1 \
+# -DSQLITE_ENABLE_STAT4 \
+# -DSQLITE_ENABLE_UPDATE_DELETE_LIMIT \
+# -DSQLITE_SECURE_DELETE \
+# -DSQLITE_SOUNDEX \
+# -DSQLITE_TEMP_STORE=3 \
+# -O2 \
+# -fPIC" LIBS="-lm" ./configure --prefix=$BINDIR --enable-static --enable-shared
+
+# cd -
+
 cd pysqlite
 
 CFLAGS="-DSQLITE_ENABLE_COLUMN_METADATA \
@@ -33,6 +52,7 @@ CFLAGS="-DSQLITE_ENABLE_COLUMN_METADATA \
 -O2 \
 -fPIC" LIBS="-lm" python setup.py build_static
 python setup.py install
+
 cd -
 
 deactivate
