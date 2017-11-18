@@ -17,10 +17,11 @@ from datetime import datetime, timedelta
 from pytz import utc, timezone
 
 import tornado.web
-from tornado.escape import xhtml_escape, xhtml_unescape, url_unescape
+from tornado.escape import xhtml_escape, xhtml_unescape, url_unescape, squeeze
 
 import arxivdb
 import webdb
+import fulltextsearch as fts
 
 import ipaddress
 
@@ -2216,6 +2217,7 @@ class FTSHandler(tornado.web.RequestHandler):
                     search_page_type="initial",
                     search_results=None,
                     search_result_info='',
+                    search_nmatches=0,
                     new_user=new_user)
 
 
@@ -2362,25 +2364,101 @@ class FTSHandler(tornado.web.RequestHandler):
         ## CONTENT RENDERING ##
         #######################
 
-        search_results = []
+        # get the search query
+        searchquery = self.get_argument('searchquery',None)
 
-        if len(search_results) == 0:
-            search_result_info = ('<h3>Sorry, no items matching your '
-                                  'search query were found.</h3>')
-        elif len(search_results) == 1:
-            search_result_info = ('<h3>Found one item matching your '
-                                  'search query.</h3>')
-        elif len(search_results) > 1:
-            search_result_info = ('<h3>Found %s items matching your '
-                                  'search query, sorted by relevance.</h3>' %
-                                  len(search_results))
+        if not searchquery or len(searchquery) == 0:
 
-        self.render("search.html",
-                    user_name=user_name,
-                    local_today=local_today,
-                    flash_message=flash_message,
-                    search_page_title="Search the Astro-Coffee archive",
-                    search_page_type="results",
-                    search_results=search_results,
-                    search_result_info=search_result_info,
-                    new_user=new_user)
+            search_result_info = ('<h4>Sorry, we couldn\'t understand your '
+                                  'search query: "%s"</h4>' %
+                                  searchquery)
+
+            search_results = None
+            search_nmatches = 0
+
+            self.render("search.html",
+                        user_name=user_name,
+                        local_today=local_today,
+                        flash_message=flash_message,
+                        search_page_title="Search the Astro-Coffee archive",
+                        search_page_type="results",
+                        search_results=search_results,
+                        search_nmatches=search_nmatches,
+                        search_result_info=search_result_info,
+                        new_user=new_user)
+
+        else:
+
+            searchquery = squeeze(xhtml_escape(searchquery))
+
+            if len(searchquery) > 0:
+
+                ftsdict = fts.fts4_phrase_query_paginated(
+                    searchquery,
+                    ['arxiv_id','day_serial','title',
+                     'authors','comments','abstract',
+                     'link','pdf','utcdate'],
+                    sortcol='relevance',
+                    pagelimit=500,
+                    database=self.database,
+                    relevance_weights=[0.4,0.4,0.2],
+                )
+
+                search_results = ftsdict['results']
+                all_nmatches = ftsdict['nmatches']
+
+                LOGGER.info('found %s objects matching %s' % (all_nmatches,
+                                                              searchquery))
+
+                if all_nmatches == 0:
+                    search_nmatches = 0
+                    search_result_info = ('<h4>Sorry, no items matching your '
+                                          'search query: "%s" were found</h4>' %
+                                          searchquery)
+                elif all_nmatches == 1:
+                    search_nmatches = 1
+                    search_result_info = ('<h4>Found only one item matching your '
+                                          'search query</h4>')
+                elif 1 < all_nmatches < 501:
+                    search_nmatches = len(ftsdict['results']['arxiv_id'])
+                    search_result_info = ('<h4>Found %s matching items, '
+                                          'results below sorted by relevance</h4>' %
+                                          search_nmatches)
+                else:
+                    search_nmatches = len(ftsdict['results']['arxiv_id'])
+                    search_result_info = ('<h4>Found %s total matching items, '
+                                          'top %s results below sorted '
+                                          'by relevance</h4>' %
+                                          (all_nmatches, search_nmatches))
+
+                self.render("search.html",
+                            user_name=user_name,
+                            local_today=local_today,
+                            flash_message=flash_message,
+                            search_page_title="Search the Astro-Coffee archive",
+                            search_page_type="results",
+                            search_results=search_results,
+                            search_nmatches=search_nmatches,
+                            search_result_info=search_result_info,
+                            new_user=new_user)
+
+
+            # this is if we don't understand the query
+            else:
+                search_result_info = ('<h4>Sorry, we couldn\'t understand your '
+                                      'search query: "%s"</h4>' %
+                                      searchquery)
+
+                search_results = None
+                search_nmatches = 0
+
+                self.render("search.html",
+                            user_name=user_name,
+                            local_today=local_today,
+                            flash_message=flash_message,
+                            search_page_title="Search the Astro-Coffee archive",
+                            search_page_type="results",
+                            search_results=search_results,
+                            search_nmatches=search_nmatches,
+                            search_result_info=search_result_info,
+                            new_user=new_user)

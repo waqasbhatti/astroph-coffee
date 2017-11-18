@@ -37,11 +37,12 @@
   {% module xsrf_form_html() %}
   <div class="row large-margin-top">
 
-    <div class="small-12 medium-10 medium-centered columns">
+    <div class="small-12 columns">
 
       <div class="row collapse postfix-radius">
         <div class="small-10 columns">
           <input type="text"
+                 name="searchquery"
                  placeholder="authors, title, abstract text, article type, date of posting, arXiv ID...">
         </div>
         <div class="small-2 columns show-for-medium-up">
@@ -65,9 +66,11 @@
   </div>
 </div>
 
-{% for result in search_results %}
+{% if search_nmatches > 0 %}
 
-<div class="row small-listing-row other-paper-listing">
+{% for resultindex in range(search_nmatches) %}
+
+<div class="row small-listing-row other-paper-listing large-margin-top">
   <div class="small-12 columns">
 
     <div class="row">
@@ -76,20 +79,15 @@
 
         <div class="row">
           <div class="small-12 columns">
-            {% set local_specaffil = result[-1] %}
-            {% if local_specaffil and len(local_specaffil) > 0 %}
-            <h4 class="paper-title mathjax" data-arxivid="{{ result[0] }}"><a href="#" title="click to see/hide abstract">[{{ local_specaffil }}] {{ result[2] }}</a></h4>
-            {% else %}
-            <h4 class="paper-title mathjax" data-arxivid="{{ result[0] }}"><a href="#" title="click to see/hide abstract">{{ result[2] }}</a></h4>
-            {% end %}
+            <h4 class="paper-title mathjax" data-arxivid="{{ search_results['arxiv_id'][resultindex] }}">{{ resultindex+1 }}. <a href="#" title="click to see/hide abstract">{{ search_results['title'][resultindex] }}</a></h4>
           </div>
         </div>
 
         <div class="row">
           <div class="small-12 columns">
-            <h6 class="subheader">{{ ', '.join((result[4].split(': ')[-1]).split(',')) }}</h6>
-            {% if len(result[5]) > 0 %}
-            <p class="comments-para">{% raw result[5] %}</p>
+            <h6 class="subheader">{{ ', '.join((search_results['authors'][resultindex].split(','))) }}</h6>
+            {% if len(search_results['comments'][resultindex]) > 0 %}
+            <p class="comments-para">{% raw search_results['comments'][resultindex] %}</p>
             {% end %}
           </div>
         </div>
@@ -100,8 +98,8 @@
 
         <div class="row">
           <div class="small-12 columns">
-            <a href="{{ result[8] }}"
-               class="button success radius ">
+            <a href="{{ search_results['pdf'][resultindex] }}"
+               class="button secondary radius ">
               Get PDF
             </a>
           </div>
@@ -109,7 +107,8 @@
 
         <div class="row small-listing-row">
           <div class="small-12 columns">
-            Paper {{ result[1] }} &mdash; <a href="{{ result[7] }}">{{ result[0] }}</a>
+            <a title="see the Astro-Coffee listings on this date" href="/astroph-coffee/archive/{{ search_results['utcdate'][resultindex].strftime('%Y%m%d') }}">Paper {{ search_results['day_serial'][resultindex] }} on {{ search_results['utcdate'][resultindex] }}</a><br>
+            <a href="{{ search_results['link'][resultindex] }}">{{ search_results['arxiv_id'][resultindex] }}</a>
           </div>
         </div>
 
@@ -119,8 +118,8 @@
 
         <div class="row">
           <div class="small-12 columns">
-            <a href="{{ result[8] }}"
-               class="button success radius ">
+            <a href="{{ search_results['pdf'][resultindex] }}"
+               class="button secondary success radius ">
               Get PDF
             </a>
           </div>
@@ -128,7 +127,8 @@
 
         <div class="row small-listing-row">
           <div class="small-12 columns">
-            Paper {{ result[1] }} &mdash; <a href="{{ result[7] }}">{{ result[0] }}</a>
+            <a title="see the Astro-Coffee listings on this date" href="/astroph-coffee/archive/{{ search_results['utcdate'][resultindex].strftime('%Y%m%d') }}">Paper {{ search_results['day_serial'][resultindex] }} on {{ search_results['utcdate'][resultindex] }}</a><br>
+            <a href="{{ search_results['link'][resultindex] }}">{{ search_results['arxiv_id'][resultindex] }}</a>
           </div>
         </div>
 
@@ -136,14 +136,16 @@
 
     </div>
 
-    <div class="row hide paper-abstract" data-arxivid="{{ result[0] }}">
+    <div class="row hide paper-abstract" data-arxivid="{{ search_results['arxiv_id'][resultindex] }}">
       <div class="small-12 columns">
-        <p class="abstract-para-medium mathjax">{{ result[6] }}</p>
+        <p class="abstract-para-medium mathjax">{{ search_results['abstract'][resultindex] }}</p>
       </div>
     </div>
 
   </div>
 </div>
+
+{% end %}
 
 {% end %}
 

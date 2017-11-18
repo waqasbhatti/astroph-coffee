@@ -293,6 +293,7 @@ def fts4_phrase_query_paginated(querystr,
         rows = cursor.fetchall()
 
         nmatches = len(rows)
+
         if nmatches > 0:
             mcols = zip(*rows)
             results = {x:y for x,y in zip(getcolumns, mcols)}
@@ -495,7 +496,7 @@ def fts4_phrase_query_paginated(querystr,
         cursor.close()
         database.close()
 
-    return {'nmatches':len(rows),
+    return {'nmatches':nmatches,
             'results':results,
             'columns':getcolumns,
             'sortcol':sortcol,

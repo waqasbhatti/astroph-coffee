@@ -35,11 +35,12 @@
 
       <ul class="right">
         <li class="has-form topbar-search-form">
-            {% module xsrf_form_html() %}
           <div class="row collapse">
             <div class="large-10 small-10 columns">
               <form action="/astroph-coffee/search" method="post">
+                {% module xsrf_form_html() %}
                 <input type="text"
+                       name="searchquery"
                        placeholder="Search the Astro-Coffee archive">
               </form>
             </div>

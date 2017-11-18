@@ -361,6 +361,23 @@ var coffee = {
 
         });
 
+        // handle clicking on the topbar search button
+        $('.topbar-search-go').on('click', function(evt) {
+
+            evt.preventDefault();
+            $('form').closest().submit();
+
+        });
+
+        // handle clicking on the search-page search button
+        $('.search-form-go').on('click', function(evt) {
+
+            evt.preventDefault();
+            $('form').closest().submit();
+
+        });
+
+
         // handle clicking on the various view options
         $('#preferences-pane').on('click','#show-local-check',function (evt) {
 
