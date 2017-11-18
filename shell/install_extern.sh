@@ -15,11 +15,16 @@ pip install itsdangerous -U
 pip install geoip2 -U
 pip install py2-ipaddress -U
 
+# for sorting and stuff
+pip install numpy -U
+
 cd pysqlite
 
 echo "Building sqlite3 command shell..."
 
 # build the sqlite3 command-line binary
+# FIXME: think about putting in linenoise.h and linenoise.c here since things
+# are painful without readline behavior
 cc -O2 -I. -DSQLITE_THREADSAFE=0 -DSQLITE_ENABLE_FTS4 \
    -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_JSON1 \
    -DSQLITE_ENABLE_RTREE -DSQLITE_ENABLE_EXPLAIN_COMMENTS \
@@ -37,7 +42,7 @@ CFLAGS="-DSQLITE_ENABLE_COLUMN_METADATA \
 -DSQLITE_ENABLE_UPDATE_DELETE_LIMIT \
 -DSQLITE_SECURE_DELETE \
 -DSQLITE_SOUNDEX \
--DSQLITE_TEMP_STORE=3 \
+-DSQLITE_TEMP_STORE=2 \
 -O2 \
 -fPIC" LIBS="-lm" python setup.py build_static
 

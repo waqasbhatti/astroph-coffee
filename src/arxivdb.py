@@ -1248,8 +1248,6 @@ def get_user_votes(utcdate, username, database=None):
 
     # get all the voters for this date
     # FIXME: this would be WAY better handled using FTS
-     # unfortunately, FTS is disabled in default Python (thanks OSes other than
-    # Linux!)
     query = ("select arxiv_id, voters from arxiv "
              "where utcdate = ? and nvotes > 0 ")
     query_params = (utcdate,)

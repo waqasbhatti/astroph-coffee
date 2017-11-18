@@ -16,6 +16,7 @@ from datetime import datetime, date, timedelta
 from pytz import utc
 import array
 import math
+import numpy as np
 
 from tornado.escape import squeeze
 
@@ -58,7 +59,7 @@ def get_matchinfo_arrays(matchinfo_rows):
     for row in matchinfo_rows:
 
         this_arr = array.array('I')
-        this_row_str = str(row[0])
+        this_row_str = str(row)
         this_arr.fromstring(this_row_str)
 
         matchinfo_arrays.append(this_arr)
@@ -168,20 +169,24 @@ def okapi_bm25_values(matchinfo_rows, search_column, k1=1.2, b=0.75):
 
 
 
-def phrase_query_paginated(querystr,
-                           getcolumns,
-                           sortcol='utcdate',
-                           sortorder='desc',
-                           pagelimit=100,
-                           pagestarter=None,
-                           database=None):
-    '''This just runs the verbatim query querystr on the full FTS table.
+def fts4_phrase_query_paginated(querystr,
+                                getcolumns,
+                                sortcol='utcdate',
+                                sortorder='desc',
+                                pagelimit=100,
+                                pagestarter=None,
+                                bm25_k1=1.2,
+                                bm25_b=0.75,
+                                relevance_weights=None,
+                                database=None):
+    '''This just runs the verbatim query querystr on the full FTS4 table.
 
     getcolumns is a list of column names to return from the arxiv table.
 
     sortcol is either a string indicating a column in the arxiv table to use for
-    sorting the match results or a string == 'bm25'. If sortcol is 'bm25',
-    results will be returned in sortorder order sorted by Okapi BM25 relevance.
+    sorting the match results or a string == 'relevance'. If sortcol is
+    'relevance', results will be returned in sortorder order sorted by Okapi
+    BM25 relevance.
 
     https://en.wikipedia.org/wiki/Okapi_BM25
 
@@ -204,6 +209,17 @@ def phrase_query_paginated(querystr,
     requested getcolumns and the values as sorted elements in sortorder using
     the sortcol.
 
+    We calculate the overall rank by calculating a weighted average for
+    bm25(title), bm25(abstract), bm25(authors) using relevance_weights. These
+    should be probably set appropriately for the type of query.
+
+    NOTE: this does not work with fts5 tables, since there's no matchinfo
+    returned. on the other hand, fts5 provides a native bm25 and sort ordering
+    is way more straightforward.
+
+    FIXME: add the okapi_bm25f weighted function here later. this will allow us
+    to weight individual fields better.
+
     '''
 
     # open the database if needed and get a cursor
@@ -214,65 +230,258 @@ def phrase_query_paginated(querystr,
         cursor = database.cursor()
         closedb = False
 
-    # add the sortcol to the query so we can paginate on it later
-    if sortcol not in getcolumns:
-        getcolumns.insert(0,sortcol)
+    # this is the usual sort order without relevance
+    if sortcol != 'relevance':
 
-    columnstr = ',' .join(['arxiv.%s' % x for x in getcolumns])
+        # add the sortcol to the query so we can paginate on it later
+        if sortcol not in getcolumns:
+            getcolumns.insert(0,sortcol)
 
-    queryparams = []
+        columnstr = ',' .join(['arxiv.%s' % x for x in getcolumns])
 
-    # this does paging
-    # pagestarter is the last element in the sortcol of the previous results
-    # pageop is chosen based on sortorder: > if 'asc', < if 'desc'
-    if pagestarter:
+        # this does paging
+        # pagestarter is the last element in the sortcol of the previous results
+        # pageop is chosen based on sortorder: > if 'asc', < if 'desc'
+        if pagestarter:
 
-        if sortorder == 'asc':
-            pageop = '>'
+            if sortorder == 'asc':
+                pageop = '>'
+            else:
+                pageop = '<'
+
+            query = ('select {columns} from '
+                     'arxiv_fts join arxiv on (arxiv_fts.docid = arxiv.rowid) '
+                     'where arxiv_fts MATCH ? and '
+                     'arxiv.{sortcol} {pageop} ? '
+                     'order by arxiv_fts.{sortcol} {sortorder}')
+            query = query.format(columns=columnstr,
+                                 sortcol=sortcol,
+                                 pageop=pageop,
+                                 pagestarter=pagestarter,
+                                 sortorder=sortorder)
+            queryparams = (querystr, pagestarter)
+
         else:
-            pageop = '<'
 
-        query = ('select {columns} from '
-                 'arxiv_fts join arxiv on (arxiv_fts.docid = arxiv.rowid) '
-                 'where arxiv_fts MATCH ? and '
-                 'arxiv.{sortcol} {pageop} ? '
-                 'order by arxiv_fts.{sortcol} {sortorder}')
-        query = query.format(columns=columnstr,
-                             sortcol=sortcol,
-                             pageop=pageop,
-                             pagestarter=pagestarter,
-                             sortorder=sortorder)
-        queryparams = (querystr, pagestarter)
+            query = ('select {columns} from '
+                     'arxiv_fts join arxiv on (arxiv_fts.docid = arxiv.rowid) '
+                     'where arxiv_fts MATCH ? '
+                     'order by arxiv_fts.{sortcol} {sortorder}')
+            query = query.format(columns=columnstr,
+                                 sortcol=sortcol,
+                                 sortorder=sortorder)
+            queryparams = (querystr,)
 
+
+        # use page limit if necessary
+        if pagelimit and pagelimit > 0:
+            query = '%s limit %s' % (query, pagelimit)
+        else:
+            pagelimit = 100
+            query = '%s limit %s' % (query, pagelimit)
+
+        print(query, queryparams)
+
+        cursor.execute(query, queryparams)
+        rows = cursor.fetchall()
+
+        nmatches = len(rows)
+        if nmatches > 0:
+            mcols = zip(*rows)
+            results = {x:y for x,y in zip(getcolumns, mcols)}
+        else:
+            results = None
+
+
+    # otherwise, we need to do some special stuff for relevance sortorder
     else:
 
-        query = ('select {columns} from '
-                 'arxiv_fts join arxiv on (arxiv_fts.docid = arxiv.rowid) '
-                 'where arxiv_fts MATCH ? '
-                 'order by arxiv_fts.{sortcol} {sortorder}')
-        query = query.format(columns=columnstr,
-                             sortcol=sortcol,
-                             sortorder=sortorder)
-        queryparams = (querystr,)
+        # we'll sort in desc relevance order, so we ignore the usual sortorder
+        columnstr = ',' .join(['arxiv.%s' % x for x in getcolumns])
 
-    # use page limit if necessary
-    if pagelimit and pagelimit > 0:
-        query = '%s limit %s' % (query, pagelimit)
-    else:
-        pagelimit = 100
-        query = '%s limit %s' % (query, pagelimit)
+        queryparams = []
 
-    print(query, queryparams)
+        # first, let's handle queries with no pagestarter given
+        if not pagestarter:
 
-    cursor.execute(query, queryparams)
-    rows = cursor.fetchall()
+            # generate the query
+            query = ("select {columns}, "
+                     "matchinfo(arxiv_fts,'pcxnal') as minfo from "
+                     "arxiv_fts join arxiv on (arxiv_fts.docid = arxiv.rowid) "
+                     "where arxiv_fts MATCH ?")
+            query = query.format(columns=columnstr)
+            queryparams = (querystr,)
 
-    nmatches = len(rows)
-    if nmatches > 0:
-        mcols = zip(*rows)
-        results = {x:y for x,y in zip(getcolumns, mcols)}
-    else:
-        results = None
+            print(query, queryparams)
+
+            cursor.execute(query, queryparams)
+            rows = cursor.fetchall()
+
+            nmatches = len(rows)
+
+            # if we have matches, we can process ranks and sort orders
+            if nmatches > 0:
+
+                # add the matchinfo column at the end for correct zipping
+                getcolumns.append('minfo')
+
+                mcols = zip(*rows)
+                results = {x:y for x,y in zip(getcolumns, mcols)}
+
+                # calculate the ranks for the abstract, title, and authors
+                abstract_bm25 = np.array(okapi_bm25_values(results['minfo'],
+                                                           'abstract',
+                                                           k1=bm25_k1,
+                                                           b=bm25_b))
+                title_bm25 = np.array(okapi_bm25_values(results['minfo'],
+                                                        'title',
+                                                        k1=bm25_k1,
+                                                        b=bm25_b))
+                authors_bm25 = np.array(okapi_bm25_values(results['minfo'],
+                                                          'authors',
+                                                          k1=bm25_k1,
+                                                          b=bm25_b))
+
+                # weight the ranks
+                _bm25 = np.column_stack((title_bm25,
+                                         abstract_bm25,
+                                         authors_bm25))
+
+                # weighted average of bm25
+                overall_bm25 = np.average(_bm25,
+                                          axis=1,
+                                          weights=relevance_weights)
+
+                # now sort by weighted sum
+                bm25_order = np.argsort(overall_bm25)[::-1]
+
+                overall_bm25 = overall_bm25[bm25_order]
+                title_bm25 = title_bm25[bm25_order]
+                abstract_bm25 = abstract_bm25[bm25_order]
+                authors_bm25 = authors_bm25[bm25_order]
+
+                # resort all the columns in bm25 order
+                # (except the last one which is minfo)
+                # here we also do the pagination
+                for colx in getcolumns[:-1]:
+
+                    results[colx] = np.array(results[colx])[bm25_order]
+                    if pagelimit and pagelimit > 0:
+                        results[colx] = results[colx][:pagelimit]
+                    results[colx] = results[colx].tolist()
+
+                # get rid of the matchinfo stuff now that we don't need it
+                del results['minfo']
+
+                # add the bm25's to the dict
+                results['abstract_bm25'] = abstract_bm25[:pagelimit]
+                results['title_bm25'] = title_bm25[:pagelimit]
+                results['authors_bm25'] = authors_bm25[:pagelimit]
+                results['overall_bm25'] = overall_bm25[:pagelimit]
+
+            # if no matches, no need to do anything
+            else:
+                results = None
+
+        # if there is a page starter, then it's a previous overall_bm25 value
+        # get everything below that value
+        else:
+
+            # generate the query
+            query = ("select {columns}, "
+                     "matchinfo(arxiv_fts,'pcxnal') as minfo from "
+                     "arxiv_fts join arxiv on (arxiv_fts.docid = arxiv.rowid) "
+                     "where arxiv_fts MATCH ?")
+            query = query.format(columns=columnstr)
+            queryparams = (querystr,)
+
+            print(query, queryparams)
+
+            cursor.execute(query, queryparams)
+            rows = cursor.fetchall()
+
+            nmatches = len(rows)
+
+            # if we have matches, we can process ranks and sort orders
+            if nmatches > 0:
+
+                # add the matchinfo column at the end for correct zipping
+                getcolumns.append('minfo')
+
+                mcols = zip(*rows)
+                results = {x:y for x,y in zip(getcolumns, mcols)}
+
+                # calculate the ranks for the abstract, title, and authors
+                abstract_bm25 = np.array(okapi_bm25_values(results['minfo'],
+                                                           'abstract',
+                                                           k1=bm25_k1,
+                                                           b=bm25_b))
+                title_bm25 = np.array(okapi_bm25_values(results['minfo'],
+                                                        'title',
+                                                        k1=bm25_k1,
+                                                        b=bm25_b))
+                authors_bm25 = np.array(okapi_bm25_values(results['minfo'],
+                                                          'authors',
+                                                          k1=bm25_k1,
+                                                          b=bm25_b))
+
+                # weight the ranks
+                _bm25 = np.column_stack((title_bm25,
+                                         abstract_bm25,
+                                         authors_bm25))
+
+                # weighted sum
+                overall_bm25 = np.average(_bm25,
+                                          axis=1,
+                                          weights=relevance_weights)
+
+                # now sort by weighted sum
+                bm25_order = np.argsort(overall_bm25)[::-1]
+
+                overall_bm25 = overall_bm25[bm25_order]
+                title_bm25 = title_bm25[bm25_order]
+                abstract_bm25 = abstract_bm25[bm25_order]
+                authors_bm25 = authors_bm25[bm25_order]
+
+                # get bm25 < pagestart indices
+                thispage_bm25_ind = np.where(overall_bm25 < pagestarter)
+
+                # resort all the columns in bm25 order
+                # (except the last one which is minfo)
+                # here we also do the pagination
+                for colx in getcolumns[:-1]:
+
+                    results[colx] = np.array(results[colx])[bm25_order]
+
+                    # get stuff below pagestarter
+                    results[colx] = results[colx][thispage_bm25_ind]
+
+                    if pagelimit and pagelimit > 0:
+                        results[colx] = results[colx][:pagelimit]
+                    results[colx] = results[colx].tolist()
+
+                # get rid of the matchinfo stuff now that we don't need it
+                del results['minfo']
+
+                # add the bm25's to the dict
+
+                results['abstract_bm25'] = (
+                    abstract_bm25[thispage_bm25_ind][:pagelimit]
+                )
+                results['title_bm25'] = (
+                    title_bm25[thispage_bm25_ind][:pagelimit]
+                )
+                results['authors_bm25'] = (
+                    authors_bm25[thispage_bm25_ind][:pagelimit]
+                )
+                results['overall_bm25'] = (
+                    overall_bm25[thispage_bm25_ind][:pagelimit]
+                )
+
+            # if no matches, no need to do anything
+            else:
+                results = None
+
 
     # at the end, close the cursor and DB connection
     if closedb:
