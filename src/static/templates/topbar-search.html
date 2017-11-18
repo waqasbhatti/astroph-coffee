@@ -6,7 +6,7 @@
       <li class="name">
         <h1>
           <a href="/astroph-coffee">
-            Astro-Coffee@Example
+            Astro-Coffee@Princeton
           </a>
         </h1>
       </li>
@@ -21,41 +21,49 @@
     <section class="top-bar-section">
 
       <ul class="left">
+
         <li class="has-form">
           <a href="/astroph-coffee/papers/today" class="button radius expand">
             Today's papers
           </a>
         </li>
+
         <li class="has-form">
-          <a href="/astroph-coffee/archive" class="button  radius expand">
+          <a href="/astroph-coffee/archive" class="button radius expand">
             Astro-Coffee archive
           </a>
         </li>
+
+        {% if search_page_type == 'results' %}
+        <li class="has-form">
+          <a href="/astroph-coffee/search" class="button radius expand">
+            Search again
+          </a>
+        </li>
+        {% end %}
+
       </ul>
 
       <ul class="right">
-        <li class="has-form topbar-search-form">
-            {% module xsrf_form_html() %}
-          <div class="row collapse">
-            <div class="large-10 small-10 columns">
-              <form action="/astroph-coffee/search" method="post">
-                <input type="text"
-                       placeholder="Search the Astro-Coffee archive">
-              </form>
-            </div>
-            <div class="large-2 small-2 columns">
-              <a href="#" class="button expand topbar-search-go">Go</a>
-            </div>
-          </div>
-        </li>
 
-        <li class="show-for-medium-up">
-          <a href="/astroph-coffee/search">Search help</a>
+        {% if search_page_type == 'results' %}
+        <li class="has-form">
+          <a href="#search" class="button radius expand">
+            Back to the top
+          </a>
         </li>
+        {% end %}
 
         <li class="show-for-medium-up">
           <a href="/astroph-coffee/local-authors">Local authors</a>
         </li>
+
+        {% if search_page_type == 'results' %}
+        <li class="show-for-medium-up">
+          <a data-options="align:left"
+             data-dropdown="preferences-pane">View options</a>
+        </li>
+        {% end %}
 
       </ul>
 

@@ -28,7 +28,39 @@
     <script src="{{ static_url("js/vendor/modernizr.js") }}"></script>
 
     {% block topjs %}
+    <!-- mathjax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+      tex2jax: {
+      inlineMath: [['$','$'],['$$','$$']],
+      processEscapes: true,
+      processEnvironments: false,
+      processClass: "mathjax",
+      ignoreClass: "no-mathjax"
+      },
+      asciimath2jax: {
+      delimiters: [['$','$']],
+      processClass: "mathjax",
+      ignoreClass: "no-mathjax"
+      },
+      TeX: {
+      Macros: {
+      AA: "\\unicode{x212B}",
+      Ha: "\\mathrm{H}\\alpha",
+      MEarth:"M_{\\oplus}",
+      farcs:".^{\\prime\\prime}",
+      MJup:"M_{\\mathrm{J}}",
+      mjup:"M_{\\mathrm{J}}"
+      }
+      }
+      });
+    </script>
+    <script
+      type="text/javascript" async
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
     {% end %}
+
 </head>
 
 <body>

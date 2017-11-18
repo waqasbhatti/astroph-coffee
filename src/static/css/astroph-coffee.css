@@ -161,3 +161,41 @@ p.normal {
     line-height: 1.1;
     color: #636363;
 }
+
+/* search page styles */
+.large-margin-top {
+    margin-top: 1.5em;
+}
+
+.search-form input {
+    font-size: 18px;
+    height: 3rem;
+    line-height: 3;
+    border-radius: 5px 0 0 5px;
+}
+
+.search-form .button {
+    font-size: 18px;
+    height: 3rem;
+    line-height: 2.7;
+    border-radius: 0 5px 5px 0px;
+}
+
+.topbar-search-form {
+    width: 21em;
+    max-width: 35em;
+}
+
+.topbar-search-form input {
+    border-radius: 5px 0 0 5px;
+    height: 2.0em;
+    font-size: 16px;
+    line-height: 1.1;
+}
+
+.topbar-search-form .button {
+    border-radius: 0 5px 5px 0px;
+    height: 2.0em;
+    font-size: 16px;
+    line-height: 1.1;
+}

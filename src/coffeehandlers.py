@@ -2002,7 +2002,7 @@ class LocalListHandler(tornado.web.RequestHandler):
         # show the local authors page #
         ###############################
 
-        authorlist = webdb.get_local_authors()
+        authorlist = webdb.get_local_authors(database=self.database)
 
         if authorlist:
 
@@ -2074,7 +2074,313 @@ class FTSHandler(tornado.web.RequestHandler):
 
         '''
 
+        # handle a redirect with an attached flash message
+        flash_message = self.get_argument('f', None)
+        if flash_message:
+            flashtext = msgdecode(flash_message)
+            LOGGER.warning('flash message: %s' % flashtext)
+            flashbox = (
+                '<div data-alert class="alert-box radius">%s'
+                '<a href="#" class="close">&times;</a></div>' %
+                flashtext
+                )
+            flash_message = flashbox
+        else:
+            flash_message = ''
+
+
+        local_today = datetime.now(tz=utc).strftime('%Y-%m-%d %H:%M %Z')
+
+        # first, get the session token
+        session_token = self.get_secure_cookie('coffee_session',
+                                               max_age_days=30)
+        ip_address = self.request.remote_ip
+
+        if 'User-Agent' in self.request.headers:
+            client_header = self.request.headers['User-Agent'] or 'none'
+        else:
+            client_header = 'none'
+
+        user_name = 'anonuser@%s' % ip_address
+        new_user = True
+
+
+        # check if this session_token corresponds to an existing user
+        if session_token:
+
+            sessioninfo = webdb.session_check(session_token,
+                                              database=self.database)
+
+            if sessioninfo[0]:
+
+                user_name = sessioninfo[2]
+                LOGGER.info('found session for %s, continuing with it' %
+                            user_name)
+                new_user = False
+
+            elif sessioninfo[-1] != 'database_error':
+
+                LOGGER.warning('unknown user, starting a new session for '
+                               '%s, %s' % (ip_address, client_header))
+
+                sessionok, token = webdb.anon_session_initiate(
+                    ip_address,
+                    client_header,
+                    database=self.database
+                )
+
+                if sessionok and token:
+                    self.set_secure_cookie('coffee_session',
+                                           token,
+                                           httponly=True)
+                else:
+                    LOGGER.error('could not set session cookie for %s, %s' %
+                                 (ip_address, client_header))
+                    self.set_status(500)
+                    message = ("There was a database error "
+                               "trying to look up user credentials.")
+
+                    LOGGER.error('database error while looking up session for '
+                                   '%s, %s' % (ip_address, client_header))
+
+                    self.render("errorpage.html",
+                                user_name=user_name,
+                                local_today=local_today,
+                                error_message=message,
+                                flash_message=flash_message,
+                                new_user=new_user)
+
+
+            else:
+
+                self.set_status(500)
+                message = ("There was a database error "
+                           "trying to look up user credentials.")
+
+                LOGGER.error('database error while looking up session for '
+                               '%s, %s' % (ip_address, client_header))
+
+                self.render("errorpage.html",
+                            user_name=user_name,
+                            error_message=message,
+                            local_today=local_today,
+                            flash_message=flash_message,
+                            new_user=new_user)
+
+
+        else:
+
+            if ('crawler' not in client_header.lower() and
+                'bot' not in client_header.lower()):
+
+                LOGGER.warning('unknown user, starting a new session for '
+                               '%s, %s' % (ip_address, client_header))
+
+                sessionok, token = webdb.anon_session_initiate(
+                    ip_address,
+                    client_header,
+                    database=self.database
+                    )
+
+                if sessionok and token:
+                    self.set_secure_cookie('coffee_session',
+                                           token,
+                                           httponly=True)
+                else:
+                    LOGGER.error('could not set session cookie for %s, %s' %
+                                 (ip_address, client_header))
+                    self.set_status(500)
+                    message = ("There was a database error "
+                               "trying to look up user credentials.")
+
+                    LOGGER.error('database error while looking up session for '
+                                 '%s, %s' % (ip_address, client_header))
+
+                    self.render("errorpage.html",
+                                user_name=user_name,
+                                local_today=local_today,
+                                error_message=message,
+                                flash_message=flash_message,
+                                new_user=new_user)
+
+
+        #######################
+        ## CONTENT RENDERING ##
+        #######################
+
+        self.render("search.html",
+                    user_name=user_name,
+                    local_today=local_today,
+                    flash_message=flash_message,
+                    search_page_title="Search the Astro-Coffee archive",
+                    search_page_type="initial",
+                    search_results=None,
+                    search_result_info='',
+                    new_user=new_user)
+
+
+
     def post(self):
         '''This handles POST requests for searching.
 
+        renders using the search.html template with search_page_type = 'results'
+        and passes search_results to it from a run of the
+        fulltextsearch.fts4_phrase_search_paginated function.
+
         '''
+
+        # handle a redirect with an attached flash message
+        flash_message = self.get_argument('f', None)
+        if flash_message:
+            flashtext = msgdecode(flash_message)
+            LOGGER.warning('flash message: %s' % flashtext)
+            flashbox = (
+                '<div data-alert class="alert-box radius">%s'
+                '<a href="#" class="close">&times;</a></div>' %
+                flashtext
+                )
+            flash_message = flashbox
+        else:
+            flash_message = ''
+
+
+        local_today = datetime.now(tz=utc).strftime('%Y-%m-%d %H:%M %Z')
+
+        # first, get the session token
+        session_token = self.get_secure_cookie('coffee_session',
+                                               max_age_days=30)
+        ip_address = self.request.remote_ip
+
+        if 'User-Agent' in self.request.headers:
+            client_header = self.request.headers['User-Agent'] or 'none'
+        else:
+            client_header = 'none'
+
+        user_name = 'anonuser@%s' % ip_address
+        new_user = True
+
+
+        # check if this session_token corresponds to an existing user
+        if session_token:
+
+            sessioninfo = webdb.session_check(session_token,
+                                              database=self.database)
+
+            if sessioninfo[0]:
+
+                user_name = sessioninfo[2]
+                LOGGER.info('found session for %s, continuing with it' %
+                            user_name)
+                new_user = False
+
+            elif sessioninfo[-1] != 'database_error':
+
+                LOGGER.warning('unknown user, starting a new session for '
+                               '%s, %s' % (ip_address, client_header))
+
+                sessionok, token = webdb.anon_session_initiate(
+                    ip_address,
+                    client_header,
+                    database=self.database
+                )
+
+                if sessionok and token:
+                    self.set_secure_cookie('coffee_session',
+                                           token,
+                                           httponly=True)
+                else:
+                    LOGGER.error('could not set session cookie for %s, %s' %
+                                 (ip_address, client_header))
+                    self.set_status(500)
+                    message = ("There was a database error "
+                               "trying to look up user credentials.")
+
+                    LOGGER.error('database error while looking up session for '
+                                   '%s, %s' % (ip_address, client_header))
+
+                    self.render("errorpage.html",
+                                user_name=user_name,
+                                local_today=local_today,
+                                error_message=message,
+                                flash_message=flash_message,
+                                new_user=new_user)
+
+
+            else:
+
+                self.set_status(500)
+                message = ("There was a database error "
+                           "trying to look up user credentials.")
+
+                LOGGER.error('database error while looking up session for '
+                               '%s, %s' % (ip_address, client_header))
+
+                self.render("errorpage.html",
+                            user_name=user_name,
+                            error_message=message,
+                            local_today=local_today,
+                            flash_message=flash_message,
+                            new_user=new_user)
+
+
+        else:
+
+            if ('crawler' not in client_header.lower() and
+                'bot' not in client_header.lower()):
+
+                LOGGER.warning('unknown user, starting a new session for '
+                               '%s, %s' % (ip_address, client_header))
+
+                sessionok, token = webdb.anon_session_initiate(
+                    ip_address,
+                    client_header,
+                    database=self.database
+                    )
+
+                if sessionok and token:
+                    self.set_secure_cookie('coffee_session',
+                                           token,
+                                           httponly=True)
+                else:
+                    LOGGER.error('could not set session cookie for %s, %s' %
+                                 (ip_address, client_header))
+                    self.set_status(500)
+                    message = ("There was a database error "
+                               "trying to look up user credentials.")
+
+                    LOGGER.error('database error while looking up session for '
+                                 '%s, %s' % (ip_address, client_header))
+
+                    self.render("errorpage.html",
+                                user_name=user_name,
+                                local_today=local_today,
+                                error_message=message,
+                                flash_message=flash_message,
+                                new_user=new_user)
+
+        #######################
+        ## CONTENT RENDERING ##
+        #######################
+
+        search_results = []
+
+        if len(search_results) == 0:
+            search_result_info = ('<h3>Sorry, no items matching your '
+                                  'search query were found.</h3>')
+        elif len(search_results) == 1:
+            search_result_info = ('<h3>Found one item matching your '
+                                  'search query.</h3>')
+        elif len(search_results) > 1:
+            search_result_info = ('<h3>Found %s items matching your '
+                                  'search query, sorted by relevance.</h3>' %
+                                  len(search_results))
+
+        self.render("search.html",
+                    user_name=user_name,
+                    local_today=local_today,
+                    flash_message=flash_message,
+                    search_page_title="Search the Astro-Coffee archive",
+                    search_page_type="results",
+                    search_results=search_results,
+                    search_result_info=search_result_info,
+                    new_user=new_user)

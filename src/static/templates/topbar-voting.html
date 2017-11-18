@@ -20,35 +20,46 @@
 
     <section class="top-bar-section">
 
+      <ul class="left">
+        <li class="has-form">
+          <a href="/astroph-coffee/papers/today" class="button radius expand">Refresh
+          this listing</a>
+        </li>
+        <li class="has-form">
+          <a href="/astroph-coffee/archive" class="button radius expand">Astro-Coffee archive</a>
+        </li>
+      </ul>
+
       <ul class="right">
+        <li class="has-form topbar-search-form">
+          <div class="row collapse">
+            <div class="large-10 small-10 columns">
+              <form action="/astroph-coffee/search" method="post">
+                {% module xsrf_form_html() %}
+                <input type="text"
+                       placeholder="Search the Astro-Coffee archive">
+              </form>
+            </div>
+            <div class="large-2 small-2 columns">
+              <a href="#" class="button expand topbar-search-go">Go</a>
+            </div>
+          </div>
+        </li>
+
+        <li class="show-for-medium-up">
+          <a href="/astroph-coffee/search">Search help</a>
+        </li>
+
         <li class="show-for-medium-up">
           <a href="/astroph-coffee/local-authors">Local authors</a>
         </li>
+
         <li class="show-for-medium-up">
           <a data-options="align:left"
              data-dropdown="preferences-pane">View options</a>
         </li>
       </ul>
 
-      <ul class="left">
-        <li class="has-form">
-          <a href="/astroph-coffee/papers/today" class="button radius expand">Refresh
-          this listing</a>
-        </li>
-        <!-- <li class="has-form"> -->
-        <!--   <a href="/astroph-coffee/papers/reserved" class="button radius expand"> -->
-        <!--     Reserved papers -->
-        <!--   </a> -->
-        <!-- </li> -->
-        <li class="has-form">
-          <a href="/astroph-coffee/archive" class="button radius
-          expand">Astro-Coffee archive</a>
-        </li>
-        <li class="has-form">
-          <a href="http://adsabs.harvard.edu/abstract_service.html"
-             class="button radius expand">Search ADS</a>
-        </li>
-      </ul>
 
     </section>
 

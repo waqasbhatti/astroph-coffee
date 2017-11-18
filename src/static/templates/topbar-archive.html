@@ -35,12 +35,31 @@
         </li>
         <li class="has-form">
           <a href="http://adsabs.harvard.edu/abstract_service.html"
-             class="button radius expand">Search ADS</a>
+             class="button radius expand">ADS</a>
         </li>
 
       </ul>
 
       <ul class="right">
+
+        <li class="has-form topbar-search-form">
+          <div class="row collapse">
+            <div class="large-10 small-10 columns">
+              <form action="/astroph-coffee/search" method="post">
+                  {% module xsrf_form_html() %}
+                <input type="text"
+                       placeholder="Search the Astro-Coffee archive">
+              </form>
+            </div>
+            <div class="large-2 small-2 columns">
+              <a href="#" class="button expand topbar-search-go">Go</a>
+            </div>
+          </div>
+        </li>
+
+        <li class="show-for-medium-up">
+          <a href="/astroph-coffee/search">Search help</a>
+        </li>
 
         <li class="show-for-medium-up">
           <a href="/astroph-coffee/local-authors">Local authors</a>

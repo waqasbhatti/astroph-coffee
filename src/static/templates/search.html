@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block pagetitle %}{{ search_page_title }}{% end %}
+
+{% block pageheader %}
+
+{% include "topbar-search.html" %}
+
+{% end %}
+
+
+{% block pagecontent %}
+
+<div class="row">
+  <a href="#top">
+    <div class="small-12 columns">
+      <h2 class="show-for-medium-up">{{ search_page_title }}</h2>
+      <h3 class="show-for-small-only">{{ search_page_title }}</h3>
+    </div>
+  </a>
+</div>
+
+<div class="row">
+  <div class="small-12 medium-4 columns">
+
+  </div>
+  <div class="small-12 medium-4 columns">
+
+  </div>
+  <div class="small-12 medium-4 columns">
+
+  </div>
+
+</div>
+
+<form method="POST" action="/astroph-coffee/search" class="search-form">
+  {% module xsrf_form_html() %}
+  <div class="row large-margin-top">
+
+    <div class="small-12 medium-10 medium-centered columns">
+
+      <div class="row collapse postfix-radius">
+        <div class="small-10 columns">
+          <input type="text"
+                 placeholder="authors, title, abstract text, article type, date of posting, arXiv ID...">
+        </div>
+        <div class="small-2 columns show-for-medium-up">
+          <a href="#" class="button success postfix">Search</a>
+        </div>
+        <div class="small-2 columns show-for-small-only">
+          <a href="#" class="button success postfix search-form-go">Go</a>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</form>
+
+{% if search_page_type == 'results' %}
+
+<div class="row">
+  <div class="small-12 columns">
+    {% raw search_result_info %}
+  </div>
+</div>
+
+{% for result in search_results %}
+
+<div class="row small-listing-row other-paper-listing">
+  <div class="small-12 columns">
+
+    <div class="row">
+
+      <div class="small-12 medium-9 columns">
+
+        <div class="row">
+          <div class="small-12 columns">
+            {% set local_specaffil = result[-1] %}
+            {% if local_specaffil and len(local_specaffil) > 0 %}
+            <h4 class="paper-title mathjax" data-arxivid="{{ result[0] }}"><a href="#" title="click to see/hide abstract">[{{ local_specaffil }}] {{ result[2] }}</a></h4>
+            {% else %}
+            <h4 class="paper-title mathjax" data-arxivid="{{ result[0] }}"><a href="#" title="click to see/hide abstract">{{ result[2] }}</a></h4>
+            {% end %}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="small-12 columns">
+            <h6 class="subheader">{{ ', '.join((result[4].split(': ')[-1]).split(',')) }}</h6>
+            {% if len(result[5]) > 0 %}
+            <p class="comments-para">{% raw result[5] %}</p>
+            {% end %}
+          </div>
+        </div>
+
+      </div>
+
+      <div class="small-12 medium-3 columns text-right show-for-medium-up">
+
+        <div class="row">
+          <div class="small-12 columns">
+            <a href="{{ result[8] }}"
+               class="button success radius ">
+              Get PDF
+            </a>
+          </div>
+        </div>
+
+        <div class="row small-listing-row">
+          <div class="small-12 columns">
+            Paper {{ result[1] }} &mdash; <a href="{{ result[7] }}">{{ result[0] }}</a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="small-12 medium-3 columns text-center show-for-small-only">
+
+        <div class="row">
+          <div class="small-12 columns">
+            <a href="{{ result[8] }}"
+               class="button success radius ">
+              Get PDF
+            </a>
+          </div>
+        </div>
+
+        <div class="row small-listing-row">
+          <div class="small-12 columns">
+            Paper {{ result[1] }} &mdash; <a href="{{ result[7] }}">{{ result[0] }}</a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="row hide paper-abstract" data-arxivid="{{ result[0] }}">
+      <div class="small-12 columns">
+        <p class="abstract-para-medium mathjax">{{ result[6] }}</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% end %}
+
+{% end %}
+
+
+{% end %}
+
+
+{% block pagejs %}
+
+<script src="{{ static_url("js/coffee.js") }}"></script>
+
+<script>
+$(document).ready(function () {
+  coffee.action_setup();
+});
+</script>
+
+{% end %}
