@@ -255,16 +255,13 @@ Usage: update_arxiv.sh </path/to/astroph-coffee>
 A UNIX cronjob set up as follows (assuming US Eastern Time) will work well:
 
 ```
-29 20 * * 0,2,3,4 /path/to/astroph-coffee/shell/update_arxiv.sh /path/to/astroph-coffee 2>&1
-37 20 * * 1 /path/to/astroph-coffee/shell/update_arxiv.sh /path/to/astroph-coffee 2>&1
+29 20 * * 0,2,3,4 /path/to/astroph-coffee/shell/update_arxiv.sh /path/to/astroph-coffee > /dev/null 2>&1
+38 20 * * 1 /path/to/astroph-coffee/shell/update_arxiv.sh /path/to/astroph-coffee >/dev/null 2>&1
 ```
 
-These will update the server database at 20:30 US EST on Sunday,
-Tuesday--Thursday, but at 20:37 on Monday night because the arxiv usually
+These will update the server database at 20:29 US EST on Sunday and Tuesday
+through Thursday, but at 20:38 on Monday night, because the arxiv usually
 updates later on that night.
-
-The working SQLite database for the server will be in the
-`astroph-coffee/run/data/astroph.sqlite` file.
 
 
 ## Manual update of the arxiv listings
