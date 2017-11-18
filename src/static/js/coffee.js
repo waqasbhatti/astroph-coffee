@@ -365,7 +365,7 @@ var coffee = {
         $('.topbar-search-go').on('click', function(evt) {
 
             evt.preventDefault();
-            $('form').closest().submit();
+            $('.search-form').submit();
 
         });
 
@@ -373,10 +373,9 @@ var coffee = {
         $('.search-form-go').on('click', function(evt) {
 
             evt.preventDefault();
-            $('form').closest().submit();
+            $('.search-form').submit();
 
         });
-
 
         // handle clicking on the various view options
         $('#preferences-pane').on('click','#show-local-check',function (evt) {

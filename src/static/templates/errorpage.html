@@ -35,3 +35,15 @@
 </div>
 
 {% end %}
+
+{% block pagejs %}
+
+<script src="{{ static_url("js/coffee.js") }}"></script>
+
+<script>
+$(document).ready(function () {
+  coffee.action_setup();
+});
+</script>
+
+{% end %}
