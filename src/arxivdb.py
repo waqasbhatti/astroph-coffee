@@ -8,7 +8,14 @@ inserting/modifying arXiv papers.
 
 '''
 
-import sqlite3
+try:
+    from pysqlite2 import dbapi2 as sqlite3
+except:
+    print("can't find internal pysqlite2, falling back to Python sqlite3 "
+          "full-text search may not work right "
+          "if your sqlite3.sqlite3_version is old (< 3.8.6 or so)")
+    import sqlite3
+
 import os
 import os.path
 import ConfigParser
