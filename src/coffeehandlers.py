@@ -405,10 +405,12 @@ class ArticleListHandler(tornado.web.RequestHandler):
 
         local_today = datetime.now(tz=utc).strftime('%Y-%m-%d %H:%M %Z')
         todays_date = datetime.now(tz=utc).strftime('%A, %b %d %Y')
+
         todays_utcdate = datetime.now(tz=utc).strftime('%Y-%m-%d')
         todays_localdate = (
             datetime.now(tz=timezone(self.server_tz)).strftime('%Y-%m-%d')
         )
+        todays_localdow = datetime.now(tz=timezone(self.server_tz)).weekday()
         todays_localdate_str = (
             datetime.now(tz=timezone(self.server_tz)).strftime('%A, %b %d %Y')
             )
@@ -550,13 +552,17 @@ class ArticleListHandler(tornado.web.RequestHandler):
                     '%Y-%m-%d'
                 ).strftime('%A, %b %d %Y')
 
-                flash_message = (
-                    "<div data-alert class=\"alert-box radius\">"
-                    "Papers for today haven't been imported yet. "
-                    "Here are the most recent papers. "
-                    "Please wait a few minutes and try again."
-                    "<a href=\"#\" class=\"close\">&times;</a></div>"
-                )
+                # don't show a message on the weekend when no papers are loaded
+                if todays_localdow in (5,6):
+                    flash_message = ""
+                else:
+                    flash_message = (
+                        "<div data-alert class=\"alert-box radius\">"
+                        "Papers for today haven't been imported yet. "
+                        "Here are the most recent papers. "
+                        "Please wait a few minutes and try again."
+                        "<a href=\"#\" class=\"close\">&times;</a></div>"
+                    )
 
                 # preprocess the local papers to highlight local author names
                 if len(local_articles) > 0:
@@ -666,18 +672,23 @@ class ArticleListHandler(tornado.web.RequestHandler):
                          database=self.database
                      )
                 )
+
                 todays_date = datetime.strptime(
                     latestdate,
                     '%Y-%m-%d'
                 ).strftime('%A, %b %d %Y')
 
-                flash_message = (
-                    "<div data-alert class=\"alert-box radius\">"
-                    "Papers for today haven't been imported yet. "
-                    "Here are the most recent papers. "
-                    "Please wait a few minutes and try again."
-                    "<a href=\"#\" class=\"close\">&times;</a></div>"
-                )
+                # don't show a message on the weekend when no papers are loaded
+                if todays_localdow in (5,6):
+                    flash_message = ""
+                else:
+                    flash_message = (
+                        "<div data-alert class=\"alert-box radius\">"
+                        "Papers for today haven't been imported yet. "
+                        "Here are the most recent papers. "
+                        "Please wait a few minutes and try again."
+                        "<a href=\"#\" class=\"close\">&times;</a></div>"
+                    )
 
             # preprocess the local papers to highlight local author names
             if len(local_articles) > 0:
