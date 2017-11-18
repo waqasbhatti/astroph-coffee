@@ -276,7 +276,7 @@ First, delete the old rows corresponding to next morning's listings:
 (run) [astroph-coffee/run]$ sqlite3 data/astroph.sqlite
 
 # here the date is tomorrow's date
-sqlite3> delete from arxiv where utcdate = '20YY-MM-DD'
+sqlite3> delete from arxiv where utcdate = '20YY-MM-DD';
 sqlite3> .exit
 
 # start python
