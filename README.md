@@ -1,4 +1,4 @@
-### astroph-coffee - A simple platform for astro-ph arXiv discussion
+## astroph-coffee - A simple platform for astro-ph arXiv discussion
 
 This server helps organize astro-ph discussion by providing a way for people to
 see local papers and vote on papers they want to talk about. It has the
@@ -8,8 +8,15 @@ following components:
 * article abstract and metadata storage in sqlite3
 * frontend built with tornado for viewing and voting on papers
 * an archive of previous astro-ph discussions
-* geofencing using the Maxmind GeoLite2 database to restrict voting locations
+* geofencing (and IP-address fencing) using the Maxmind GeoLite2 database to
+  restrict voting locations
 * reserving papers for later discussion (up to a week after their appearance)
+
+See the INSTALL.md file for instructions on how to install and run the
+server. If you have questions or problems, please open an issue or drop me an
+email.
+
+### How it works
 
 Everyone gets five votes to use in total per day, with one per paper. In
 addition, everyone may reserve up to five papers for later discussion. The
@@ -34,10 +41,6 @@ server generally operates in two modes:
 
    ![Display mode image](src/static/images/listing.png?raw=true)
 
-
 An archive of all paper abstracts is also provided in reverse chronological
 order, grouped by month and year to make it easy to see what people were
 interested in talking about on previous days.
-
-See the INSTALL.md file for instructions on how to install and run the
-server. If you have questions or problems, please let me know.
