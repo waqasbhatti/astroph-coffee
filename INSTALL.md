@@ -19,7 +19,7 @@ stuff, you'll need a C compiler.
 
 You'll need the following already installed:
 
-* a C compiler (tested with gcc 4.8.5, gcc 7.2.1, Apple clang XXXX)
+* a C compiler (tested with gcc 4.8.5 and gcc 7.2.1)
 * the virtualenv tool for Python
 * nginx or Apache (if you want external access via reverse-proxy)
 * rsync to incrementally copy stuff in `src` to the `run` directory
@@ -257,7 +257,6 @@ A UNIX cronjob set up as follows (assuming US Eastern Time) will work well:
 ```
 29 20 * * 0,2,3,4 /path/to/astroph-coffee/shell/update_arxiv.sh /path/to/astroph-coffee 2>&1
 37 20 * * 1 /path/to/astroph-coffee/shell/update_arxiv.sh /path/to/astroph-coffee 2>&1
-
 ```
 
 These will update the server database at 20:30 US EST on Sunday,
@@ -275,30 +274,32 @@ something else broke), you'll have to do a manual update.
 
 First, delete the old rows corresponding to next morning's listings:
 
-```
+```bash
 [astroph-coffee/run]$ source bin/activate
 (run) [astroph-coffee/run]$ sqlite3 data/astroph.sqlite
 
 # here the date is tomorrow's date
 sqlite3> delete from arxiv where utcdate = '20YY-MM-DD'
 sqlite3> .exit
+
+# start python
+(run) [astroph-coffee/run]$ python
 ```
 
 Next, run a manual update:
-(run) [astroph-coffee/run]$ python
 
->>> import arxivutils, arxivdb
+```python
+
+import arxivutils, arxivdb
 
 # download the HTML of tonight's astro-ph listing
->>> listing = arxivutils.arxiv_update()
+listing = arxivutils.arxiv_update()
 
 # insert the articles into the DB and tag local authors automatically
 # the match_threshold is used to set the strictness of local author matching
 # smaller values are more relaxed, match_threshold ranges from 0.0 to 1.0.
 # the default value is 0.93
->>> arxivdb.insert_articles(listing, match_threshold=X.XX)
-
->>> exit()
+arxivdb.insert_articles(listing, match_threshold=X.XX)
 ```
 
 
@@ -316,28 +317,29 @@ that will help fix these problems.
 [user@machine astroph-coffee]$ source bin/activate
 (run)[user@machine astroph-coffee]$ python
 ```
+
 Then in the python shell:
 
 ```python
->>> import arxivdb
+import arxivdb
 
 # to untag a paper that's not actually a local author paper
->>> arxivdb.force_localauthor_untag('<arxiv id of the offending paper>')
+arxivdb.force_localauthor_untag('<arxiv id of the offending paper>')
 
 # to retag a paper that was actually a local author paper,
 # or if the server tagged the wrong people in the author list
 # as the local authors
->>> arxivdb.force_localauthor_tag('<arxiv id of the offending paper>',
-                                  [index_of_first_missing_author,
-                                   index_of_second_missing_author, ...])
+arxivdb.force_localauthor_tag('<arxiv id of the offending paper>',
+                              [index_of_first_missing_author,
+                               index_of_second_missing_author, ...])
 
 # an example where we missed a paper with local authors in the 1st, 3rd, and 6th
 # positions in the author list
->>> arxivdb.force_localauthor_tag('arXiv:1711:01234', [0,2,5])
+arxivdb.force_localauthor_tag('arXiv:1711:01234', [0,2,5])
 
 # to retag a paper that had an incorrect local special affiliation
->>> arxivdb.force_localauthor_tag('<arxiv id of the offending paper>',
-                                  [index_of_first_author,
-                                   index_of_second_author, ...],
-                                  specaffils=['Affiliate1','Affiliate2', ...])
+arxivdb.force_localauthor_tag('<arxiv id of the offending paper>',
+                               [index_of_first_author,
+                                index_of_second_author, ...],
+                                specaffils=['Affiliate1','Affiliate2', ...])
 ```
