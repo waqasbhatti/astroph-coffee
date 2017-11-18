@@ -410,7 +410,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
         todays_localdate = (
             datetime.now(tz=timezone(self.server_tz)).strftime('%Y-%m-%d')
         )
-        todays_localdow = datetime.now(tz=timezone(self.server_tz)).weekday()
+        todays_utcdow = datetime.now(tz=utc).weekday()
         todays_localdate_str = (
             datetime.now(tz=timezone(self.server_tz)).strftime('%A, %b %d %Y')
             )
@@ -553,7 +553,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
                 ).strftime('%A, %b %d %Y')
 
                 # don't show a message on the weekend when no papers are loaded
-                if todays_localdow in (5,6):
+                if todays_utcdow in (5,6):
                     flash_message = ""
                 else:
                     flash_message = (
@@ -679,7 +679,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
                 ).strftime('%A, %b %d %Y')
 
                 # don't show a message on the weekend when no papers are loaded
-                if todays_localdow in (5,6):
+                if todays_utcdow in (5,6):
                     flash_message = ""
                 else:
                     flash_message = (
