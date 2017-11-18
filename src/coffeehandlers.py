@@ -2030,3 +2030,51 @@ class LocalListHandler(tornado.web.RequestHandler):
                         error_message=message,
                         flash_message=flash_message,
                         new_user=new_user)
+
+
+class FTSHandler(tornado.web.RequestHandler):
+    '''
+    This handles all requests for searching.
+
+    GET returns a search page.
+
+    POST posts the AJAX request.
+
+    '''
+
+    def initialize(self,
+                   database,
+                   voting_start,
+                   voting_end,
+                   debug,
+                   signer,
+                   geofence,
+                   countries,
+                   regions):
+        '''
+        Sets up the database.
+
+        '''
+
+        self.database = database
+        self.voting_start = voting_start
+        self.voting_end = voting_end
+        self.debug = debug
+        self.signer = signer
+
+        self.geofence = geofence[0]
+        self.ipaddrs = geofence[1]
+        self.editips = geofence[2]
+
+        self.countries = countries
+        self.regions = regions
+
+    def get(self):
+        '''This handles GET requests for searching.
+
+        '''
+
+    def post(self):
+        '''This handles POST requests for searching.
+
+        '''
