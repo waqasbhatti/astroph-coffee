@@ -2395,15 +2395,29 @@ class FTSHandler(tornado.web.RequestHandler):
 
                 try:
 
+                    # figure out the weights to apply
+                    titleq_count = searchquery.count('title:')
+                    abstractq_count = searchquery.count('abstract:')
+                    authorq_count = searchquery.count('authors:')
+
+
+                    author_weight = 1.0 + 1.0*authorq_count
+                    abstract_weight = 3.0 + 1.0*abstractq_count
+                    title_weight = 2.0 + 1.0*titleq_count
+
                     ftsdict = fts.fts4_phrase_query_paginated(
                         searchquery,
                         ['arxiv_id','day_serial','title',
                          'authors','comments','abstract',
-                         'link','pdf','utcdate'],
+                         'link','pdf','utcdate',
+                         'nvotes',
+                         'local_authors', 'local_author_indices'],
                         sortcol='relevance',
                         pagelimit=500,
                         database=self.database,
-                        relevance_weights=[8.0,10.0,2.0],
+                        relevance_weights=[title_weight,
+                                           abstract_weight,
+                                           author_weight],
                     )
 
                     search_results = ftsdict['results']
@@ -2419,6 +2433,7 @@ class FTSHandler(tornado.web.RequestHandler):
                         'abstract = 10.0,'
                         ' authors = 2.0, all others = 1.0">relevance</span>'
                     )
+
 
                     if all_nmatches == 0:
                         search_nmatches = 0

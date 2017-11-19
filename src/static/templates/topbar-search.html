@@ -36,7 +36,7 @@
 
         {% if search_page_type == 'results' %}
         <li class="has-form">
-          <a href="/astroph-coffee/search" class="button radius expand">
+          <a href="#top" class="button radius expand">
             Search again
           </a>
         </li>
@@ -45,14 +45,6 @@
       </ul>
 
       <ul class="right">
-
-        {% if search_page_type == 'results' %}
-        <li class="has-form">
-          <a href="#top" class="button radius expand">
-            Back to the top
-          </a>
-        </li>
-        {% end %}
 
         <li class="show-for-medium-up">
           <a href="/astroph-coffee/local-authors">Local authors</a>
@@ -83,16 +75,8 @@
   <h6>Abstract visibility</h6>
   <ul class="no-bullet">
     <li>
-      <input type="checkbox" id="show-local-check" checked>
-      <label for="show-local-check">Local abstracts</label>
-    </li>
-    <li>
-      <input type="checkbox" id="show-voted-check" checked>
-      <label for="show-voted-check">Voted abstracts</label>
-    </li>
-    <li>
       <input type="checkbox" id="show-other-check">
-      <label for="show-other-check">Other abstracts</label>
+      <label for="show-other-check">Show abstracts</label>
     </li>
   </ul>
 
