@@ -2401,7 +2401,7 @@ class FTSHandler(tornado.web.RequestHandler):
                     sortcol='relevance',
                     pagelimit=500,
                     database=self.database,
-                    relevance_weights=[0.4,0.4,0.2],
+                    relevance_weights=[8.0,10.0,2.0],
                 )
 
                 search_results = ftsdict['results']
@@ -2409,6 +2409,10 @@ class FTSHandler(tornado.web.RequestHandler):
 
                 LOGGER.info('found %s objects matching %s' % (all_nmatches,
                                                               searchquery))
+
+                relevance_sticker = ('<abbr title="Okapi BM25 weighted '
+                                     'relevance: title = 8.0, abstract = 10.0,'
+                                     ' authors = 2.0">relevance</abbr>')
 
                 if all_nmatches == 0:
                     search_nmatches = 0
@@ -2422,14 +2426,16 @@ class FTSHandler(tornado.web.RequestHandler):
                 elif 1 < all_nmatches < 501:
                     search_nmatches = len(ftsdict['results']['arxiv_id'])
                     search_result_info = ('<h4>Found %s matching items, '
-                                          'results below sorted by relevance</h4>' %
-                                          search_nmatches)
+                                          'results below sorted by %s</h4>' %
+                                          (search_nmatches,relevance_sticker))
                 else:
                     search_nmatches = len(ftsdict['results']['arxiv_id'])
                     search_result_info = ('<h4>Found %s total matching items, '
                                           'top %s results below sorted '
-                                          'by relevance</h4>' %
-                                          (all_nmatches, search_nmatches))
+                                          'by %s</h4>' %
+                                          (all_nmatches,
+                                           search_nmatches,
+                                           relevance_sticker))
 
                 self.render("search.html",
                             user_name=user_name,
