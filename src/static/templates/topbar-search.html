@@ -77,3 +77,39 @@
     {% raw flash_message %}
   </div>
 </div>
+
+<div id="preferences-pane" data-dropdown-content class="tiny f-dropdown content">
+
+  <h6>Abstract visibility</h6>
+  <ul class="no-bullet">
+    <li>
+      <input type="checkbox" id="show-local-check" checked>
+      <label for="show-local-check">Local abstracts</label>
+    </li>
+    <li>
+      <input type="checkbox" id="show-voted-check" checked>
+      <label for="show-voted-check">Voted abstracts</label>
+    </li>
+    <li>
+      <input type="checkbox" id="show-other-check">
+      <label for="show-other-check">Other abstracts</label>
+    </li>
+  </ul>
+
+  <h6>Abstract text size</h6>
+  <ul class="no-bullet">
+    <li>
+      <input type="radio" id="font-size-small" name="font-size-radio">
+      <label for="font-size-small">Small font</label>
+    </li>
+    <li>
+      <input type="radio" id="font-size-medium" name="font-size-radio" checked>
+      <label for="font-size-medium">Medium font</label>
+    </li>
+    <li>
+      <input type="radio" id="font-size-large" name="font-size-radio">
+      <label for="font-size-large">Large font</label>
+    </li>
+  </ul>
+
+</div>
