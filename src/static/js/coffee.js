@@ -377,6 +377,54 @@ var coffee = {
 
         });
 
+        // handle the sort order go button
+        $('.resort-results-go').on('click', function (evt) {
+
+            evt.preventDefault();
+
+            var sortorder = $('.sortorder-select').val();
+            var sortcol = 'data-' + $('.sortby-select').val();
+            var resultscontainer = $('.search-result-container');
+
+            var tosort_divs = $('.other-paper-listing');
+
+            // sort the rows in the order requested
+            tosort_divs.sort(function (a,b) {
+
+                if (sortcol == 'data-utcdate') {
+                    var adata = Date.parse(a.getAttribute(sortcol));
+                    var bdata = Date.parse(b.getAttribute(sortcol));
+                }
+                else {
+                    var adata = parseFloat(a.getAttribute(sortcol));
+                    var bdata = parseFloat(b.getAttribute(sortcol));
+                }
+
+                if (adata > bdata) {
+                    if (sortorder == 'asc') {
+                        return 1;
+                    }
+                    else {
+                        return -1;
+                    }
+                }
+                else if (adata < bdata) {
+                    if (sortorder == 'asc') {
+                        return -1;
+                    }
+                    else {
+                        return 1;
+                    }
+                }
+                else {
+                    return 0;
+                }
+
+            }).detach().appendTo(resultscontainer);
+
+        });
+
+
         // handle clicking on the various view options
         $('#preferences-pane').on('click','#show-local-check',function (evt) {
 

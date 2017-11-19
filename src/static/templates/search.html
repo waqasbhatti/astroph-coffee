@@ -69,10 +69,10 @@
             <tr>
               <td>Full-text keyword search</td>
               <td>Just type in the keywords you want to use. To look for
-              alternate forms of keywords, use the <strong>*</strong>
-              (asterisk) operator. All keywords separated by spaces will
-              be required to appear in the results. They will be matched
-              against all content fields in the database if no specific content fields are provided (see below).</td>
+                alternate forms of keywords, use the <strong>*</strong>
+                (asterisk) operator. All keywords separated by spaces will
+                be required to appear in the results. They will be matched
+                against all content fields in the database if no specific content fields are provided (see below).</td>
               <td><strong>gaussian process regression</strong><br><strong>Kepler exoplanet*</strong><br>(matches exoplanet, exoplanets, exoplanetary)</td>
             </tr>
 
@@ -159,129 +159,156 @@
 
 {% if search_nmatches > 0 %}
 
+<div class="row search-result-info">
+
+  <div class="small-12 columns">
+    <p>Show matching items in: &nbsp;
+      <select class="sortorder-select">
+        <option value="desc" selected>descending</option>
+        <option value="asc">ascending</option>
+      </select>
+      &nbsp;order sorted by: &nbsp;
+      <select class="sortby-select">
+        <option value="relevance" selected>relevance</option>
+        <option value="utcdate">date of posting</option>
+        <option value="nvotes">number of votes</option>
+        <option value="localauthors">local authors</option>
+      </select>
+      &nbsp;
+      <a class="button radius resort-results-go">Resort</a>
+    </p>
+  </div>
+
+</div>
+
+<div class="search-result-container">
+
 {% for resultindex in range(search_nmatches) %}
 
-<div data-arxivid="{{ search_results['arxiv_id'][resultindex] }}"
-     data-utcdate="{{ search_results['utcdate'][resultindex] }}"
-     data-relevance="{{ search_results['overall_bm25'][resultindex] }}"
-     data-nvotes="{{ search_results['nvotes'][resultindex] }}"
-     data-localauthors="{{ search_results['local_authors'][resultindex] }}"
-     class="row small-listing-row other-paper-listing large-margin-top">
-  <div class="small-12 columns">
+  <div data-arxivid="{{ search_results['arxiv_id'][resultindex] }}"
+       data-utcdate="{{ search_results['utcdate'][resultindex] }}"
+       data-relevance="{{ search_results['overall_bm25'][resultindex] }}"
+       data-nvotes="{{ search_results['nvotes'][resultindex] }}"
+       data-localauthors="{{ search_results['local_authors'][resultindex] }}"
+       class="row small-listing-row other-paper-listing large-margin-top">
+    <div class="small-12 columns">
 
-    <div class="row">
+      <div class="row">
 
-      <div class="small-12 medium-9 columns">
+        <div class="small-12 medium-9 columns">
 
-        <div class="row">
-          <div class="small-12 columns">
-            <h4 class="paper-title mathjax">{{ resultindex+1 }}. <a href="#" title="click to see/hide abstract">{{ search_results['title'][resultindex] }}</a></h4>
+          <div class="row">
+            <div class="small-12 columns">
+              <h4 data-arxivid="{{ search_results['arxiv_id'][resultindex] }}"
+                  class="paper-title mathjax"><a href="#" title="click to see/hide abstract">{{ search_results['title'][resultindex] }}</a></h4>
+            </div>
           </div>
+
+          <div class="row">
+            <div class="small-12 columns">
+              {% if search_results['local_authors'][resultindex] and search_results['local_author_indices'][resultindex] and len(search_results['local_author_indices'][resultindex]) > 0 %}
+
+              {% set localinds = [int(x) for x in search_results['local_author_indices'][resultindex].split(',')] %}
+              {% set authorlist = [('<strong>%s</strong>' % author if authorind in localinds else author) for (authorind, author) in enumerate(search_results['authors'][resultindex].split(','))] %}
+              <h6 class="subheader">{% raw ', '.join(authorlist) %}</h6>
+
+              {% else %}
+
+              <h6 class="subheader">{{ ', '.join((search_results['authors'][resultindex].split(','))) }}</h6>
+
+              {% end %}
+
+              {% if len(search_results['comments'][resultindex]) > 0 %}
+              <p class="comments-para">{% raw search_results['comments'][resultindex] %}</p>
+              {% end %}
+
+            </div>
+          </div>
+
         </div>
 
-        <div class="row">
-          <div class="small-12 columns">
-            {% if search_results['local_authors'][resultindex] and search_results['local_author_indices'][resultindex] and len(search_results['local_author_indices'][resultindex]) > 0 %}
+        <div class="small-12 medium-3 columns text-right show-for-medium-up">
 
-            {% set localinds = [int(x) for x in search_results['local_author_indices'][resultindex].split(',')] %}
-            {% set authorlist = [('<strong>%s</strong>' % author if authorind in localinds else author) for (authorind, author) in enumerate(search_results['authors'][resultindex].split(','))] %}
-            <h6 class="subheader">{% raw ', '.join(authorlist) %}</h6>
-
-            {% else %}
-
-            <h6 class="subheader">{{ ', '.join((search_results['authors'][resultindex].split(','))) }}</h6>
-
-            {% end %}
-
-            {% if len(search_results['comments'][resultindex]) > 0 %}
-            <p class="comments-para">{% raw search_results['comments'][resultindex] %}</p>
-            {% end %}
-
+          <div class="row">
+            <div class="small-12 columns">
+              <a href="{{ search_results['pdf'][resultindex] }}"
+                 class="button secondary radius ">
+                Get PDF
+              </a>
+            </div>
           </div>
-        </div>
 
-      </div>
+          <div class="row small-listing-row">
+            <div class="small-12 columns">
 
-      <div class="small-12 medium-3 columns text-right show-for-medium-up">
-
-        <div class="row">
-          <div class="small-12 columns">
-            <a href="{{ search_results['pdf'][resultindex] }}"
-               class="button secondary radius ">
-              Get PDF
-            </a>
-          </div>
-        </div>
-
-        <div class="row small-listing-row">
-          <div class="small-12 columns">
-
-            {% if search_results['nvotes'][resultindex] > 1 %}
+              {% if search_results['nvotes'][resultindex] > 1 %}
               <h5>
                 <strong>{{ search_results['nvotes'][resultindex] }}</strong> votes
               </h5>
-            {% elif search_results['nvotes'][resultindex] == 1 %}
+              {% elif search_results['nvotes'][resultindex] == 1 %}
               <h5>
                 <strong>{{ search_results['nvotes'][resultindex] }}</strong> vote
               </h5>
-            {% end %}
+              {% end %}
+            </div>
           </div>
+
+          <div class="row small-listing-row">
+            <div class="small-12 columns">
+              <a title="see the Astro-Coffee listings on this date" href="/astroph-coffee/archive/{{ search_results['utcdate'][resultindex].strftime('%Y%m%d') }}">Paper {{ search_results['day_serial'][resultindex] }} on {{ search_results['utcdate'][resultindex] }}</a><br>
+              <a href="{{ search_results['link'][resultindex] }}">{{ search_results['arxiv_id'][resultindex] }}</a>
+            </div>
+          </div>
+
         </div>
 
-        <div class="row small-listing-row">
-          <div class="small-12 columns">
-            <a title="see the Astro-Coffee listings on this date" href="/astroph-coffee/archive/{{ search_results['utcdate'][resultindex].strftime('%Y%m%d') }}">Paper {{ search_results['day_serial'][resultindex] }} on {{ search_results['utcdate'][resultindex] }}</a><br>
-            <a href="{{ search_results['link'][resultindex] }}">{{ search_results['arxiv_id'][resultindex] }}</a>
+        <div class="small-12 medium-3 columns text-center show-for-small-only">
+
+          <div class="row">
+            <div class="small-12 columns">
+              <a href="{{ search_results['pdf'][resultindex] }}"
+                 class="button secondary success radius ">
+                Get PDF
+              </a>
+            </div>
           </div>
-        </div>
 
-      </div>
+          <div class="row small-listing-row">
+            <div class="small-12 columns">
 
-      <div class="small-12 medium-3 columns text-center show-for-small-only">
-
-        <div class="row">
-          <div class="small-12 columns">
-            <a href="{{ search_results['pdf'][resultindex] }}"
-               class="button secondary success radius ">
-              Get PDF
-            </a>
-          </div>
-        </div>
-
-        <div class="row small-listing-row">
-          <div class="small-12 columns">
-
-            {% if search_results['nvotes'][resultindex] > 1 %}
+              {% if search_results['nvotes'][resultindex] > 1 %}
               <h5>
                 <strong>{{ search_results['nvotes'][resultindex] }}</strong> votes
               </h5>
-            {% elif search_results['nvotes'][resultindex] == 1 %}
+              {% elif search_results['nvotes'][resultindex] == 1 %}
               <h5>
                 <strong>{{ search_results['nvotes'][resultindex] }}</strong> vote
               </h5>
-            {% end %}
+              {% end %}
 
+            </div>
           </div>
-        </div>
 
-        <div class="row small-listing-row">
-          <div class="small-12 columns">
-            <a title="see the Astro-Coffee listings on this date" href="/astroph-coffee/archive/{{ search_results['utcdate'][resultindex].strftime('%Y%m%d') }}">Paper {{ search_results['day_serial'][resultindex] }} on {{ search_results['utcdate'][resultindex] }}</a><br>
-            <a href="{{ search_results['link'][resultindex] }}">{{ search_results['arxiv_id'][resultindex] }}</a>
+          <div class="row small-listing-row">
+            <div class="small-12 columns">
+              <a title="see the Astro-Coffee listings on this date" href="/astroph-coffee/archive/{{ search_results['utcdate'][resultindex].strftime('%Y%m%d') }}">Paper {{ search_results['day_serial'][resultindex] }} on {{ search_results['utcdate'][resultindex] }}</a><br>
+              <a href="{{ search_results['link'][resultindex] }}">{{ search_results['arxiv_id'][resultindex] }}</a>
+            </div>
           </div>
+
         </div>
 
       </div>
 
-    </div>
-
-    <div class="row hide paper-abstract" data-arxivid="{{ search_results['arxiv_id'][resultindex] }}">
-      <div class="small-12 columns">
-        <p class="abstract-para-medium mathjax">{{ search_results['abstract'][resultindex] }}</p>
+      <div class="row hide paper-abstract" data-arxivid="{{ search_results['arxiv_id'][resultindex] }}">
+        <div class="small-12 columns">
+          <p class="abstract-para-medium mathjax">{{ search_results['abstract'][resultindex] }}</p>
+        </div>
       </div>
-    </div>
 
+    </div>
   </div>
+
 </div>
 
 {% end %}

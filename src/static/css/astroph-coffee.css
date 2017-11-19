@@ -207,3 +207,16 @@ p.normal {
 .search-result-info p {
     font-size: 20px;
 }
+
+.search-result-info div {
+    font-size: 20px;
+}
+
+.search-result-info select {
+    width: auto;
+}
+
+.search-result-info .button {
+    padding-top: 0.625rem;
+    padding-bottom: 0.625rem;
+}

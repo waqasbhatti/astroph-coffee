@@ -2429,41 +2429,39 @@ class FTSHandler(tornado.web.RequestHandler):
                     relevance_sticker = (
                         '<span data-tooltip aria-haspopup="true" '
                         'class="has-tip" title="Okapi BM25 relevance '
-                        'weights: title = 8.0, '
-                        'abstract = 10.0,'
-                        ' authors = 2.0, all others = 1.0">relevance</span>'
-                    )
+                        'weights: title = %.1f, '
+                        'abstract = %.1f,'
+                        ' authors = %.1f, all others = 1.0">relevant</span>'
+                    ) % (title_weight, abstract_weight, author_weight)
 
 
                     if all_nmatches == 0:
                         search_nmatches = 0
                         search_result_info = (
-                            '<p>Sorry, no items matching your '
-                            'search query: "%s" were found.</p>' %
+                            '<p>Sorry, no matching items were found for: '
+                            '<strong>%s</strong></p>' %
                             searchquery
                         )
                     elif all_nmatches == 1:
                         search_nmatches = 1
                         search_result_info = (
-                            '<p>Found only one item matching your '
-                            'search query: "%s".</p>' % searchquery
+                            '<p>Found only one matching item for: '
+                            '<strong>%s</strong></p>' % searchquery
                         )
                     elif 1 < all_nmatches < 501:
                         search_nmatches = len(ftsdict['results']['arxiv_id'])
                         search_result_info = (
-                            '<p>Found %s matching items for "%s". '
-                            'Results below are sorted by %s.</p>' %
+                            '<p>Found %s matching items for: '
+                            '<strong>%s</strong></p>' %
                             (search_nmatches,
-                             searchquery,
-                             relevance_sticker)
+                             searchquery)
                         )
                     else:
                         search_nmatches = len(ftsdict['results']['arxiv_id'])
                         search_result_info = ('<p>Found %s total matching '
-                                              'items for "%s". '
+                                              'items for <strong>%s</strong>. '
                                               'Showing only the '
-                                              'top %s results below, sorted '
-                                              'by %s.</p>' %
+                                              'top %s %s results below.</p>' %
                                               (all_nmatches,
                                                searchquery,
                                                search_nmatches,
