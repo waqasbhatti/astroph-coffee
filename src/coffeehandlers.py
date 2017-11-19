@@ -2436,8 +2436,8 @@ class FTSHandler(tornado.web.RequestHandler):
                     elif 1 < all_nmatches < 501:
                         search_nmatches = len(ftsdict['results']['arxiv_id'])
                         search_result_info = (
-                            '<p>Found %s matching items for "%s", '
-                            'results below sorted by %s.</p>' %
+                            '<p>Found %s matching items for "%s". '
+                            'Results below are sorted by %s.</p>' %
                             (search_nmatches,
                              searchquery,
                              relevance_sticker)
@@ -2445,8 +2445,9 @@ class FTSHandler(tornado.web.RequestHandler):
                     else:
                         search_nmatches = len(ftsdict['results']['arxiv_id'])
                         search_result_info = ('<p>Found %s total matching '
-                                              'items for "%s", '
-                                              'top %s results below sorted '
+                                              'items for "%s". '
+                                              'Showing only the '
+                                              'top %s results below, sorted '
                                               'by %s.</p>' %
                                               (all_nmatches,
                                                searchquery,
