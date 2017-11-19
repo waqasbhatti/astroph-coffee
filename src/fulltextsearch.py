@@ -46,7 +46,8 @@ FTS_COLUMNS = ['utcdate',
                'abstract',
                'link',
                'pdf',
-               'nvotes']
+               'nvotes',
+               'local_authors']
 
 
 def get_matchinfo_arrays(matchinfo_rows):
