@@ -11,6 +11,7 @@ following components:
 * geofencing (and IP-address fencing) using the Maxmind GeoLite2 database to
   restrict voting locations
 * reserving papers for later discussion (up to a week after their appearance)
+* full-text search for paper titles, abstract titles, and author names
 
 See the INSTALL.md file for instructions on how to install and run the
 server. If you have questions or problems, please open an issue or drop me an
