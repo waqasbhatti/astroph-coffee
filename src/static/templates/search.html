@@ -20,18 +20,6 @@
   </a>
 </div>
 
-<div class="row">
-  <div class="small-12 medium-4 columns">
-
-  </div>
-  <div class="small-12 medium-4 columns">
-
-  </div>
-  <div class="small-12 medium-4 columns">
-
-  </div>
-
-</div>
 
 <form method="POST" action="/astroph-coffee/search" class="search-form">
   {% module xsrf_form_html() %}
@@ -58,11 +46,109 @@
   </div>
 </form>
 
-{% if search_page_type == 'results' %}
-
 <div class="row">
   <div class="small-12 columns">
-    {% raw search_result_info %}
+
+    <dl class="accordion" data-accordion>
+
+      <dd class="accordion-navigation">
+        <a href="#panel-basic">HELP: basic search usage</a>
+        <div id="panel-basic" class="content">
+
+          <table class="help-table">
+
+            <thead>
+              <tr>
+                <th width="150">Search type</th>
+                <th>How it's done</th>
+                <th width="300">Examples</th>
+              </tr>
+            </thead>
+
+            <tr>
+              <td>Full-text keyword search</td>
+              <td>Just type in the keywords you want to use. To look for alternate forms of keywords, use the <strong>*</strong> (asterisk) operator. All keywords separated by spaces will be required to appear in the results. They will be matched against content fields in the database if no content fields are provided (see below).</td>
+              <td><strong>gaussian process regression</strong><br><strong>Kepler exoplanet*</strong><br>(matches exoplanet, exoplanets, exoplanetary)</td>
+            </tr>
+
+            <tr>
+              <td>Boolean operators</td>
+              <td>Use <strong>NOT keyword</strong> to make sure keyword doesn't show up in the results. Use <strong>keyword1 OR keyword2</strong> to match either keyword1 or keyword2. Use <strong>keyword1 AND keyword2</strong> to make sure both or all keywords show up in the results. You can use parentheses to specify the operator precedence.</td>
+              <td><strong>Kepler NOT transit*</strong><br><strong>(K2 OR Gaia) AND supernova*</strong><br></td>
+            </tr>
+
+          </table>
+
+        </div>
+      </dd>
+
+      <dd class="accordion-navigation">
+        <a href="#panel-advanced">HELP: advanced search using content fields</a>
+        <div id="panel-advanced" class="content">
+
+          <table class="help-table">
+
+            <thead>
+              <tr>
+                <th width="150">Search type</th>
+                <th>How it's done</th>
+                <th width="300">Examples</th>
+              </tr>
+            </thead>
+
+            <tr>
+              <td>Author content field</td>
+              <td>Use <strong>authors:author_name</strong>.</td>
+              <td><strong>authors:Lupton authors:Gunn NOT SDSS</strong><br><strong>authors:Bakos NOT planet*</strong></td>
+            </tr>
+
+            <tr>
+              <td>Title content field</td>
+              <td>Use <strong>title:keyword</strong> to search for keyword in title. All of the rules above for Booleans and multiple matching work here too.</td>
+              <td><strong>title:Gaia authors:Eyer transients</strong><br><strong>title:LSST authors:Juric</strong></td>
+            </tr>
+
+            <tr>
+              <td>Abstract content field</td>
+              <td>Use <strong>abstract:keyword</strong> to search for keyword in the article abstract. All of the rules above for Booleans and multiple matching work here too. The <strong>*</strong> operator will be particularly useful here.</td>
+              <td><strong>abstract:transient* title:PTF NOT title:supernova*</strong></td>
+            </tr>
+
+            <tr>
+              <td>arXiv ID content field</td>
+              <td>Type in an arXiv ID (without the 'arXiv:' prefix) to look up the paper: <strong>arxiv_id:XXXX.YYYY</strong></td>
+              <td><strong>arxiv_id:1601.05121</strong></td>
+            </tr>
+
+            <tr>
+              <td>Article type content field</td>
+              <td>Use either <strong>article_type:astronomy</strong> or <strong>article_type:crosslists</strong> to restrict results to the respective listings.</td>
+              <td><strong>abstract:plasma title:sun article_type:astronomy</strong></td>
+            </tr>
+
+          </table>
+
+        </div>
+      </dd>
+
+    </dl>
+
+  </div>
+</div>
+
+
+
+{% if search_page_type == 'results' %}
+
+
+<div class="row large-margin-top">
+  <div class="small-12 columns">
+    <h3>Search results</h3>
+
+    <div class="search-result-info">
+      {% raw search_result_info %}
+    </div>
+
   </div>
 </div>
 
@@ -160,9 +246,9 @@
 <script src="{{ static_url("js/coffee.js") }}"></script>
 
 <script>
-$(document).ready(function () {
+  $(document).ready(function () {
   coffee.action_setup();
-});
+  });
 </script>
 
 {% end %}

@@ -58,6 +58,7 @@ create virtual table arxiv_fts using fts4(
        link,
        pdf,
        nvotes,
+       tokenize="unicode61"
 );
 
 -- create the required triggers to update the FTS index whenever stuff is

@@ -199,3 +199,11 @@ p.normal {
     font-size: 16px;
     line-height: 1.1;
 }
+
+.help-table {
+    font-size: 14px;
+}
+
+.search-result-info p {
+    font-size: 20px;
+}

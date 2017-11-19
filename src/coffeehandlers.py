@@ -2369,8 +2369,8 @@ class FTSHandler(tornado.web.RequestHandler):
 
         if not searchquery or len(searchquery) == 0:
 
-            search_result_info = ('<h4>Sorry, we couldn\'t understand your '
-                                  'search query: "%s"</h4>' %
+            search_result_info = ('<p>Sorry, we couldn\'t understand your '
+                                  'search query: "%s".</p>' %
                                   squeeze(xhtml_escape(searchquery)))
 
             search_results = None
@@ -2393,66 +2393,109 @@ class FTSHandler(tornado.web.RequestHandler):
 
             if len(searchquery) > 0:
 
-                ftsdict = fts.fts4_phrase_query_paginated(
-                    searchquery,
-                    ['arxiv_id','day_serial','title',
-                     'authors','comments','abstract',
-                     'link','pdf','utcdate'],
-                    sortcol='relevance',
-                    pagelimit=500,
-                    database=self.database,
-                    relevance_weights=[8.0,10.0,2.0],
-                )
+                try:
 
-                search_results = ftsdict['results']
-                all_nmatches = ftsdict['nmatches']
+                    ftsdict = fts.fts4_phrase_query_paginated(
+                        searchquery,
+                        ['arxiv_id','day_serial','title',
+                         'authors','comments','abstract',
+                         'link','pdf','utcdate'],
+                        sortcol='relevance',
+                        pagelimit=500,
+                        database=self.database,
+                        relevance_weights=[8.0,10.0,2.0],
+                    )
 
-                LOGGER.info('found %s objects matching %s' % (all_nmatches,
-                                                              searchquery))
+                    search_results = ftsdict['results']
+                    all_nmatches = ftsdict['nmatches']
 
-                relevance_sticker = ('<abbr title="Okapi BM25 weighted '
-                                     'relevance: title = 8.0, abstract = 10.0,'
-                                     ' authors = 2.0">relevance</abbr>')
+                    LOGGER.info('found %s objects matching %s' % (all_nmatches,
+                                                                  searchquery))
 
-                if all_nmatches == 0:
-                    search_nmatches = 0
-                    search_result_info = ('<h4>Sorry, no items matching your '
-                                          'search query: "%s" were found</h4>' %
+                    relevance_sticker = (
+                        '<span data-tooltip aria-haspopup="true" '
+                        'class="has-tip" title="Okapi BM25 relevance '
+                        'weights: title = 8.0, '
+                        'abstract = 10.0,'
+                        ' authors = 2.0, all others = 1.0">relevance</span>'
+                    )
+
+                    if all_nmatches == 0:
+                        search_nmatches = 0
+                        search_result_info = (
+                            '<p>Sorry, no items matching your '
+                            'search query: "%s" were found.</p>' %
+                            searchquery
+                        )
+                    elif all_nmatches == 1:
+                        search_nmatches = 1
+                        search_result_info = (
+                            '<p>Found only one item matching your '
+                            'search query: "%s".</p>' % searchquery
+                        )
+                    elif 1 < all_nmatches < 501:
+                        search_nmatches = len(ftsdict['results']['arxiv_id'])
+                        search_result_info = (
+                            '<p>Found %s matching items for "%s", '
+                            'results below sorted by %s.</p>' %
+                            (search_nmatches,
+                             searchquery,
+                             relevance_sticker)
+                        )
+                    else:
+                        search_nmatches = len(ftsdict['results']['arxiv_id'])
+                        search_result_info = ('<p>Found %s total matching '
+                                              'items for "%s", '
+                                              'top %s results below sorted '
+                                              'by %s.</p>' %
+                                              (all_nmatches,
+                                               searchquery,
+                                               search_nmatches,
+                                               relevance_sticker))
+
+                    self.render(
+                        "search.html",
+                        user_name=user_name,
+                        local_today=local_today,
+                        flash_message=flash_message,
+                        search_page_title="Search the Astro-Coffee archive",
+                        search_page_type="results",
+                        search_results=search_results,
+                        search_nmatches=search_nmatches,
+                        search_result_info=search_result_info,
+                        new_user=new_user
+                    )
+
+                # if the query fails on the backend, return nothing.
+                except Exception as e:
+
+                    LOGGER.exception("search backend failed on searchquery: %s"
+                                     % searchquery)
+
+                    search_result_info = ('<p>Sorry, we couldn\'t understand your '
+                                          'search query: "%s".</p>' %
                                           searchquery)
-                elif all_nmatches == 1:
-                    search_nmatches = 1
-                    search_result_info = ('<h4>Found only one item matching your '
-                                          'search query</h4>')
-                elif 1 < all_nmatches < 501:
-                    search_nmatches = len(ftsdict['results']['arxiv_id'])
-                    search_result_info = ('<h4>Found %s matching items, '
-                                          'results below sorted by %s</h4>' %
-                                          (search_nmatches,relevance_sticker))
-                else:
-                    search_nmatches = len(ftsdict['results']['arxiv_id'])
-                    search_result_info = ('<h4>Found %s total matching items, '
-                                          'top %s results below sorted '
-                                          'by %s</h4>' %
-                                          (all_nmatches,
-                                           search_nmatches,
-                                           relevance_sticker))
 
-                self.render("search.html",
-                            user_name=user_name,
-                            local_today=local_today,
-                            flash_message=flash_message,
-                            search_page_title="Search the Astro-Coffee archive",
-                            search_page_type="results",
-                            search_results=search_results,
-                            search_nmatches=search_nmatches,
-                            search_result_info=search_result_info,
-                            new_user=new_user)
+                    search_results = None
+                    search_nmatches = 0
+
+                    self.render("search.html",
+                                user_name=user_name,
+                                local_today=local_today,
+                                flash_message=flash_message,
+                                search_page_title="Search the Astro-Coffee archive",
+                                search_page_type="results",
+                                search_results=search_results,
+                                search_nmatches=search_nmatches,
+                                search_result_info=search_result_info,
+                                new_user=new_user)
+
 
 
             # this is if we don't understand the query
             else:
-                search_result_info = ('<h4>Sorry, we couldn\'t understand your '
-                                      'search query: "%s"</h4>' %
+                search_result_info = ('<p>Sorry, we couldn\'t understand your '
+                                      'search query: "%s".</p>' %
                                       searchquery)
 
                 search_results = None
