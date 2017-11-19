@@ -2371,7 +2371,7 @@ class FTSHandler(tornado.web.RequestHandler):
 
             search_result_info = ('<h4>Sorry, we couldn\'t understand your '
                                   'search query: "%s"</h4>' %
-                                  searchquery)
+                                  squeeze(xhtml_escape(searchquery)))
 
             search_results = None
             search_nmatches = 0
