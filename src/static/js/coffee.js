@@ -1,6 +1,17 @@
 // coffee.js - Waqas Bhatti (wbhatti@astro.princeton.edu) - Jul 2014
 // This contains JS to drive some parts of the astroph-coffee interface
 
+// add the intersection set operation
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set
+Set.prototype.intersection = function(setB) {
+    var intersection = new Set();
+    for (var elem of setB) {
+        if (this.has(elem)) {
+            intersection.add(elem);
+        }
+    }
+    return intersection;
+}
 
 var coffee = {
 
@@ -386,107 +397,75 @@ var coffee = {
 
         });
 
-        // handle the filter checkboxes
-        $('.filter-check').on('click', function (evt) {
 
-            // check the values of the checkboxes
-            var lacheckval = $('#localauthors-check').prop('checked');
-            var nvcheckval = $('#voted-check').prop('checked');
+        $('.filter-check').on('click',function (evt) {
 
-            // find the non-local author papers
-            var afilter = '[data-localauthors="' + 0 + '"]';
-            var nafilter = '[data-localauthors!="' + 0 + '"]';
+            localauthors_checked = $('#localauthors-check').prop('checked');
+            votedpapers_checked = $('#voted-check').prop('checked');
 
-            var aelem = $('.other-paper-listing').filter(afilter);
+            local_filter = '[data-localauthors="1"]';
+            voted_filter = '[data-nvotes!="0"]';
 
-            // find the non-voted papers
-            var vfilter = '[data-nvotes="' + 0 + '"]';
-            var nvfilter = '[data-nvotes!="' + 0 + '"]';
+            paper_list = $('.other-paper-listing');
 
-            var velem = $('.other-paper-listing').filter(vfilter);
+            if (localauthors_checked && votedpapers_checked) {
 
-            console.log('papers with no-local = ' + aelem.length);
-            console.log('papers with no-votes = ' + velem.length);
+                paper_list.hide();
+                var localpapers = paper_list.filter(local_filter);
+                var votedpapers = paper_list.filter(voted_filter);
 
-            // if both are checked
-            if (lacheckval && nvcheckval) {
+                if (localpapers.length > votedpapers.length) {
+                    paper_list.filter(local_filter).filter(voted_filter).show();
+                }
+                else if (votedpapers.length > localpapers.length) {
+                    paper_list.filter(voted_filter).filter(local_filter).show();
+                }
+                else {
+                    paper_list.filter(local_filter).filter(voted_filter).show();
+                }
 
-                // hide the elements
-                aelem.hide();
-                velem.hide();
-
-                // update the count
-                var new_nmatches = $('.other-paper-listing')
-                    .filter(':visible')
-                    .length;
-                $('.nmatches').text(new_nmatches);
-
+                // update the filter info
+                $('.nvotes-filter')
+                    .html(', with filter: <strong>voted papers only</strong>');
                 // update the filter info
                 $('.local-filter')
                     .html(', with filter: <strong>local authors only</strong>');
+            }
+
+            else if (!localauthors_checked && votedpapers_checked) {
+
+                paper_list.hide();
+                paper_list.filter(voted_filter).show();
+
+                // update the filter info
                 $('.nvotes-filter')
                     .html(', with filter: <strong>voted papers only</strong>');
 
             }
 
-            // if both are unchecked
-            else if (!lacheckval && !nvcheckval) {
+            else if (localauthors_checked && !votedpapers_checked) {
 
-                // show the elements
-                aelem.show();
-                velem.show();
-
-                // update the count
-                var new_nmatches = $('.other-paper-listing')
-                    .filter(':visible')
-                    .length;
-                $('.nmatches').text(new_nmatches);
-
-                // update the filter info
-                $('.local-filter').empty();
-                $('.nvotes-filter').empty();
-
-            }
-
-            // if la-checked and nv-notchecked
-            else if (lacheckval && !nvcheckval) {
-
-                // show the elements
-                aelem.hide();
-                velem.show();
-
-                // update the count
-                var new_nmatches = $('.other-paper-listing')
-                    .filter(':visible')
-                    .length;
-                $('.nmatches').text(new_nmatches);
+                paper_list.hide();
+                paper_list.filter(local_filter).show();
 
                 // update the filter info
                 $('.local-filter')
                     .html(', with filter: <strong>local authors only</strong>');
+
+            }
+
+            else {
+                paper_list.show()
+                $('.local-filter').empty();
                 $('.nvotes-filter').empty();
 
             }
 
-            // if la-notchecked and la-checked
-            else if (!lacheckval && nvcheckval) {
-
-                // show the elements
-                aelem.show();
-                velem.hide();
-
-                // update the count
-                var new_nmatches = $('.other-paper-listing')
-                    .filter(':visible')
-                    .length;
-                $('.nmatches').text(new_nmatches);
-
-                // update the filter info
-                $('.nvotes-filter')
-                    .html(', with filter: <strong>voted papers only</strong>');
-                $('.local-filter').empty();
-
-            }
+            // update the count
+            var new_nmatches = $('.other-paper-listing')
+                .filter(':visible')
+                .length;
+            $('.nmatches').text(new_nmatches);
 
 
         });
