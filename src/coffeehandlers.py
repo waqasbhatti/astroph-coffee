@@ -2369,8 +2369,8 @@ class FTSHandler(tornado.web.RequestHandler):
 
         if not searchquery or len(searchquery) == 0:
 
-            search_result_info = ('<p>Sorry, we couldn\'t understand your '
-                                  'search query: "%s".</p>' %
+            search_result_info = ('Sorry, we couldn\'t understand your '
+                                  'search query: <strong>%s</strong>' %
                                   squeeze(xhtml_escape(searchquery)))
 
             search_results = None
@@ -2438,34 +2438,40 @@ class FTSHandler(tornado.web.RequestHandler):
                     if all_nmatches == 0:
                         search_nmatches = 0
                         search_result_info = (
-                            '<p>Sorry, no matching items were found for: '
-                            '<strong>%s</strong></p>' %
+                            'Sorry, <span class="nmatches">0</span> '
+                            'matching items were found for: '
+                            '<strong>%s</strong>' %
                             searchquery
                         )
                     elif all_nmatches == 1:
                         search_nmatches = 1
                         search_result_info = (
-                            '<p>Found only one matching item for: '
-                            '<strong>%s</strong></p>' % searchquery
+                            'Found only <span class="nmatches">1</span> '
+                            'matching item for: '
+                            '<strong>%s</strong>' % searchquery
                         )
                     elif 1 < all_nmatches < 501:
                         search_nmatches = len(ftsdict['results']['arxiv_id'])
                         search_result_info = (
-                            '<p>Found %s matching items for: '
-                            '<strong>%s</strong></p>' %
+                            'Found <span class="nmatches">%s</span> '
+                            'matching items for: '
+                            '<strong>%s</strong>' %
                             (search_nmatches,
                              searchquery)
                         )
                     else:
                         search_nmatches = len(ftsdict['results']['arxiv_id'])
-                        search_result_info = ('<p>Found %s total matching '
-                                              'items for <strong>%s</strong>. '
-                                              'Showing only the '
-                                              'top %s %s results below.</p>' %
-                                              (all_nmatches,
-                                               searchquery,
-                                               search_nmatches,
-                                               relevance_sticker))
+                        search_result_info = (
+                            'Found %s total matching '
+                            'items for: <strong>%s</strong>. '
+                            'Showing only the '
+                            'top <span class="nmatches">%s</span> '
+                            '%s '
+                            'results below' %
+                            (all_nmatches,
+                             searchquery,
+                             search_nmatches,
+                             relevance_sticker))
 
                     self.render(
                         "search.html",
@@ -2486,8 +2492,8 @@ class FTSHandler(tornado.web.RequestHandler):
                     LOGGER.exception("search backend failed on searchquery: %s"
                                      % searchquery)
 
-                    search_result_info = ('<p>Sorry, we couldn\'t understand your '
-                                          'search query: "%s".</p>' %
+                    search_result_info = ('Sorry, we couldn\'t understand your '
+                                          'search query: <strong>%s</strong>' %
                                           searchquery)
 
                     search_results = None
@@ -2508,8 +2514,8 @@ class FTSHandler(tornado.web.RequestHandler):
 
             # this is if we don't understand the query
             else:
-                search_result_info = ('<p>Sorry, we couldn\'t understand your '
-                                      'search query: "%s".</p>' %
+                search_result_info = ('Sorry, we couldn\'t understand your '
+                                      'search query: <strong>%s</strong>.' %
                                       searchquery)
 
                 search_results = None

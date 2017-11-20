@@ -4,6 +4,9 @@
 
 var coffee = {
 
+    // this stores the original number of search matches before filtering
+    original_nmatches: 0,
+
     // this handles actual voting
     vote_on_paper: function(arxivid) {
 
@@ -332,6 +335,12 @@ var coffee = {
         $.cookie.json = true;
         coffee.restore_cookie_settings();
 
+        // store the nmatches early
+        var nmatch_elem = $('.nmatches');
+        if (nmatch_elem.length > 0) {
+            coffee.original_nmatches = parseInt(nmatch_elem.text());
+        }
+
         // handle sliding out the abstract when the paper title is clicked
         $('.paper-title').on('click', function(evt) {
 
@@ -374,6 +383,111 @@ var coffee = {
 
             evt.preventDefault();
             $('.search-form').submit();
+
+        });
+
+        // handle the filter checkboxes
+        $('.filter-check').on('click', function (evt) {
+
+            // check the values of the checkboxes
+            var lacheckval = $('#localauthors-check').prop('checked');
+            var nvcheckval = $('#voted-check').prop('checked');
+
+            // find the non-local author papers
+            var afilter = '[data-localauthors="' + 0 + '"]';
+            var nafilter = '[data-localauthors!="' + 0 + '"]';
+
+            var aelem = $('.other-paper-listing').filter(afilter);
+
+            // find the non-voted papers
+            var vfilter = '[data-nvotes="' + 0 + '"]';
+            var nvfilter = '[data-nvotes!="' + 0 + '"]';
+
+            var velem = $('.other-paper-listing').filter(vfilter);
+
+            console.log('papers with no-local = ' + aelem.length);
+            console.log('papers with no-votes = ' + velem.length);
+
+            // if both are checked
+            if (lacheckval && nvcheckval) {
+
+                // hide the elements
+                aelem.hide();
+                velem.hide();
+
+                // update the count
+                var new_nmatches = $('.other-paper-listing')
+                    .filter(':visible')
+                    .length;
+                $('.nmatches').text(new_nmatches);
+
+                // update the filter info
+                $('.local-filter')
+                    .html(', with filter: <strong>local authors only</strong>');
+                $('.nvotes-filter')
+                    .html(', with filter: <strong>voted papers only</strong>');
+
+            }
+
+            // if both are unchecked
+            else if (!lacheckval && !nvcheckval) {
+
+                // show the elements
+                aelem.show();
+                velem.show();
+
+                // update the count
+                var new_nmatches = $('.other-paper-listing')
+                    .filter(':visible')
+                    .length;
+                $('.nmatches').text(new_nmatches);
+
+                // update the filter info
+                $('.local-filter').empty();
+                $('.nvotes-filter').empty();
+
+            }
+
+            // if la-checked and nv-notchecked
+            else if (lacheckval && !nvcheckval) {
+
+                // show the elements
+                aelem.hide();
+                velem.show();
+
+                // update the count
+                var new_nmatches = $('.other-paper-listing')
+                    .filter(':visible')
+                    .length;
+                $('.nmatches').text(new_nmatches);
+
+                // update the filter info
+                $('.local-filter')
+                    .html(', with filter: <strong>local authors only</strong>');
+                $('.nvotes-filter').empty();
+
+            }
+
+            // if la-notchecked and la-checked
+            else if (!lacheckval && nvcheckval) {
+
+                // show the elements
+                aelem.show();
+                velem.hide();
+
+                // update the count
+                var new_nmatches = $('.other-paper-listing')
+                    .filter(':visible')
+                    .length;
+                $('.nmatches').text(new_nmatches);
+
+                // update the filter info
+                $('.nvotes-filter')
+                    .html(', with filter: <strong>voted papers only</strong>');
+                $('.local-filter').empty();
+
+            }
+
 
         });
 

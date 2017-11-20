@@ -212,7 +212,14 @@ p.normal {
     font-size: 20px;
 }
 
+.search-result-info label {
+    font-size: 20px;
+}
+
 .search-result-info select {
+    width: auto;
+}
+.search-result-info input {
     width: auto;
 }
 

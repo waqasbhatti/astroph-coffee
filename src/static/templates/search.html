@@ -151,7 +151,7 @@
     <h3>Search results</h3>
 
     <div class="search-result-info">
-      {% raw search_result_info %}
+      <p>{% raw search_result_info %}<span class="local-filter"></span><span class="nvotes-filter"></span></p>
     </div>
 
   </div>
@@ -172,11 +172,18 @@
         <option value="relevance" selected>relevance</option>
         <option value="utcdate">date of posting</option>
         <option value="nvotes">number of votes</option>
-        <option value="localauthors">local authors</option>
       </select>
       &nbsp;
       <a class="button radius resort-results-go">Resort</a>
-    </p>
+    <br>
+    <input type="checkbox"
+           name="localauthors-check"
+           class="filter-check"
+           id="localauthors-check"><label for="localauthors-check">Papers by local authors only</label>&nbsp;
+    <input type="checkbox"
+           name="voted-check"
+           class="filter-check"
+           id="voted-check"><label for="voted-check">Papers with votes only</label></p>
   </div>
 
 </div>
