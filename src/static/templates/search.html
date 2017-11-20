@@ -72,8 +72,12 @@
                 alternate forms of keywords, use the <strong>*</strong>
                 (asterisk) operator. All keywords separated by spaces will
                 be required to appear in the results. They will be matched
-                against all content fields in the database if no specific content fields are provided (see below).</td>
-              <td><strong>gaussian process regression</strong><br><strong>Kepler exoplanet*</strong><br>(matches exoplanet, exoplanets, exoplanetary)</td>
+                against all content fields in the database if no specific
+                content fields are provided (see below). To search for a
+                specific phrase, enclose it in double quotes.</td>
+              <td><strong>gaussian process regression</strong><br><strong>Kepler
+              exoplanet*</strong><br>(matches exoplanet, exoplanets,
+              exoplanetary)<br><strong>&quot;B star&quot; variable</strong></td>
             </tr>
 
             <tr>
@@ -103,19 +107,27 @@
 
             <tr>
               <td>Author content field</td>
-              <td>Use <strong>authors:author_name</strong>.</td>
+              <td>Use <strong>authors:author_name</strong>. All of the rules
+              above for Booleans and multiple matching work here too (except
+              for exact phrases in double quotes).</td>
               <td><strong>authors:Lupton authors:Gunn NOT SDSS</strong><br><strong>authors:Bakos NOT planet*</strong></td>
             </tr>
 
             <tr>
               <td>Title content field</td>
-              <td>Use <strong>title:keyword</strong> to search for keyword in title. All of the rules above for Booleans and multiple matching work here too.</td>
+              <td>Use <strong>title:keyword</strong> to search for keyword in
+              title. All of the rules above for Booleans and multiple matching
+              work here too (except for exact phrases in double quotes).</td>
               <td><strong>title:Gaia authors:Eyer transients</strong><br><strong>title:LSST authors:Juric</strong></td>
             </tr>
 
             <tr>
               <td>Abstract content field</td>
-              <td>Use <strong>abstract:keyword</strong> to search for keyword in the article abstract. All of the rules above for Booleans and multiple matching work here too. The <strong>*</strong> operator will be particularly useful here.</td>
+              <td>Use <strong>abstract:keyword</strong> to search for keyword in
+              the article abstract. All of the rules above for Booleans and
+              multiple matching work here too (except for exact phrases in
+              double quotes). The <strong>*</strong> operator will be
+              particularly useful here.</td>
               <td><strong>abstract:transient* title:PTF NOT title:supernova*</strong></td>
             </tr>
 
