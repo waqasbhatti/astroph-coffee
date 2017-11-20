@@ -2405,6 +2405,10 @@ class FTSHandler(tornado.web.RequestHandler):
                     abstract_weight = 3.0 + 1.0*abstractq_count
                     title_weight = 2.0 + 1.0*titleq_count
 
+                    # turn any &quot; characters into " so we can do exact
+                    # phrase matching
+                    searchquery = searchquery.replace('&quot;','"')
+
                     ftsdict = fts.fts4_phrase_query_paginated(
                         searchquery,
                         ['arxiv_id','day_serial','title',
