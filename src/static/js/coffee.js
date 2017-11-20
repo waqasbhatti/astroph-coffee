@@ -440,6 +440,7 @@ var coffee = {
                 // update the filter info
                 $('.nvotes-filter')
                     .html(', with filter: <strong>voted papers only</strong>');
+                $('.local-filter').empty();
 
             }
 
@@ -451,6 +452,7 @@ var coffee = {
                 // update the filter info
                 $('.local-filter')
                     .html(', with filter: <strong>local authors only</strong>');
+                $('.nvotes-filter').empty();
 
             }
 
