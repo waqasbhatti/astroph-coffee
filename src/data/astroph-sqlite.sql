@@ -58,7 +58,6 @@ create virtual table arxiv_fts using fts4(
        link,
        pdf,
        nvotes,
-       local_authors,
        tokenize=unicode61
 );
 
