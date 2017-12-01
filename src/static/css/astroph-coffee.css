@@ -170,7 +170,7 @@ p.normal {
 .search-form input {
     font-size: 18px;
     height: 3rem;
-    line-height: 3;
+    line-height: normal;
     border-radius: 5px 0 0 5px;
 }
 
@@ -190,7 +190,7 @@ p.normal {
     border-radius: 5px 0 0 5px;
     height: 2.0em;
     font-size: 16px;
-    line-height: 1.1;
+    line-height: normal;
 }
 
 .topbar-search-form .button {
