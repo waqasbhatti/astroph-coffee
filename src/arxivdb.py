@@ -21,11 +21,15 @@ import os.path
 import ConfigParser
 from datetime import datetime, date, timedelta
 from pytz import utc
+import re
 
 from tornado.escape import squeeze
 
 # for text searching on author names
 import difflib
+
+# to get rid of parens in author names
+affil_regex = re.compile(r'\(.+\)')
 
 
 CONF = ConfigParser.ConfigParser()
@@ -212,12 +216,15 @@ def tag_local_authors(arxiv_date,
             for row in rows:
 
                paper_authors = row[1]
+
+               # remove the parens from the authors
+               paper_authors = affil_regex.sub('', paper_authors)
+
                paper_authors = (paper_authors.split(': ')[-1]).split(',')
 
                # normalize these names so we can compare them more robustly to
                # the local authors
                paper_authors = [x.lower().strip() for x in paper_authors]
-               paper_authors = [x.split('(')[0] for x in paper_authors]
                paper_authors = [x.strip() for x in paper_authors if len(x) > 1]
                paper_authors = [x.replace('.',' ') for x in paper_authors]
                paper_authors = [squeeze(x) for x in paper_authors]
