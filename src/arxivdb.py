@@ -421,7 +421,8 @@ def tag_local_authors(arxiv_date,
 def insert_articles(arxiv,
                     database=None,
                     tag_locals=True,
-                    match_threshold=0.93,
+                    fullname_match_threshold=75,
+                    firstname_match_threshold=93,
                     verbose=False):
     '''
     This inserts all articles in an arxivdict created by
@@ -521,8 +522,10 @@ def insert_articles(arxiv,
     if tag_locals:
         tag_local_authors(arxiv_dt.date(),
                           database=database,
-                          match_threshold=match_threshold,
-                          update_db=True)
+                          firstname_match_threshold=firstname_match_threshold,
+                          fullname_match_threshold=fullname_match_threshold,
+                          update_db=True,
+                          verbose=verbose)
 
 
     # at the end, close the cursor and DB connection
