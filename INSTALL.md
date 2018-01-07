@@ -72,7 +72,7 @@ The Python dependencies will be automatically installed by pip. These include:
 * itsdangerous
 * py2-ipaddress
 * numpy (for calculating relevancy scores for search results)
-* python-levenstein (for matching local author names)
+* python-levenshtein (for matching local author names)
 * fuzzywuzzy (for matching local author names)
 
 After this, the Makefile will compile a custom version of the sqlite3 shell;
@@ -171,7 +171,7 @@ record of what changed.
 You should add local authors to the astroph-coffee server database to have these
 automatically recognized on each nightly arxiv update. It's a good idea to use
 the full name to make it easier to match names against authors in arXiv
-listings. The astroph-coffee server uses
+listings. The astroph-coffee server uses the
 [fuzzywuzzy](https://github.com/seatgeek/fuzzywuzzy) package to do the fuzzy
 string matching required. The function that does this is `tag_local_authors` in
 `src/arxivdb.py`. You can tune the default `firstname_match_threshold` and the
