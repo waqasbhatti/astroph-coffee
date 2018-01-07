@@ -29,7 +29,16 @@ from tornado.escape import squeeze
 import difflib
 
 # to get rid of parens in author names
-affil_regex = re.compile(r'\(.+\)')
+# these are applied in order
+
+# this should turn:
+# "author1 (1, 2, & 3), author1 (1, 2, and 3), ((1) blah1, (2) blah2)"
+# into:
+# "author1, author2"
+affil_regex1 = re.compile(r'\([0-9, &and]+\)')
+
+# this gets rid of patterns like (blah)
+affil_regex2 = re.compile(r'\([^)]*\)')
 
 
 CONF = ConfigParser.ConfigParser()
@@ -176,6 +185,35 @@ def force_localauthor_untag(arxivid, database=None):
         database.close()
 
 
+def strip_affils(authorstr, subchar=','):
+    '''
+    This tries to strip author affils from authorstr.
+
+    As far as I can test, I think this handles:
+
+    author (affil, ...)
+    author (1) ... ((1) affil, ....)
+    author (1, 2) ... ((1) affil, ....)
+    author (1 & 2) ... ((1) affil, ....)
+    author (1 and 2) ... ((1) affil, ....)
+
+    I don't think it can handle:
+
+    author (1) ... (1) affil
+
+    but I haven't seen these in use (yet).
+
+    '''
+
+    initial = authorstr.replace("Authors: ","")
+    prelim = affil_regex1.sub(subchar, initial)
+    intermed = affil_regex2.sub(subchar, prelim)
+    cleaned = intermed.split(',')
+    final = [x.strip() for x in cleaned if len(x) > 1]
+
+    return final
+
+
 
 def tag_local_authors(arxiv_date,
                       database=None,
@@ -217,10 +255,13 @@ def tag_local_authors(arxiv_date,
 
                paper_authors = row[1]
 
-               # remove the parens from the authors
-               paper_authors = affil_regex.sub('', paper_authors)
+               # get rid of the affiliations for matching to local authors
+               paper_authors = strip_affils(paper_authors)
 
-               paper_authors = (paper_authors.split(': ')[-1]).split(',')
+               # we'll save this initial cleaned version back to the database
+               # for local matched papers so all the author indices line up
+               # correctly
+               cleaned_paper_authors = paper_authors[::]
 
                # normalize these names so we can compare them more robustly to
                # the local authors
@@ -331,13 +372,15 @@ def tag_local_authors(arxiv_date,
                     )
 
                     cursor.execute(
-                        'update arxiv '
-                        'set local_authors = ?, '
+                        'update arxiv set '
+                        'authors = ?, '
+                        'local_authors = ?, '
                         'local_author_indices = ?, '
                         'local_author_specaffils = ? '
                         'where '
                         'arxiv_id = ?',
-                        (True,
+                        (','.join(cleaned_paper_authors),
+                         True,
                          local_author_indices,
                          local_author_special_affils,
                          row[0])
