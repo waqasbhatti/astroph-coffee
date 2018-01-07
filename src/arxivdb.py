@@ -218,7 +218,8 @@ def strip_affils(authorstr, subchar=','):
 def tag_local_authors(arxiv_date,
                       database=None,
                       match_threshold=0.93,
-                      update_db=False):
+                      update_db=False,
+                      verbose=False):
 
     '''
     This finds all local authors for all papers on the date arxiv_date and tags
@@ -262,6 +263,10 @@ def tag_local_authors(arxiv_date,
                # for local matched papers so all the author indices line up
                # correctly
                cleaned_paper_authors = paper_authors[::]
+
+               if verbose:
+                   print('%s authors: %s' % (row[0],
+                                             repr(cleaned_paper_authors)))
 
                # normalize these names so we can compare them more robustly to
                # the local authors
