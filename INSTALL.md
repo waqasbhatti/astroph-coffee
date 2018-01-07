@@ -9,7 +9,7 @@ sqlite3 library that is woefully out of date for some stuff we depend on (like
 full-text search). Therefore, the server bundles the following packages:
 
 - pysqlite from Gerhard Häring: https://pysqlite.readthedocs.io/en/latest/sqlite3.html
-- a recent sqlite3 source (v3.21.0 as of this writing)  from Hipp, et al.: https://sqlite.org/releaselog/3_21_0.html
+- a recent sqlite3 source (v3.21.0 as of this writing) from Hipp, et al.: https://sqlite.org/releaselog/3_21_0.html
 
 Together, these allow us to build an independent version of the Python sqlite3
 bindings and use them in a virtualenv for everything. Since we'll be compiling
@@ -71,7 +71,9 @@ The Python dependencies will be automatically installed by pip. These include:
 * pytz
 * itsdangerous
 * py2-ipaddress
-* numpy
+* numpy (for calculating relevancy scores for search results)
+* python-levenstein (for matching local author names)
+* fuzzywuzzy (for matching local author names)
 
 After this, the Makefile will compile a custom version of the sqlite3 shell;
 this will be placed in `run/bin` and will be available preferably over any
@@ -169,11 +171,12 @@ record of what changed.
 You should add local authors to the astroph-coffee server database to have these
 automatically recognized on each nightly arxiv update. It's a good idea to use
 the full name to make it easier to match names against authors in arXiv
-listings. The astroph-coffee server uses the Python standard library
-`difflib.get_close_matches` function to do the fuzzy string matching
-required. The function that does this is `tag_local_authors` in
-`src/arxivdb.py`. You can tune the default `match_threshold` kwarg for the
-`insert_articles` function for looser/tighter matching.
+listings. The astroph-coffee server uses
+[fuzzywuzzy](https://github.com/seatgeek/fuzzywuzzy) package to do the fuzzy
+string matching required. The function that does this is `tag_local_authors` in
+`src/arxivdb.py`. You can tune the default `firstname_match_threshold` and the
+`fullname_match_threshold` kwargs for the `insert_articles` function for
+looser/tighter matching.
 
 To add a list of local authors, create a CSV file of the form:
 
