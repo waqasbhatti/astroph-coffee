@@ -15,6 +15,10 @@ pip install itsdangerous -U
 pip install geoip2 -U
 pip install py2-ipaddress -U
 
+# for better local author matching
+pip install python-levenshtein>=0.12
+pip install fuzzywuzzy -U
+
 # for sorting and stuff
 pip install numpy -U
 

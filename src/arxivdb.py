@@ -25,8 +25,8 @@ import re
 
 from tornado.escape import squeeze
 
-# for text searching on author names
-import difflib
+# for matching local author names
+from fuzzywuzzy import process
 
 # to get rid of parens in author names
 # these are applied in order
@@ -199,7 +199,7 @@ def strip_affils(authorstr, subchar=','):
 
     I don't think it can handle:
 
-    author (1) ... (1) affil
+    author (1) ... (1) affil, ...
 
     but I haven't seen these in use (yet).
 
@@ -217,7 +217,8 @@ def strip_affils(authorstr, subchar=','):
 
 def tag_local_authors(arxiv_date,
                       database=None,
-                      match_threshold=0.93,
+                      firstname_match_threshold=93,
+                      fullname_match_threshold=75,
                       update_db=False,
                       verbose=False):
 
@@ -254,119 +255,111 @@ def tag_local_authors(arxiv_date,
 
             for row in rows:
 
-               paper_authors = row[1]
+                paper_authors = row[1]
 
-               # get rid of the affiliations for matching to local authors
-               paper_authors = strip_affils(paper_authors)
+                # get rid of the affiliations for matching to local authors
+                paper_authors = strip_affils(paper_authors)
 
-               # we'll save this initial cleaned version back to the database
-               # for local matched papers so all the author indices line up
-               # correctly
-               cleaned_paper_authors = paper_authors[::]
+                # we'll save this initial cleaned version back to the database
+                # for local matched papers so all the author indices line up
+                # correctly
+                cleaned_paper_authors = paper_authors[::]
 
-               if verbose:
-                   print('%s authors: %s' % (row[0],
-                                             repr(cleaned_paper_authors)))
+                if verbose:
+                    print('%s authors: %s' % (row[0],
+                                              repr(cleaned_paper_authors)))
 
-               # normalize these names so we can compare them more robustly to
-               # the local authors
-               paper_authors = [x.lower().strip() for x in paper_authors]
-               paper_authors = [x.strip() for x in paper_authors if len(x) > 1]
-               paper_authors = [x.replace('.',' ') for x in paper_authors]
-               paper_authors = [squeeze(x) for x in paper_authors]
+                # normalize these names so we can compare them more robustly to
+                # the local authors
+                paper_authors = [x.lower().strip() for x in paper_authors]
+                paper_authors = [x.strip() for x in paper_authors if len(x) > 1]
+                paper_authors = [x.replace('.',' ') for x in paper_authors]
+                paper_authors = [squeeze(x) for x in paper_authors]
 
-               paper_author_fnames = [x.split() for x in paper_authors]
-               paper_author_fnames = [''.join([x[0][0],x[-1]]) for x
+                paper_author_fnames = [x.split() for x in paper_authors]
+                paper_author_fnames = [''.join([x[0][0],x[-1]]) for x
                                       in paper_author_fnames]
-               paper_authors = [x.replace(' ','') for x in paper_authors]
+                paper_authors = [x.replace(' ','') for x in paper_authors]
 
-               if verbose:
-                   print("%s normalized authors: %s" % (row[0],
-                                                        repr(paper_authors)))
+                if verbose:
+                    print("%s normalized authors: %s" % (row[0],
+                                                         repr(paper_authors)))
 
 
-               local_matched_author_inds = []
-               local_matched_author_affils = []
+                local_matched_author_inds = []
+                local_matched_author_affils = []
 
-               # match to the flastname first, then if that works, try another
-               # match with fullname. if both work, then we accept this as a
-               # local author match
-               for paper_author, paper_fname, paper_author_ind in zip(
-                       paper_authors,
-                       paper_author_fnames,
-                       range(len(paper_authors))
-               ):
+                # match to the flastname first, then if that works, try another
+                # match with fullname. if both work, then we accept this as a
+                # local author match
+                for paper_author, paper_fname, paper_author_ind in zip(
+                        paper_authors,
+                        paper_author_fnames,
+                        range(len(paper_authors))
+                ):
 
-                   matched_author_fname = difflib.get_close_matches(
-                       paper_fname,
-                       local_author_fnames,
-                       n=1,
-                       cutoff=match_threshold
-                   )
+                    matched_author_fname = process.extractOne(
+                        paper_fname,
+                        local_author_fnames,
+                        score_cutoff=firstname_match_threshold
+                    )
 
-                   if matched_author_fname:
+                    matched_author_full = process.extractOne(
+                        paper_author,
+                        local_authors,
+                        score_cutoff=fullname_match_threshold
+                    )
 
-                       # this is a bit lower to allow looser matches between
-                       # f. m. lastname in the paper authors list and first
-                       # lastname pairs in the local authors list
-                       matched_author_full = difflib.get_close_matches(
-                           paper_author,
-                           local_authors,
-                           n=1,
-                           cutoff=0.7
-                       )
 
-                       # if the full author matches, append their index to the
-                       # tracker
-                       if matched_author_full:
+                    if matched_author_fname and matched_author_full:
 
-                           print(
-                               '%s: %s, matched paper author: %s '
-                               'to local author: %s' % (
-                                   row[0],
-                                   paper_authors,
-                                   paper_author,
-                                   matched_author_full
-                               )
-                           )
+                        print(
+                            '%s: %s, matched paper author: %s '
+                            'to local author: %s. '
+                            'first name score: %s, full name score: %s' % (
+                                row[0],
+                                paper_authors,
+                                paper_author,
+                                matched_author_full[0],
+                                matched_author_fname[1],
+                                matched_author_full[1],
+                            )
+                        )
 
-                           # update the paper author index column so we can
-                           # highlight them in the frontend
-                           local_matched_author_inds.append(paper_author_ind)
+                        # update the paper author index column so we can
+                        # highlight them in the frontend
+                        local_matched_author_inds.append(paper_author_ind)
 
-                           # also update the affilation tag for this author
+                        # also update the affilation tag for this author
+                        local_authind = local_authors.index(
+                            matched_author_full[0]
+                        )
 
-                           # get the index to the local author list
-                           for lmai in matched_author_full:
+                        # get the corresponding email
+                        local_matched_email = local_emails[local_authind]
 
-                               local_authind = local_authors.index(
-                                   matched_author_full[0]
-                               )
+                        # split to get the affil tag
+                        local_matched_affil = (
+                            local_matched_email.split('@')[-1]
+                        )
 
-                               # get the corresponding email
-                               local_matched_email = local_emails[local_authind]
+                        if local_matched_affil in AFFIL_DICT:
 
-                               # split to get the affil tag
-                               local_matched_affil = (
-                                   local_matched_email.split('@')[-1]
-                               )
+                            local_matched_author_affils.append(
+                                AFFIL_DICT[local_matched_affil]
+                            )
 
-                               if local_matched_affil in AFFIL_DICT:
-                                   local_matched_author_affils.append(
-                                       AFFIL_DICT[local_matched_affil]
-                                   )
-
-                           # now that we have all the special affils, compress
-                           # them into only the unique ones
-                           local_matched_author_affils = list(set(
-                               local_matched_author_affils
-                           ))
+                        # now that we have all the special affils, compress
+                        # them into only the unique ones
+                        local_matched_author_affils = list(set(
+                            local_matched_author_affils
+                        ))
                 #
                 # done with all authors for this paper
                 #
 
-               # now update the info for this paper
-               if len(local_matched_author_inds) > 0 and update_db:
+                # now update the info for this paper
+                if len(local_matched_author_inds) > 0 and update_db:
 
                     # arxivid of this article that has local authors
                     local_author_articles.append((row[0]))
