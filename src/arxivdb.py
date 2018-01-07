@@ -280,6 +280,10 @@ def tag_local_authors(arxiv_date,
                                       in paper_author_fnames]
                paper_authors = [x.replace(' ','') for x in paper_authors]
 
+               if verbose:
+                   print("%s normalized authors: %s" % (row[0],
+                                                        repr(paper_authors)))
+
 
                local_matched_author_inds = []
                local_matched_author_affils = []
