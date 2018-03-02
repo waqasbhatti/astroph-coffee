@@ -137,6 +137,7 @@ if __name__ == '__main__':
     VOTING_START = CONF.get('times','voting_start')
     VOTING_END = CONF.get('times','voting_end')
     COFFEE_TIME = CONF.get('times','coffee_time')
+    RESERVE_INTERVAL_DAYS = int(CONF.get('times','reserve_interval_days'))
 
     VOTING_START = [int(x) for x in VOTING_START.split(':')]
     VOTING_START = time(VOTING_START[0], VOTING_START[1], tzinfo=utc)
@@ -238,15 +239,18 @@ if __name__ == '__main__':
           'voting_start':VOTING_START,
           'voting_end':VOTING_END,
           'server_tz':SERVER_TZ,
+          'reserve_interval':RESERVE_INTERVAL_DAYS,
           'signer':FLASHSIGNER}),
         (r'/astroph-coffee/papers/today/',coffeehandlers.ArticleListHandler,
          {'database':DATABASE,
           'voting_start':VOTING_START,
           'voting_end':VOTING_END,
           'server_tz':SERVER_TZ,
+          'reserve_interval':RESERVE_INTERVAL_DAYS,
           'signer':FLASHSIGNER}),
         (r'/astroph-coffee/archive/?(.*)',coffeehandlers.ArchiveHandler,
          {'database':DATABASE,
+          'reserve_interval':RESERVE_INTERVAL_DAYS,
           'signer':FLASHSIGNER}),
         (r'/astroph-coffee/vote',coffeehandlers.VotingHandler,
          {'database':DATABASE,

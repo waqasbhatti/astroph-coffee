@@ -361,6 +361,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
                    voting_start,
                    voting_end,
                    server_tz,
+                   reserve_interval,
                    signer):
         '''
         Sets up the database.
@@ -372,6 +373,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
         self.voting_end = voting_end
         self.server_tz = server_tz
         self.signer = signer
+        self.reserve_interval = reserve_interval
 
 
     def get(self):
@@ -599,6 +601,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
                             other_articles=other_articles,
                             reserved_articles=reserved_articles,
                             flash_message=flash_message,
+                            reserve_interval_days=self.reserve_interval,
                             new_user=new_user)
 
             # if today's papers are ready, show them and ask for votes
@@ -651,6 +654,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
                             reserved_articles=reserved_articles,
                             flash_message=flash_message,
                             new_user=new_user,
+                            reserve_interval_days=self.reserve_interval,
                             user_articles=user_articles,
                             user_reserved=user_reserved)
 
@@ -724,6 +728,7 @@ class ArticleListHandler(tornado.web.RequestHandler):
                         voted_articles=voted_articles,
                         other_articles=other_articles,
                         reserved_articles=reserved_articles,
+                        reserve_interval_days=self.reserve_interval,
                         flash_message=flash_message,
                         new_user=new_user)
 
@@ -1562,6 +1567,7 @@ class ArchiveHandler(tornado.web.RequestHandler):
 
     def initialize(self,
                    database,
+                   reserve_interval,
                    signer):
         '''
         Sets up the database.
@@ -1569,6 +1575,7 @@ class ArchiveHandler(tornado.web.RequestHandler):
         '''
 
         self.database = database
+        self.reserve_interval = reserve_interval
         self.signer = signer
 
 
@@ -1803,6 +1810,7 @@ class ArchiveHandler(tornado.web.RequestHandler):
                                 voted_articles=voted_articles,
                                 other_articles=other_articles,
                                 reserved_articles=reserved_articles,
+                                reserve_interval_days=self.reserve_interval,
                                 flash_message=flash_message,
                                 new_user=new_user)
 

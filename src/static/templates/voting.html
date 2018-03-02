@@ -343,8 +343,9 @@
     <h2 id="reserved-papers">Papers reserved for later discussion</h2>
 
     <p>These are papers reserved by people for discussion at a later date. All
-    reservations are kept for 3 days after the date of the reservation. Papers you have reserved may be released during the
-    daily voting period to remove them from this list.</p>
+    reservations are kept for {{ reserve_interval_days }} days after the date of
+    the reservation. Papers you have reserved may be released during the daily
+    voting period to remove them from this list.</p>
 
     {% for article in reserved_articles %}
 

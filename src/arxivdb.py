@@ -51,6 +51,10 @@ AFFIL_DEFS = CONF.get('localauthors','special_affil_defs')
 AFFIL_DICT = {x.strip():y.strip()
               for x,y in zip(AFFIL_TAGS.split(','), AFFIL_DEFS.split(','))}
 
+RESERVE_INTERVAL_DAYS = int(CONF.get('times','reserve_interval_days'))
+
+
+
 def opendb():
     '''
     This just opens a connection to the database and returns it + a cursor.
@@ -685,9 +689,10 @@ def get_articles_for_listing(utcdate=None,
                  "(utcdate between date(?) and date(?)) and reserved = 1 "
                  "order by arxiv_id desc")
 
-    # fetch all reserved articles up to 3 days older than the given utcdate
+    # fetch all reserved articles up to RESERVE_INTERVAL_DAYS older than the
+    # given utcdate
     given_dt = datetime.strptime(utcdate,'%Y-%m-%d')
-    earliest_dt = given_dt - timedelta(days=3)
+    earliest_dt = given_dt - timedelta(days=RESERVE_INTERVAL_DAYS)
     earliest_utcdate = earliest_dt.strftime('%Y-%m-%d')
 
     query_params = (earliest_utcdate, utcdate)
@@ -909,7 +914,7 @@ def get_articles_for_voting(database=None,
 
     # fetch all reserved articles up to 3 days older than the given utcdate
     given_dt = datetime.strptime(utcdate,'%Y-%m-%d')
-    earliest_dt = given_dt - timedelta(days=3)
+    earliest_dt = given_dt - timedelta(days=RESERVE_INTERVAL_DAYS)
     earliest_utcdate = earliest_dt.strftime('%Y-%m-%d')
 
     query_params = (earliest_utcdate, utcdate)
@@ -1229,12 +1234,14 @@ def record_edit(arxivid, username, edittype, database=None):
 
 
 
-def get_user_reservations(utcdate, username, database=None):
+def get_user_reservations(utcdate, username,
+                          database=None):
     '''This gets a user's reserved papers.
 
-    Papers are reserved for up to 3 days, so we check for utcdate - 3 days
-    here. The frontend uses this function to set the current reservation state
-    for the articles on the voting and listing pages.
+    Papers are reserved for up to RESERVE_INTERVAL_DAYS, so we check for utcdate
+    - RESERVE_INTERVAL_DAYS days here. The frontend uses this function to set
+    the current reservation state for the articles on the voting and listing
+    pages.
 
     The voting page shows all reserved papers from everyone up to today's date
     and allows unreserving papers that this user reserved.
@@ -1252,14 +1259,15 @@ def get_user_reservations(utcdate, username, database=None):
         cursor = database.cursor()
         closedb = False
 
-    # get all the reserved papers by this user for this utcdate - 7 days
+    # get all the reserved papers by this user for this utcdate -
+    # RESERVE_INTERVAL_DAYS
     query = ("select arxiv_id, reservers from arxiv where "
              "(utcdate between ? and ?) and "
              "(reserved = 1)")
 
     # figure out the oldest date
     given_dt = datetime.strptime(utcdate,'%Y-%m-%d')
-    earliest_dt = given_dt - timedelta(days=3)
+    earliest_dt = given_dt - timedelta(days=RESERVE_INTERVAL_DAYS)
     earliest_utcdate = earliest_dt.strftime('%Y-%m-%d')
 
     params = (earliest_utcdate, utcdate)
