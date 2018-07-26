@@ -162,6 +162,10 @@ p.normal {
     color: #636363;
 }
 
+.subheader strong {
+    color: #105fba;
+}
+
 /* search page styles */
 .large-margin-top {
     margin-top: 1.5em;
