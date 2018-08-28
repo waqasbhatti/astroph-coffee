@@ -6,21 +6,21 @@ source $BINDIR/bin/activate
 
 # install latest versions of needed packages
 pip install pip -U
-pip install tornado -U
-pip install requests -U
-pip install BeautifulSoup4 -U
-pip install selenium -U
-pip install pytz -U
-pip install itsdangerous -U
-pip install geoip2 -U
-pip install py2-ipaddress -U
+pip install tornado==4.5.2
+pip install requests==2.18.4
+pip install BeautifulSoup4==4.6.0
+pip install selenium==3.7.0
+pip install pytz
+pip install itsdangerous==0.24
+pip install geoip2==2.6.0
+pip install py2-ipaddress==3.4.1
 
 # for better local author matching
-pip install python-levenshtein>=0.12
-pip install fuzzywuzzy -U
+pip install python-levenshtein==0.12.0
+pip install fuzzywuzzy==0.16.0
 
 # for sorting and stuff
-pip install numpy -U
+pip install numpy==1.13.3
 
 cd pysqlite
 
