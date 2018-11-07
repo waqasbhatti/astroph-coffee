@@ -276,7 +276,7 @@ def arxiv_update(url='http://arxiv.org/list/astro-ph/new',
 
         # get the paper links
         paperlinks = docparts[0].find_all('dt')
-        paperdata = docparts[0].find_all('div',class='_meta')
+        paperdata = docparts[0].find_all('div',class_='_meta')
         
         # ignore the cross links and treat them as part of the paper list
         crosslinks, crossdata = [], []
