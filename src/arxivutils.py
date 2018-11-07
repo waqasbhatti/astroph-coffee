@@ -101,7 +101,11 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
 
     for ind, link, data in zip(range(len(paperlinks)), paperlinks, paperdata):
 
-        paper_abstract = squeeze(data.p.text.replace('\n',' ').strip())
+        try:
+            paper_abstract = squeeze(data.p.text.replace('\n',' ').strip())
+        except:
+            paper_abstract = ''
+
         paper_title = squeeze(
             data.find_all(
                 'div',class_='list-title'
@@ -149,7 +153,11 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
 
     for ind, link, data in zip(range(len(crosslinks)), crosslinks, crossdata):
 
-        cross_abstract = squeeze(data.p.text.replace('\n',' ').strip())
+        try:
+            cross_abstract = squeeze(data.p.text.replace('\n',' ').strip())
+        except:
+            cross_abstract = ''
+
         cross_title = squeeze(
             data.find_all(
                 'div',class_='list-title'
@@ -216,6 +224,7 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
 
 
 def arxiv_update(url='http://arxiv.org/list/astro-ph/new',
+                 alturl='https://arxiv.org/list/astro-ph/pastweek?show=350',
                  fakery=False,
                  pickledict=False):
     '''
@@ -223,28 +232,77 @@ def arxiv_update(url='http://arxiv.org/list/astro-ph/new',
 
     '''
 
-    print('updating article DB from arxiv...')
+    arxiv = None
 
-    html = get_page_html(url, fakery=fakery)
-    soup = soupify(html)
+    try:
 
-    paperlinks, paperdata, crosslinks, crossdata = get_arxiv_lists(soup)
+        print('updating article DB from arxiv /new page: %s' % url)
 
-    # process the papers and crosslists
-    paperdict, crosslistdict = get_arxiv_articles(paperlinks, paperdata,
-                                                  crosslinks, crossdata)
-    now = datetime.now(tz=utc)
+        html = get_page_html(url, fakery=fakery)
+        soup = soupify(html)
 
-    arxiv = {'utc':now,
-             'npapers':len(paperdict.keys()),
-             'papers':paperdict,
-             'ncrosslists':len(crosslistdict.keys()),
-             'crosslists':crosslistdict}
+        paperlinks, paperdata, crosslinks, crossdata = get_arxiv_lists(soup)
 
-    if pickledict:
-        import cPickle as pickle
-        pickle_fpath = 'data/%s-UT-arxiv.pkl' % now.strftime('%Y-%m-%d')
-        with open(pickle_fpath,'wb') as fd:
-            pickle.dump(arxiv, fd, pickle.HIGHEST_PROTOCOL)
+        # process the papers and crosslists
+        paperdict, crosslistdict = get_arxiv_articles(paperlinks, paperdata,
+                                                      crosslinks, crossdata)
+        now = datetime.now(tz=utc)
 
-    return arxiv
+        arxiv = {'utc':now,
+                 'npapers':len(paperdict.keys()),
+                 'papers':paperdict,
+                 'ncrosslists':len(crosslistdict.keys()),
+                 'crosslists':crosslistdict}
+
+        if pickledict:
+            import cPickle as pickle
+            pickle_fpath = 'data/%s-UT-arxiv.pkl' % now.strftime('%Y-%m-%d')
+            with open(pickle_fpath,'wb') as fd:
+                pickle.dump(arxiv, fd, pickle.HIGHEST_PROTOCOL)
+
+        return arxiv
+
+    except Exception as e:
+        
+        print('could not get /new page, trying alternative /recent page: %s' % alturl)
+
+        resp = requests.get(alturl)
+        resphtml = resp.text
+
+        soup = BeautifulSoup(resphtml)
+        docparts = soup.find_all('dl')
+        
+        # the first dl is for the most recent date
+
+        # get the paper links
+        paperlinks = docparts[0].find_all('dt')
+        paperdata = docparts[0].find_all('div',class='_meta')
+        
+        # ignore the cross links and treat them as part of the paper list
+        crosslinks, crossdata = [], []
+        
+        paperdict, crosslistdict = get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata)
+
+        # the rest of the bits are the same
+        now = datetime.now(tz=utc)
+
+        arxiv = {'utc':now,
+                 'npapers':len(paperdict.keys()),
+                 'papers':paperdict,
+                 'ncrosslists':len(crosslistdict.keys()),
+                 'crosslists':crosslistdict}
+
+        if pickledict:
+            import cPickle as pickle
+            pickle_fpath = 'data/%s-UT-arxiv.pkl' % now.strftime('%Y-%m-%d')
+            with open(pickle_fpath,'wb') as fd:
+                pickle.dump(arxiv, fd, pickle.HIGHEST_PROTOCOL)
+
+        return arxiv
+        
+        
+    finally:
+
+        if arxiv is None:
+            print('could not get arxiv update from /new URL: %s or /recent URL: %s' % (url, alturl))
+            
