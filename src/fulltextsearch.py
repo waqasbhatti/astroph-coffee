@@ -99,26 +99,34 @@ def okapi_bm25(matchinfo_array, search_column, k1=1.2, b=0.75):
     else:
         searchTextCol = FTS_COLUMNS.index(search_column)
 
-    P_OFFSET = 0;
-    C_OFFSET = 1;
-    X_OFFSET = 2;
+    P_OFFSET = 0
+    C_OFFSET = 1
+    X_OFFSET = 2
 
     termCount = matchinfo_array[P_OFFSET]
     colCount = matchinfo_array[C_OFFSET]
 
-    N_OFFSET = X_OFFSET + 3*termCount*colCount;
-    A_OFFSET = N_OFFSET + 1;
-    L_OFFSET = (A_OFFSET + colCount);
+    N_OFFSET = X_OFFSET + 3*termCount*colCount
+    A_OFFSET = N_OFFSET + 1
+    L_OFFSET = (A_OFFSET + colCount)
 
-    totalDocs = matchinfo_array[N_OFFSET];
-    avgLength = matchinfo_array[A_OFFSET + searchTextCol];
-    docLength = matchinfo_array[L_OFFSET + searchTextCol];
+    totalDocs = matchinfo_array[N_OFFSET]
+    avgLength = matchinfo_array[A_OFFSET + searchTextCol]
+    docLength = matchinfo_array[L_OFFSET + searchTextCol]
 
-    sum = 0.0;
+    sum = 0.0
 
     for ind in range(termCount):
 
-        currentX = X_OFFSET + (3 * searchTextCol * (ind + 1))
+        # this is incorrect, according to:
+        # - https://github.com/rads/sqlite-okapi-bm25/issues/2
+        # - https://github.com/coleifer/peewee/issues/1826#issuecomment-451780948
+        # I noticed this here:
+        # https://simonwillison.net/2019/Jan/7/exploring-search-relevance-algorithms-sqlite/
+        # currentX = X_OFFSET + (3 * searchTextCol * (ind + 1))
+        # this should be correct one
+        currentX = X_OFFSET + (3 * (searchTextCol + ind*colCount))
+
         termFrequency = matchinfo_array[currentX]
         docsWithTerm = matchinfo_array[currentX + 2]
 
@@ -132,7 +140,7 @@ def okapi_bm25(matchinfo_array, search_column, k1=1.2, b=0.75):
             (termFrequency + (k1 * (1 - b + (b * (docLength / avgLength)))))
         )
 
-        sum += (idf * rightSide);
+        sum += (idf * rightSide)
 
     return sum
 
