@@ -10,22 +10,16 @@ inserting/modifying arXiv papers.
 
 try:
     from pysqlite2 import dbapi2 as sqlite3
-except:
+except Exception as e:
     print("can't find internal pysqlite2, falling back to Python sqlite3 "
           "full-text search may not work right "
           "if your sqlite3.sqlite3_version is old (< 3.8.6 or so)")
     import sqlite3
 
-import os
-import os.path
 import ConfigParser
-from datetime import datetime, date, timedelta
-from pytz import utc
 import array
 import math
 import numpy as np
-
-from tornado.escape import squeeze
 
 
 CONF = ConfigParser.ConfigParser()
@@ -118,13 +112,14 @@ def okapi_bm25(matchinfo_array, search_column, k1=1.2, b=0.75):
 
     for ind in range(termCount):
 
-        # this is incorrect, according to:
+        # this calculation for currentX is incorrect, according to:
         # - https://github.com/rads/sqlite-okapi-bm25/issues/2
         # - https://github.com/coleifer/peewee/issues/1826#issuecomment-451780948
         # I noticed this here:
         # https://simonwillison.net/2019/Jan/7/exploring-search-relevance-algorithms-sqlite/
         # currentX = X_OFFSET + (3 * searchTextCol * (ind + 1))
-        # this should be correct one
+
+        # this should be the correct value of currentX
         currentX = X_OFFSET + (3 * (searchTextCol + ind*colCount))
 
         termFrequency = matchinfo_array[currentX]
