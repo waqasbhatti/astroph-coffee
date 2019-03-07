@@ -425,7 +425,7 @@ def tag_local_authors(arxiv_date,
 def insert_articles(arxiv,
                     database=None,
                     tag_locals=True,
-                    fullname_match_threshold=75,
+                    fullname_match_threshold=72,
                     firstname_match_threshold=93,
                     verbose=False):
     '''

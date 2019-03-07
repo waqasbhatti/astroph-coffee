@@ -23,7 +23,7 @@ cd $BASEPATH/run
 source $BASEPATH/run/bin/activate
 
 # fakery = False means one can run this on a headless server
-python -c 'import arxivutils, arxivdb; x = arxivutils.arxiv_update(fakery=False); arxivdb.insert_articles(x)'
+python -c 'import arxivutils, arxivdb; x = arxivutils.arxiv_update(fakery=False); arxivdb.insert_articles(x,fullname_match_threshold=72,firstname_match_threshold=93)'
 
 deactivate
 
