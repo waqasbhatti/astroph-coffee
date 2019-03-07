@@ -222,7 +222,7 @@ def strip_affils(authorstr, subchar=','):
 def tag_local_authors(arxiv_date,
                       database=None,
                       firstname_match_threshold=93,
-                      fullname_match_threshold=75,
+                      fullname_match_threshold=72,
                       update_db=False,
                       verbose=False):
 
