@@ -81,8 +81,9 @@ def get_arxiv_lists(soup):
 
     docparts = soup.find_all('dl')
 
-    # if the structure doesn't match what we expect (new, crosslists, replacements)
-    # then take the first bit only (since that's guaranteed to be new papers)
+    # if the structure doesn't match what we expect: (new, crosslists,
+    # replacements), then take the first bit only (since that's guaranteed to be
+    # new papers)
     if len(docparts) < 3:
 
         papers = docparts[0]
@@ -274,25 +275,28 @@ def arxiv_update(url='https://arxiv.org/list/astro-ph/new',
         return arxiv
 
     except Exception as e:
-        
-        print('could not get /new page, trying alternative /recent page: %s' % alturl)
+
+        print('could not get /new page, trying alternative '
+              '/recent page: %s' % alturl)
 
         resp = requests.get(alturl)
         resphtml = resp.text
 
         soup = BeautifulSoup(resphtml)
         docparts = soup.find_all('dl')
-        
+
         # the first dl is for the most recent date
 
         # get the paper links
         paperlinks = docparts[0].find_all('dt')
         paperdata = docparts[0].find_all('div',class_='_meta')
-        
+
         # ignore the cross links and treat them as part of the paper list
         crosslinks, crossdata = [], []
-        
-        paperdict, crosslistdict = get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata)
+
+        paperdict, crosslistdict = get_arxiv_articles(
+            paperlinks, paperdata, crosslinks, crossdata
+        )
 
         # the rest of the bits are the same
         now = datetime.now(tz=utc)
@@ -310,10 +314,10 @@ def arxiv_update(url='https://arxiv.org/list/astro-ph/new',
                 pickle.dump(arxiv, fd, pickle.HIGHEST_PROTOCOL)
 
         return arxiv
-        
-        
+
+
     finally:
 
         if arxiv is None:
-            print('could not get arxiv update from /new URL: %s or /recent URL: %s' % (url, alturl))
-            
+            print('could not get arxiv update '
+                  'from /new URL: %s or /recent URL: %s' % (url, alturl))
