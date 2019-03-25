@@ -81,13 +81,24 @@ def get_arxiv_lists(soup):
 
     docparts = soup.find_all('dl')
 
-    papers, crosslists, replacements = docparts
+    # if the structure doesn't match what we expect (new, crosslists, replacements)
+    # then take the first bit only (since that's guaranteed to be new papers)
+    if len(docparts) < 3:
+
+        papers = docparts[0]
+        paperlinks, paperdata = (papers.find_all('dt'),
+                                 papers.find_all('div', class_='meta'))
+        crosslinks, crossdata = [], []
+
+    # otherwise, we can parse as usual
+    elif len(docparts) == 3:
+        papers, crosslists, replacements = docparts
 
 
-    paperlinks, paperdata = (papers.find_all('dt'),
-                             papers.find_all('div', class_='meta'))
-    crosslinks, crossdata = (crosslists.find_all('dt'),
-                             crosslists.find_all('div', class_='meta'))
+        paperlinks, paperdata = (papers.find_all('dt'),
+                                 papers.find_all('div', class_='meta'))
+        crosslinks, crossdata = (crosslists.find_all('dt'),
+                                 crosslists.find_all('div', class_='meta'))
 
 
     return paperlinks, paperdata, crosslinks, crossdata
@@ -223,7 +234,7 @@ def get_arxiv_articles(paperlinks, paperdata, crosslinks, crossdata):
 
 
 
-def arxiv_update(url='http://arxiv.org/list/astro-ph/new',
+def arxiv_update(url='https://arxiv.org/list/astro-ph/new',
                  alturl='https://arxiv.org/list/astro-ph/pastweek?show=350',
                  fakery=False,
                  pickledict=False):
