@@ -53,7 +53,7 @@ LocalAuthors = Table(
     "local_authors",
     ASTROCOFFEE,
     Column("id", Integer, primary_key=True, nullable=False),
-    Column("name", String),
+    Column("name", String, unique=True, nullable=False),
     Column("email", String, nullable=False)
 )
 
@@ -138,20 +138,20 @@ FTS_SCRIPT = dedent(
         link,
         pdf,
         content="arxiv_listings",
-        tokenize=unicode61,
+        tokenize="unicode61 remove_diacritics 0"
     );
 
     -- create the required triggers to update the FTS index whenever stuff is
     -- inserted, updated, or deleted from the arxiv table.
-    create trigger fts_before_update before update on arxiv begin
+    create trigger fts_before_update before update on arxiv_listings begin
         delete from arxiv_fts where rowid=old.rowid;
     end;
 
-    create trigger fts_before_delete before delete on arxiv begin
+    create trigger fts_before_delete before delete on arxiv_listings begin
         delete from arxiv_fts where rowid=old.rowid;
     end;
 
-    create trigger fts_after_update after update on arxiv begin
+    create trigger fts_after_update after update on arxiv_listings begin
         insert into arxiv_fts(rowid, utcdate, title, article_type,
                               arxiv_id, authors, abstract, link, pdf)
             values (new.rowid, new.utcdate,
@@ -159,7 +159,7 @@ FTS_SCRIPT = dedent(
                     new.authors, new.abstract, new.link, new.pdf);
         end;
 
-    create trigger fts_after_insert after insert on arxiv begin
+    create trigger fts_after_insert after insert on arxiv_listings begin
         insert into arxiv_fts(rowid, utcdate, title, article_type,
                               arxiv_id, authors, abstract, link, pdf)
             values (new.rowid, new.utcdate,
@@ -172,7 +172,7 @@ FTS_SCRIPT = dedent(
 
 def new_astrocoffee_db(
         database_url,
-        database_metadata,
+        database_metadata=ASTROCOFFEE,
         echo=False,
 ):
     '''
@@ -216,7 +216,7 @@ def new_astrocoffee_db(
 
 
 def get_astrocoffee_db(database_url,
-                       database_metadata,
+                       database_metadata=ASTROCOFFEE,
                        use_engine=None,
                        engine_dispose=False,
                        engine_kwargs=None,
