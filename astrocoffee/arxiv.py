@@ -30,6 +30,9 @@ import requests
 from bs4 import BeautifulSoup
 
 from tornado.escape import squeeze
+from sqlalchemy import select, update, func, distinct, insert, exc
+
+from . import database
 
 
 ############
@@ -365,3 +368,107 @@ def get_arxiv_listing(
             pickle.dump(arxiv_dict, outfd, pickle.HIGHEST_PROTOCOL)
 
     return arxiv_dict
+
+
+def insert_arxiv_listing(dbinfo,
+                         arxiv_dict,
+                         dbkwargs=None,
+                         overwrite=False):
+    '''
+    This inserts an arxiv listing into the DB.
+
+    '''
+
+    #
+    # get the database
+    #
+    dbref, dbmeta = dbinfo
+    if not dbkwargs:
+        dbkwargs = {}
+    if isinstance(dbref, str):
+        engine, conn, meta = database.get_astrocoffee_db(dbref,
+                                                         dbmeta,
+                                                         **dbkwargs)
+    else:
+        engine, conn, meta = None, dbref, dbmeta
+        meta.bind = conn
+
+    #
+    # actual work
+    #
+    with conn.begin() as transaction:
+
+        utcdate = arxiv_dict['utc'].date()
+        arxiv_listings = meta.tables['arxiv_listings']
+        ins = insert(arxiv_listings)
+
+        LOGINFO(
+            "Inserting arXiv articles for UTC date: %s" % utcdate
+        )
+
+        for new_paper in arxiv_dict['new_papers']:
+
+            title = arxiv_dict['new_papers'][new_paper]['title']
+            arxiv_id = arxiv_dict['new_papers'][new_paper]['arxiv']
+            authors_string = '|'.join(
+                arxiv_dict['new_papers'][new_paper]['authors']
+            )
+            comments = arxiv_dict['new_papers'][new_paper]['comments']
+            abstract = arxiv_dict['new_papers'][new_paper]['abstract']
+            link = (
+                'https://arxiv.org/%s' %
+                arxiv_dict['new_papers'][new_paper]['link']
+            )
+            pdf = (
+                'https://arxiv.org/%s' %
+                arxiv_dict['new_papers'][new_paper]['pdf']
+            )
+
+            try:
+                conn.execute(
+                    ins,
+                    {'utcdate':utcdate,
+                     'day_serial':new_paper,
+                     'title':title,
+                     'article_type':'newarticle',
+                     'arxiv_id':arxiv_id,
+                     'authors':authors_string,
+                     'comments':comments,
+                     'abstract':abstract,
+                     'link':link,
+                     'pdf':pdf}
+                )
+            except exc.IntegrityError:
+
+                transaction.rollback()
+
+                if not overwrite:
+                    LOGERROR("Article with ID: %s already exists! "
+                             "Skipping..." % arxiv_id)
+                    continue
+
+                upd = update(arxiv_listings).where(
+                    arxiv_listings.c.arxiv_id == arxiv_id
+                ).values(
+                    {'utcdate':utcdate,
+                     'day_serial':new_paper,
+                     'title':title,
+                     'article_type':'newarticle',
+                     'arxiv_id':arxiv_id,
+                     'authors':authors_string,
+                     'comments':comments,
+                     'abstract':abstract,
+                     'link':link,
+                     'pdf':pdf}
+                )
+                conn.execute(upd)
+                LOGWARNING("Updated existing listing for article: %s" %
+                           arxiv_id)
+
+    #
+    # at the end, shut down the DB
+    #
+    if engine:
+        conn.close()
+        meta.bind = None
+        engine.dispose()

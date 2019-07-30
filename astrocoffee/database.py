@@ -138,7 +138,7 @@ FTS_SCRIPT = dedent(
         link,
         pdf,
         content="arxiv_listings",
-        tokenize="unicode61 remove_diacritics 0"
+        tokenize="unicode61 remove_diacritics 2"
     );
 
     -- create the required triggers to update the FTS index whenever stuff is
