@@ -29,16 +29,14 @@ import os.path
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Engine
 
-from datetime import datetime
 from sqlalchemy import (
     MetaData,
     Table,
-    ForeignKey,
     Column,
-    Index,
     Integer,
-    String,
+    Text,
     Boolean,
+    JSON
 )
 from sqlalchemy.types import DATE, Enum
 
@@ -53,64 +51,46 @@ LocalAuthors = Table(
     "local_authors",
     ASTROCOFFEE,
     Column("id", Integer, primary_key=True, nullable=False),
-    Column("name", String, unique=True, nullable=False),
-    Column("email", String, nullable=False)
+    Column("name", Text, unique=True, nullable=False),
+    Column("email", Text, nullable=False),
+    # this contains any other info associated with this author
+    # - affiliation
+    # - server user ID
+    # - server user role
+    Column("info", JSON),
 )
 
 ArxivListings = Table(
     "arxiv_listings",
     ASTROCOFFEE,
     Column("id", Integer, primary_key=True, nullable=False),
-    Column("utcdate", DATE, nullable=False),
+    Column("utcdate", DATE, nullable=False, index=True),
     Column("day_serial", Integer, nullable=False),
-    Column("title", String, nullable=False),
+    Column("title", Text, nullable=False),
     Column("article_type", Enum("newarticle",
                                 "crosslist",
                                 "replacement",
                                 name="article_type_enum"),
            index=True, nullable=False, default="newarticle"),
-    Column("arxiv_id", String, unique=True, nullable=False),
-    Column("authors", String),
-    Column("comments", String),
-    Column("abstract", String),
-    Column("link", String),
-    Column("pdf", String),
-)
-
-ArxivLocals = Table(
-    "arxiv_locals",
-    ASTROCOFFEE,
-    Column("id", Integer, ForeignKey('arxiv_listings.id'),
-           index=True, nullable=False),
-    Column("local_author_ids", String),
-    Column("author_indices", String),
-    Column("author_affiliations", String),
-)
-
-ArxivVoters = Table(
-    "arxiv_voters",
-    ASTROCOFFEE,
-    Column("id", Integer, ForeignKey('arxiv_listings.id'),
-           index=True, nullable=False),
-    Column("voter", String),
-)
-
-ArxivPresenters = Table(
-    "arxiv_presenters",
-    ASTROCOFFEE,
-    Column("id", Integer, ForeignKey('arxiv_listings.id'),
-           index=True, nullable=False),
-    Column("presenter", String),
-)
-
-ArxivReservers = Table(
-    "arxiv_reservers",
-    ASTROCOFFEE,
-    Column("id", Integer, ForeignKey('arxiv_listings.id'),
-           index=True, nullable=False),
-    Column("reserver", String),
-    Column("on", DATE),
-    Column("until", DATE),
+    Column("arxiv_id", Text, unique=True, nullable=False, index=True),
+    # this contains the list of authors
+    Column("authors", JSON, nullable=False),
+    Column("comments", Text),
+    Column("abstract", Text),
+    Column("link", Text),
+    Column("pdf", Text),
+    # this contains a list of the indices of the paper author list that
+    # correspond to local authors. also contains corresponding lists of local
+    # author affiliations
+    Column("local_authors", JSON),
+    Column("nvotes", Integer, nullable=False, default=0),
+    # this contains a list of server userids that voted on this paper
+    Column("voter_userids", JSON),
+    Column("presenter_userid", Text),
+    Column("reserved", Boolean, nullable=False, default=False),
+    Column("reserved_by_userid", Text),
+    Column("reserved_on", DATE),
+    Column("reserved_until", DATE),
 )
 
 
@@ -137,6 +117,9 @@ FTS_SCRIPT = dedent(
         abstract,
         link,
         pdf,
+        voter_userids,
+        presenter_userid,
+        reserved_by_userid,
         content="arxiv_listings",
         tokenize="unicode61 remove_diacritics 2"
     );
@@ -153,18 +136,26 @@ FTS_SCRIPT = dedent(
 
     create trigger fts_after_update after update on arxiv_listings begin
         insert into arxiv_fts(rowid, utcdate, title, article_type,
-                              arxiv_id, authors, abstract, link, pdf)
+                              arxiv_id, authors, abstract, link, pdf,
+                              voter_userids, presenter_userid,
+                              reserved_by_userid)
             values (new.rowid, new.utcdate,
                     new.title, new.article_type, new.arxiv_id,
-                    new.authors, new.abstract, new.link, new.pdf);
+                    new.authors, new.abstract, new.link, new.pdf,
+                    new.voter_userids, new.presenter_userid,
+                    new.reserved_by_userid);
         end;
 
     create trigger fts_after_insert after insert on arxiv_listings begin
         insert into arxiv_fts(rowid, utcdate, title, article_type,
-                              arxiv_id, authors, abstract, link, pdf)
+                              arxiv_id, authors, abstract, link, pdf,
+                              voter_userids, presenter_userid,
+                              reserved_by_userid)
             values (new.rowid, new.utcdate,
                     new.title, new.article_type, new.arxiv_id,
-                    new.authors, new.abstract, new.link, new.pdf);
+                    new.authors, new.abstract, new.link, new.pdf,
+                    new.voter_userids, new.presenter_userid,
+                    new.reserved_by_userid);
         end;
     """
 )

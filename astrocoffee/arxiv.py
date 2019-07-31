@@ -29,11 +29,12 @@ import pickle
 import requests
 from bs4 import BeautifulSoup
 
+from dateutil import parser
 from tornado.escape import squeeze
-from sqlalchemy import select, update, func, distinct, insert, exc
+from sqlalchemy import select, update, insert, exc
 
 from . import database
-
+from .authors import strip_affiliations
 
 ############
 ## CONFIG ##
@@ -47,11 +48,11 @@ REQUEST_HEADERS = {
 }
 
 
-####################
-## LOW-LEVEL BITS ##
-####################
+##############################################
+## LOW-LEVEL BITS TO DOWNLOAD ARXIV LISTING ##
+##############################################
 
-def fetch_new_articles(url, timeout=60.0):
+def fetch_arxiv_url(url, timeout=60.0):
     '''
     This fetches new article listings from a list of arxiv URLs.
 
@@ -168,8 +169,7 @@ def parse_arxiv_soup(soup):
                 'div',class_='list-authors'
             )[0].text.replace('\n','').replace('Authors:','',1)
         )
-        paper_authors = [squeeze(x.replace('\n',''))
-                         for x in paper_authors.split(', ')]
+        paper_authors = strip_affiliations(paper_authors)
 
         paper_links = link.find_all('a')[1:3]
         paper_link, arxiv_id = paper_links[0]['href'], paper_links[0].text
@@ -229,8 +229,7 @@ def parse_arxiv_soup(soup):
                 'div',class_='list-authors'
             )[0].text.replace('\n','').replace('Authors:','',1)
         )
-        cross_authors = [squeeze(x.replace('\n',''))
-                         for x in cross_authors.split(', ')]
+        cross_authors = strip_affiliations(cross_authors)
 
         cross_links = link.find_all('a')[1:3]
         cross_link, arxiv_id = cross_links[0]['href'], cross_links[0].text
@@ -289,7 +288,11 @@ def parse_arxiv_soup(soup):
     return new_papers, cross_lists, listing_hash
 
 
-def get_arxiv_listing(
+#############################
+## FETCHING ARXIV LISTINGS ##
+#############################
+
+def fetch_arxiv_listing(
         urls=("https://arxiv.org/list/astro-ph/new",
               "https://arxiv.org/list/astro-ph/pastweek?show=350"),
         timeout=60.0,
@@ -327,7 +330,7 @@ def get_arxiv_listing(
 
         try:
 
-            soup = fetch_new_articles(url, timeout=timeout)
+            soup = fetch_arxiv_url(url, timeout=timeout)
             if not soup:
                 LOGERROR("Could not get articles from %s" % url)
                 continue
@@ -370,6 +373,10 @@ def get_arxiv_listing(
     return arxiv_dict
 
 
+#######################################
+## INSERTING AND RETRIEVING LISTINGS ##
+#######################################
+
 def insert_arxiv_listing(dbinfo,
                          arxiv_dict,
                          dbkwargs=None,
@@ -403,16 +410,16 @@ def insert_arxiv_listing(dbinfo,
         ins = insert(arxiv_listings)
 
         LOGINFO(
-            "Inserting arXiv articles for UTC date: %s" % utcdate
+            "Inserting new arXiv articles for UTC date: %s" % utcdate
         )
 
         for new_paper in arxiv_dict['new_papers']:
 
             title = arxiv_dict['new_papers'][new_paper]['title']
             arxiv_id = arxiv_dict['new_papers'][new_paper]['arxiv']
-            authors_string = '|'.join(
-                arxiv_dict['new_papers'][new_paper]['authors']
-            )
+            authors_json = {
+                'list': arxiv_dict['new_papers'][new_paper]['authors']
+            }
             comments = arxiv_dict['new_papers'][new_paper]['comments']
             abstract = arxiv_dict['new_papers'][new_paper]['abstract']
             link = (
@@ -432,7 +439,7 @@ def insert_arxiv_listing(dbinfo,
                      'title':title,
                      'article_type':'newarticle',
                      'arxiv_id':arxiv_id,
-                     'authors':authors_string,
+                     'authors':authors_json,
                      'comments':comments,
                      'abstract':abstract,
                      'link':link,
@@ -455,7 +462,7 @@ def insert_arxiv_listing(dbinfo,
                      'title':title,
                      'article_type':'newarticle',
                      'arxiv_id':arxiv_id,
-                     'authors':authors_string,
+                     'authors':authors_json,
                      'comments':comments,
                      'abstract':abstract,
                      'link':link,
@@ -465,6 +472,68 @@ def insert_arxiv_listing(dbinfo,
                 LOGWARNING("Updated existing listing for article: %s" %
                            arxiv_id)
 
+        LOGINFO(
+            "Inserting cross-listed arXiv articles for UTC date: %s" % utcdate
+        )
+
+        for cross_list in arxiv_dict['cross_lists']:
+
+            title = arxiv_dict['cross_lists'][cross_list]['title']
+            arxiv_id = arxiv_dict['cross_lists'][cross_list]['arxiv']
+            authors_json = {
+                'list': arxiv_dict['cross_lists'][cross_list]['authors']
+            }
+            comments = arxiv_dict['cross_lists'][cross_list]['comments']
+            abstract = arxiv_dict['cross_lists'][cross_list]['abstract']
+            link = (
+                'https://arxiv.org/%s' %
+                arxiv_dict['cross_lists'][cross_list]['link']
+            )
+            pdf = (
+                'https://arxiv.org/%s' %
+                arxiv_dict['cross_lists'][cross_list]['pdf']
+            )
+
+            try:
+                conn.execute(
+                    ins,
+                    {'utcdate':utcdate,
+                     'day_serial':cross_list,
+                     'title':title,
+                     'article_type':'crosslist',
+                     'arxiv_id':arxiv_id,
+                     'authors':authors_json,
+                     'comments':comments,
+                     'abstract':abstract,
+                     'link':link,
+                     'pdf':pdf}
+                )
+            except exc.IntegrityError:
+
+                transaction.rollback()
+
+                if not overwrite:
+                    LOGERROR("Article with ID: %s already exists! "
+                             "Skipping..." % arxiv_id)
+                    continue
+
+                upd = update(arxiv_listings).where(
+                    arxiv_listings.c.arxiv_id == arxiv_id
+                ).values(
+                    {'utcdate':utcdate,
+                     'day_serial':cross_list,
+                     'title':title,
+                     'article_type':'crosslist',
+                     'arxiv_id':arxiv_id,
+                     'authors':authors_json,
+                     'comments':comments,
+                     'abstract':abstract,
+                     'link':link,
+                     'pdf':pdf}
+                )
+                conn.execute(upd)
+                LOGWARNING("Updated existing listing for article: %s" %
+                           arxiv_id)
     #
     # at the end, shut down the DB
     #
@@ -472,3 +541,384 @@ def insert_arxiv_listing(dbinfo,
         conn.close()
         meta.bind = None
         engine.dispose()
+
+
+def get_arxiv_listing(dbinfo,
+                      utcdate=None,
+                      dbkwargs=None):
+    '''
+    This gets all articles from the database for the given UTC date.
+
+    Returns a dict of the form:
+
+        retdict = {
+            'utcdate':utcdate,
+            'local_papers':[],
+            'papers_with_votes':[],
+            'papers_with_presenters':[],
+            'reserved_papers':[],
+            'other_new_papers':[],
+            'cross_listed_papers':[]
+        }
+
+    '''
+
+    #
+    # get the database
+    #
+    dbref, dbmeta = dbinfo
+    if not dbkwargs:
+        dbkwargs = {}
+    if isinstance(dbref, str):
+        engine, conn, meta = database.get_astrocoffee_db(dbref,
+                                                         dbmeta,
+                                                         **dbkwargs)
+    else:
+        engine, conn, meta = None, dbref, dbmeta
+        meta.bind = conn
+
+    retdict = {
+        'utcdate':utcdate,
+        'local_papers':[],
+        'papers_with_votes':[],
+        'papers_with_presenters':[],
+        'reserved_papers':[],
+        'other_new_papers':[],
+        'cross_listed_papers':[]
+    }
+
+    #
+    # actual work
+    #
+    with conn.begin() as transaction:
+
+        arxiv_listings = meta.tables['arxiv_listings']
+
+        #
+        # get the latest UTC date if not provided
+        #
+        if not utcdate:
+
+            sel = select([arxiv_listings.c.utcdate]).select_from(
+                arxiv_listings
+            ).order_by(arxiv_listings.c.utcdate.desc())
+
+            res = conn.execute(sel)
+            utcdate = res.scalar()
+
+        elif isinstance(utcdate, str):
+            utcdate = parser.parse(utcdate)
+
+        LOGINFO("Fetching arxiv listings for date: %s" % utcdate)
+        retdict['utcdate'] = utcdate
+
+        #
+        # first, fetch only the local papers
+        #
+        sel = select([
+            arxiv_listings.c.day_serial,
+            arxiv_listings.c.arxiv_id,
+            arxiv_listings.c.title,
+            arxiv_listings.c.authors,
+            arxiv_listings.c.comments,
+            arxiv_listings.c.abstract,
+            arxiv_listings.c.link,
+            arxiv_listings.c.pdf,
+            arxiv_listings.c.local_authors,
+            arxiv_listings.c.nvotes,
+            arxiv_listings.c.voter_userids,
+            arxiv_listings.c.presenter_userid,
+            arxiv_listings.c.reserved,
+            arxiv_listings.c.reserved_by_userid,
+            arxiv_listings.c.reserved_on,
+            arxiv_listings.c.reserved_until,
+        ]).select_from(
+            arxiv_listings
+        ).where(
+            arxiv_listings.c.utcdate == utcdate
+        ).where(
+            arxiv_listings.c.local_authors.isnot(None)
+        ).where(
+            arxiv_listings.c.reserved.is_(False)
+        ).where(
+            arxiv_listings.c.presenter_userid.is_(None)
+        ).order_by(
+            arxiv_listings.c.nvotes.desc()
+        )
+
+        try:
+
+            res = conn.execute(sel)
+            local_papers_rows = res.fetchall()
+
+        except Exception:
+            LOGEXCEPTION("Could not fetch local papers for date: %s" % utcdate)
+
+            transaction.rollback()
+            local_papers_rows = []
+
+        retdict['local_papers'] = local_papers_rows
+
+        #
+        # next, fetch the papers with presenters (from either new papers
+        # or cross-lists)
+        #
+        sel = select([
+            arxiv_listings.c.day_serial,
+            arxiv_listings.c.arxiv_id,
+            arxiv_listings.c.title,
+            arxiv_listings.c.authors,
+            arxiv_listings.c.comments,
+            arxiv_listings.c.abstract,
+            arxiv_listings.c.link,
+            arxiv_listings.c.pdf,
+            arxiv_listings.c.local_authors,
+            arxiv_listings.c.nvotes,
+            arxiv_listings.c.voter_userids,
+            arxiv_listings.c.presenter_userid,
+            arxiv_listings.c.reserved,
+            arxiv_listings.c.reserved_by_userid,
+            arxiv_listings.c.reserved_on,
+            arxiv_listings.c.reserved_until,
+        ]).select_from(
+            arxiv_listings
+        ).where(
+            arxiv_listings.c.utcdate == utcdate
+        ).where(
+            arxiv_listings.c.presenter_userid.isnot(None)
+        ).where(
+            arxiv_listings.c.local_authors.is_(None)
+        ).where(
+            arxiv_listings.c.reserved.is_(False)
+        ).order_by(
+            arxiv_listings.c.nvotes.desc()
+        )
+
+        try:
+
+            res = conn.execute(sel)
+            papers_with_presenters_rows = res.fetchall()
+
+        except Exception:
+            LOGEXCEPTION(
+                "Could not fetch papers with presenters for date: %s" % utcdate
+            )
+
+            transaction.rollback()
+            papers_with_presenters_rows = []
+
+        retdict['papers_with_presenters'] = papers_with_presenters_rows
+
+        #
+        # next, fetch the papers with voters only (from either new papers or
+        # cross-lists)
+        #
+        sel = select([
+            arxiv_listings.c.day_serial,
+            arxiv_listings.c.arxiv_id,
+            arxiv_listings.c.title,
+            arxiv_listings.c.authors,
+            arxiv_listings.c.comments,
+            arxiv_listings.c.abstract,
+            arxiv_listings.c.link,
+            arxiv_listings.c.pdf,
+            arxiv_listings.c.local_authors,
+            arxiv_listings.c.nvotes,
+            arxiv_listings.c.voter_userids,
+            arxiv_listings.c.presenter_userid,
+            arxiv_listings.c.reserved,
+            arxiv_listings.c.reserved_by_userid,
+            arxiv_listings.c.reserved_on,
+            arxiv_listings.c.reserved_until,
+        ]).select_from(
+            arxiv_listings
+        ).where(
+            arxiv_listings.c.utcdate == utcdate
+        ).where(
+            arxiv_listings.c.nvotes > 0
+        ).where(
+            arxiv_listings.c.presenter_userid.is_(None)
+        ).where(
+            arxiv_listings.c.local_authors.is_(None)
+        ).where(
+            arxiv_listings.c.reserved.is_(False)
+        ).order_by(
+            arxiv_listings.c.nvotes.desc()
+        )
+
+        try:
+
+            res = conn.execute(sel)
+            papers_with_votes_rows = res.fetchall()
+
+        except Exception:
+            LOGEXCEPTION(
+                "Could not fetch papers with votes for date: %s" % utcdate
+            )
+
+            transaction.rollback()
+            papers_with_votes_rows = []
+
+        retdict['papers_with_votes'] = papers_with_votes_rows
+
+        #
+        # next, fetch the papers that were reserved only (from either new papers
+        # or cross-lists)
+        #
+        sel = select([
+            arxiv_listings.c.day_serial,
+            arxiv_listings.c.arxiv_id,
+            arxiv_listings.c.title,
+            arxiv_listings.c.authors,
+            arxiv_listings.c.comments,
+            arxiv_listings.c.abstract,
+            arxiv_listings.c.link,
+            arxiv_listings.c.pdf,
+            arxiv_listings.c.local_authors,
+            arxiv_listings.c.nvotes,
+            arxiv_listings.c.voter_userids,
+            arxiv_listings.c.presenter_userid,
+            arxiv_listings.c.reserved,
+            arxiv_listings.c.reserved_by_userid,
+            arxiv_listings.c.reserved_on,
+            arxiv_listings.c.reserved_until,
+        ]).select_from(
+            arxiv_listings
+        ).where(
+            arxiv_listings.c.utcdate == utcdate
+        ).where(
+            arxiv_listings.c.reserved.is_(True)
+        ).order_by(
+            arxiv_listings.c.nvotes.desc()
+        )
+
+        try:
+
+            res = conn.execute(sel)
+            reserved_papers_rows = res.fetchall()
+
+        except Exception:
+            LOGEXCEPTION(
+                "Could not fetch reserved papers for date: %s" % utcdate
+            )
+
+            transaction.rollback()
+            reserved_papers_rows = []
+
+        retdict['reserved_papers'] = reserved_papers_rows
+
+        #
+        # next, fetch the new papers only
+        #
+        sel = select([
+            arxiv_listings.c.day_serial,
+            arxiv_listings.c.arxiv_id,
+            arxiv_listings.c.title,
+            arxiv_listings.c.authors,
+            arxiv_listings.c.comments,
+            arxiv_listings.c.abstract,
+            arxiv_listings.c.link,
+            arxiv_listings.c.pdf,
+            arxiv_listings.c.local_authors,
+            arxiv_listings.c.nvotes,
+            arxiv_listings.c.voter_userids,
+            arxiv_listings.c.presenter_userid,
+            arxiv_listings.c.reserved,
+            arxiv_listings.c.reserved_by_userid,
+            arxiv_listings.c.reserved_on,
+            arxiv_listings.c.reserved_until,
+        ]).select_from(
+            arxiv_listings
+        ).where(
+            arxiv_listings.c.utcdate == utcdate
+        ).where(
+            arxiv_listings.c.nvotes == 0
+        ).where(
+            arxiv_listings.c.article_type == 'newarticle'
+        ).where(
+            arxiv_listings.c.reserved.is_(False)
+        ).where(
+            arxiv_listings.c.presenter_userid.is_(None)
+        ).where(
+            arxiv_listings.c.local_authors.is_(None)
+        ).order_by(
+            arxiv_listings.c.day_serial.asc()
+        )
+
+        try:
+
+            res = conn.execute(sel)
+            other_new_papers_rows = res.fetchall()
+
+        except Exception:
+            LOGEXCEPTION(
+                "Could not fetch reserved papers for date: %s" % utcdate
+            )
+
+            transaction.rollback()
+            other_new_papers_rows = []
+
+        retdict['other_new_papers'] = other_new_papers_rows
+
+        #
+        # finally, fetch the cross-lists
+        #
+        sel = select([
+            arxiv_listings.c.day_serial,
+            arxiv_listings.c.arxiv_id,
+            arxiv_listings.c.title,
+            arxiv_listings.c.authors,
+            arxiv_listings.c.comments,
+            arxiv_listings.c.abstract,
+            arxiv_listings.c.link,
+            arxiv_listings.c.pdf,
+            arxiv_listings.c.local_authors,
+            arxiv_listings.c.nvotes,
+            arxiv_listings.c.voter_userids,
+            arxiv_listings.c.presenter_userid,
+            arxiv_listings.c.reserved,
+            arxiv_listings.c.reserved_by_userid,
+            arxiv_listings.c.reserved_on,
+            arxiv_listings.c.reserved_until,
+        ]).select_from(
+            arxiv_listings
+        ).where(
+            arxiv_listings.c.utcdate == utcdate
+        ).where(
+            arxiv_listings.c.nvotes == 0
+        ).where(
+            arxiv_listings.c.article_type == 'crosslist'
+        ).where(
+            arxiv_listings.c.reserved.is_(False)
+        ).where(
+            arxiv_listings.c.presenter_userid.is_(None)
+        ).where(
+            arxiv_listings.c.local_authors.is_(None)
+        ).order_by(
+            arxiv_listings.c.day_serial.asc()
+        )
+
+        try:
+
+            res = conn.execute(sel)
+            cross_listed_papers_rows = res.fetchall()
+
+        except Exception:
+            LOGEXCEPTION(
+                "Could not fetch reserved papers for date: %s" % utcdate
+            )
+
+            transaction.rollback()
+            cross_listed_papers_rows = []
+
+        retdict['cross_listed_papers'] = cross_listed_papers_rows
+
+    #
+    # at the end, shut down the DB
+    #
+    if engine:
+        conn.close()
+        meta.bind = None
+        engine.dispose()
+
+    return retdict

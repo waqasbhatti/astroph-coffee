@@ -27,7 +27,6 @@ import csv
 
 from tornado.escape import squeeze
 from fuzzywuzzy import process
-
 from sqlalchemy import select, update, func, distinct, insert, exc
 
 from . import database
@@ -49,6 +48,8 @@ affil_regex1 = re.compile(r'\([0-9, &and]+\)')
 # this gets rid of patterns like (blah)
 affil_regex2 = re.compile(r'\([^)]*\)')
 
+# this gets rid of patterns like (blah)
+affil_regex3 = re.compile(r'\(\w+|\s+\)')
 
 #######################
 ## UTILITY FUNCTIONS ##
@@ -75,10 +76,12 @@ def strip_affiliations(authorstr, subchar=','):
     '''
 
     initial = authorstr.replace("Authors: ","")
+    initial = authorstr.replace('\n','')
     prelim = affil_regex1.sub(subchar, initial)
-    intermed = affil_regex2.sub(subchar, prelim)
-    cleaned = intermed.split(',')
-    final = [x.strip() for x in cleaned if len(x) > 1]
+    intermed1 = affil_regex2.sub(subchar, prelim)
+    intermed2 = affil_regex3.sub(subchar, intermed1)
+    cleaned = intermed2.split(',')
+    final = [squeeze(x.strip()) for x in cleaned if len(x) > 1]
 
     return final
 
