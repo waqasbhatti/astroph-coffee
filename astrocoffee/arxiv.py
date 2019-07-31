@@ -549,7 +549,7 @@ def get_arxiv_listing(dbinfo,
     '''
     This gets all articles from the database for the given UTC date.
 
-    Returns a dict of the form:
+    Returns a dict of the form::
 
         retdict = {
             'utcdate':utcdate,
