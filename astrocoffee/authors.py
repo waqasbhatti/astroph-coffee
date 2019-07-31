@@ -172,9 +172,9 @@ def insert_local_authors(
     csvfd.close()
 
 
-###########################
-## TAGGING LOCAL AUTHORS ##
-###########################
+##############################
+## NORMALIZING AUTHOR LISTS ##
+##############################
 
 def get_local_authors(dbinfo, dbkwargs=None):
     '''
@@ -393,6 +393,10 @@ def get_article_authors(dbinfo,
     return author_dict
 
 
+########################################
+## AUTOMATIC TAGGING OF LOCAL AUTHORS ##
+########################################
+
 def autotag_local_authors(
         dbinfo,
         utcdate=None,
@@ -597,3 +601,98 @@ def autotag_local_authors(
         engine.dispose()
 
     return papers_with_local_authors
+
+
+##############################
+## MANUAL LOCAL AUTHOR TAGS ##
+##############################
+
+def toggle_localauthor_tag(
+        dbinfo,
+        arxiv_id,
+        local_author_indices=None,
+        local_author_specaffils=None,
+        dbkwargs=None,
+):
+    '''This toggles the local author tag for a paper.
+
+    If local_author_indices is None, the local author tag is removed from the
+    paper.
+
+    If local_author_indices is a list of indices of the local authors in the
+    paper's list of authors, the local author tag is added to the paper.
+
+    '''
+
+    #
+    # get the database
+    #
+    dbref, dbmeta = dbinfo
+    if not dbkwargs:
+        dbkwargs = {}
+    if isinstance(dbref, str):
+        engine, conn, meta = database.get_astrocoffee_db(dbref,
+                                                         dbmeta,
+                                                         **dbkwargs)
+    else:
+        engine, conn, meta = None, dbref, dbmeta
+        meta.bind = conn
+
+    #
+    # actual work
+    #
+
+    arxiv_listings = meta.tables['arxiv_listings']
+
+    updated = 0
+
+    with conn.begin() as transaction:
+
+        if local_author_indices is None:
+
+            update_dict = None
+
+        else:
+
+            if local_author_specaffils:
+                specaffil = list(set(local_author_specaffils))
+            else:
+                specaffil = []
+
+            update_dict = {
+                'mark_other_affil':False,
+                'mark_local':'primary',
+                'indices':local_author_indices,
+                'specaffil':specaffil
+            }
+
+        upd = update(arxiv_listings).where(
+            arxiv_listings.c.arxiv_id == arxiv_id
+        ).values({
+            'local_authors':update_dict
+        })
+
+        try:
+            res = conn.execute(upd)
+            updated = res.rowcount
+
+            if updated == 0:
+                LOGERROR(
+                    "Could not update paper: %s as local." % arxiv_id
+                )
+
+        except Exception:
+            transaction.rollback()
+            LOGEXCEPTION(
+                "Could not update paper: %s as local." % arxiv_id
+            )
+
+    #
+    # at the end, shut down the DB
+    #
+    if engine:
+        conn.close()
+        meta.bind = None
+        engine.dispose()
+
+    return updated == 1
