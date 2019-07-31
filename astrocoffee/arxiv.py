@@ -607,7 +607,7 @@ def get_arxiv_listing(dbinfo,
             utcdate = res.scalar()
 
         elif isinstance(utcdate, str):
-            utcdate = parser.parse(utcdate)
+            utcdate = parser.parse(utcdate).date()
 
         LOGINFO("Fetching arxiv listings for date: %s" % utcdate)
         retdict['utcdate'] = utcdate
@@ -650,6 +650,7 @@ def get_arxiv_listing(dbinfo,
 
             res = conn.execute(sel)
             local_papers_rows = res.fetchall()
+            res.close()
 
         except Exception:
             LOGEXCEPTION("Could not fetch local papers for date: %s" % utcdate)
@@ -698,6 +699,7 @@ def get_arxiv_listing(dbinfo,
 
             res = conn.execute(sel)
             papers_with_presenters_rows = res.fetchall()
+            res.close()
 
         except Exception:
             LOGEXCEPTION(
@@ -750,6 +752,7 @@ def get_arxiv_listing(dbinfo,
 
             res = conn.execute(sel)
             papers_with_votes_rows = res.fetchall()
+            res.close()
 
         except Exception:
             LOGEXCEPTION(
@@ -796,6 +799,7 @@ def get_arxiv_listing(dbinfo,
 
             res = conn.execute(sel)
             reserved_papers_rows = res.fetchall()
+            res.close()
 
         except Exception:
             LOGEXCEPTION(
@@ -849,6 +853,7 @@ def get_arxiv_listing(dbinfo,
 
             res = conn.execute(sel)
             other_new_papers_rows = res.fetchall()
+            res.close()
 
         except Exception:
             LOGEXCEPTION(
@@ -902,6 +907,7 @@ def get_arxiv_listing(dbinfo,
 
             res = conn.execute(sel)
             cross_listed_papers_rows = res.fetchall()
+            res.close()
 
         except Exception:
             LOGEXCEPTION(
