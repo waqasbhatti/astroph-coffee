@@ -23,9 +23,9 @@ LOGEXCEPTION = LOGGER.exception
 ## IMPORTS ##
 #############
 
-from datetime import datetime, timezone, date
+from datetime import datetime, date
 from dateutil import parser
-from sqlalchemy import select, update, insert, exc, func, case
+from sqlalchemy import select, update
 
 from . import database
 

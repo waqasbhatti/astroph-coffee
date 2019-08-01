@@ -28,7 +28,7 @@ import csv
 from dateutil import parser
 from tornado.escape import squeeze
 from fuzzywuzzy import process
-from sqlalchemy import select, update, func, distinct, insert, exc
+from sqlalchemy import select, update, insert, exc, delete
 
 from . import database
 
@@ -96,10 +96,24 @@ def insert_local_authors(
         dbinfo,
         author_csv,
         dbkwargs=None,
+        truncate=False,
         overwrite=True,
 ):
-    '''
-    This inserts local authors into the database.
+    '''This inserts local authors into the database.
+
+    author_csv is a CSV file with three columns:
+
+    author_name, author_email, author_special_affiliation
+
+    author_special_affiliation can be an empty string to indicate the author is
+    associated with the main group of people that'll be using the server. If the
+    author belongs to another institution but should be counted as a local
+    author, include that institution's name here.
+
+    truncate = True will clear the table before adding the authors. Useful for
+    start-of-year updates.
+
+    overwrite = True will update existing items.
 
     '''
 
@@ -128,16 +142,40 @@ def insert_local_authors(
 
     with conn.begin() as transaction:
 
+        if truncate:
+            LOGWARNING("Deleting all existing local authors.")
+            delall = delete(local_authors)
+            conn.execute(delall)
+
         LOGINFO("Inserting local authors...")
 
         ins = insert(local_authors)
 
-        csvreader = csv.DictReader(csvfd, fieldnames=('name','email'))
+        csvreader = csv.DictReader(
+            csvfd,
+            fieldnames=('name','email', 'affiliation')
+        )
 
         for row in csvreader:
 
+            affiliation = row['affiliation']
+            if len(affiliation) == 0:
+                affiliation = None
+
+            info = {
+                'affiliation':row['affiliation'],
+                'server_user_id':None,
+                'server_user_role':None
+            }
+
             try:
-                conn.execute(ins, row)
+
+                conn.execute(
+                    ins,
+                    name=row['name'],
+                    email=row['email'],
+                    info=info
+                )
 
             except exc.IntegrityError:
 
@@ -153,7 +191,11 @@ def insert_local_authors(
 
                 upd = update(local_authors).where(
                     local_authors.c.name == row['name']
-                ).values(row)
+                ).values(
+                    name=row['name'],
+                    email=row['email'],
+                    info=info
+                )
 
                 conn.execute(upd)
                 LOGWARNING("Updated existing author info for author: %s" %
@@ -174,9 +216,9 @@ def insert_local_authors(
 
 def add_local_author(
         dbinfo,
-        author_name,
-        author_email,
-        author_info=None,
+        name,
+        email,
+        affiliation=None,
         dbkwargs=None,
         overwrite=True,
 ):
@@ -215,11 +257,16 @@ def add_local_author(
 
         try:
 
+            # default info
+            info = {'affiliation':affiliation,
+                    'server_user_id':None,
+                    'server_user_role':None}
+
             res = conn.execute(
                 ins,
-                name=author_name,
-                email=author_email,
-                info=author_info
+                name=name,
+                email=email,
+                info=info
             )
             res = conn.execute(ins)
             updated = res.rowcount == 1
@@ -233,24 +280,23 @@ def add_local_author(
                 LOGERROR(
                     "Author: %s with email: %s already exists "
                     "in the DB and overwrite=False. Skipping..."
-                    % (author_name, author_email)
+                    % (name, email)
                 )
 
             else:
 
                 upd = update(local_authors).where(
-                    local_authors.c.name == author_name
+                    local_authors.c.name == name
                 ).values(
-                    name=author_name,
-                    email=author_email,
-                    info=author_info
+                    name=name,
+                    email=email,
+                    info=info
                 )
 
                 res = conn.execute(upd)
                 updated = res.rowcount == 1
 
-                LOGWARNING("Updated existing author info for author: %s" %
-                           author_name)
+                LOGWARNING("Updated existing author info for author: %s" % name)
     #
     # at the end, shut down the DB
     #
@@ -266,7 +312,9 @@ def add_local_author(
 ## NORMALIZING AUTHOR LISTS ##
 ##############################
 
-def get_local_authors(dbinfo, dbkwargs=None):
+def get_local_authors(dbinfo,
+                      include_affiliations=False,
+                      dbkwargs=None):
     '''
     This fetches and normalizes the local author list from the DB.
 
@@ -316,8 +364,20 @@ def get_local_authors(dbinfo, dbkwargs=None):
             # normalize the full names and generate the firstinitial-lastnames
             #
 
+            # sort the names by last-name
             actual_names = (x['name'] for x in rows)
-            full_names = [x['name'].casefold() for x in rows]
+            last_names = {x:x.split()[-1] for x in actual_names}
+
+            sorted_rows = sorted(
+                rows,
+                key=lambda x:last_names[x['name']]
+            )
+
+            actual_names = [x['name'] for x in sorted_rows]
+            author_emails = [x['email'] for x in sorted_rows]
+            author_info = [x['info'] for x in sorted_rows]
+
+            full_names = [x.casefold() for x in actual_names]
             full_names = [x.replace('.', ' ') for x in full_names]
             full_names = [squeeze(x) for x in full_names]
 
@@ -331,12 +391,16 @@ def get_local_authors(dbinfo, dbkwargs=None):
                     full_names,
                     actual_names,
                     firstinitial_lastnames,
-                    (x['email'].casefold() for x in rows),
-                    (x['info'] for x in rows)
+                    author_emails,
+                    author_info
             ):
 
+                this_actual_name = an
+                if include_affiliations and info.get('affiliation') is not None:
+                    this_actual_name = '%s (%s)' % (an, info.get('affiliation'))
+
                 author_dict[fn] = {
-                    'actual_name':an,
+                    'actual_name':this_actual_name,
                     'firstinitial_lastname':fl,
                     'email':em,
                     'info':info
@@ -490,7 +554,6 @@ def get_article_authors(dbinfo,
 def autotag_local_authors(
         dbinfo,
         utcdate=None,
-        affiliations=None,
         firstname_match_threshold=93,
         fullname_match_threshold=72,
         update_db=False,
@@ -590,11 +653,12 @@ def autotag_local_authors(
                 this_paper_info['local_author_indices'].append(ind)
 
                 # look up and append the affiliation
-                local_matched_email = local_authors[full_name_match[0]]['email']
-                local_matched_affil = local_matched_email.split('@')[-1]
-                if affiliations and local_matched_affil in affiliations:
+                local_matched_affil = (
+                    local_authors[full_name_match[0]]['info']['affiliation']
+                )
+                if local_matched_affil is not None:
                     this_paper_info['local_author_specaffil'].append(
-                        affiliations[local_matched_affil]
+                        local_matched_affil
                     )
 
         #
