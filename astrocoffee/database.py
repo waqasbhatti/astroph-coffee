@@ -121,7 +121,7 @@ FTS_SCRIPT = dedent(
         presenter_userid,
         reserved_by_userid,
         content="arxiv_listings",
-        tokenize="unicode61 remove_diacritics 2"
+        tokenize="unicode61"
     );
 
     -- create the required triggers to update the FTS index whenever stuff is
