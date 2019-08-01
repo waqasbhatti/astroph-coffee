@@ -22,7 +22,6 @@ LOGEXCEPTION = LOGGER.exception
 ## IMPORTS ##
 #############
 
-from hashlib import sha256
 from datetime import datetime, timezone
 import pickle
 
@@ -113,12 +112,9 @@ def parse_arxiv_soup(soup):
     Returns
     -------
 
-    (new_papers, cross_lists, listing_hash) : tuple
+    (new_papers, cross_lists) : tuple
         ``new_papers`` contains the new articles from the URL. ``cross_lists``
-        contains the cross-listings from the URL. ``listing_hash`` is a SHA256
-        hash of the first five articles in the ``new_papers`` dict to help
-        indicate if the article listing has been updated when compared to a
-        previous listing.
+        contains the cross-listings from the URL.
 
     '''
 
@@ -279,13 +275,7 @@ def parse_arxiv_soup(soup):
             'pdf':cross_pdf
         }
 
-    # hash the first five new paper arxiv IDs so we can tell if the listings
-    # have been updated
-    listing_hash = sha256(
-        (' '.join([new_papers[x]['arxiv'] for x in range(1,5)])).encode()
-    ).hexdigest()
-
-    return new_papers, cross_lists, listing_hash
+    return new_papers, cross_lists
 
 
 #############################
@@ -543,6 +533,71 @@ def insert_arxiv_listing(dbinfo,
         engine.dispose()
 
 
+def get_single_article(dbinfo,
+                       arxiv_id,
+                       dbkwargs=None):
+    '''
+    This gets a single article's listing.
+
+    '''
+
+    #
+    # get the database
+    #
+    dbref, dbmeta = dbinfo
+    if not dbkwargs:
+        dbkwargs = {}
+    if isinstance(dbref, str):
+        engine, conn, meta = database.get_astrocoffee_db(dbref,
+                                                         dbmeta,
+                                                         **dbkwargs)
+    else:
+        engine, conn, meta = None, dbref, dbmeta
+        meta.bind = conn
+
+    row = None
+
+    with conn.begin():
+
+        arxiv_listings = meta.tables['arxiv_listings']
+
+        sel = select([
+            arxiv_listings.c.day_serial,
+            arxiv_listings.c.arxiv_id,
+            arxiv_listings.c.title,
+            arxiv_listings.c.authors,
+            arxiv_listings.c.comments,
+            arxiv_listings.c.abstract,
+            arxiv_listings.c.link,
+            arxiv_listings.c.pdf,
+            arxiv_listings.c.local_authors,
+            arxiv_listings.c.nvotes,
+            arxiv_listings.c.voter_info,
+            arxiv_listings.c.presenter_info,
+            arxiv_listings.c.reserved,
+            arxiv_listings.c.reserver_info,
+            arxiv_listings.c.reserved_on,
+            arxiv_listings.c.reserved_until,
+        ]).select_from(
+            arxiv_listings
+        ).where(
+            arxiv_listings.c.arxiv_id == arxiv_id
+        )
+
+        res = conn.execute(sel)
+        row = res.first()
+
+    #
+    # at the end, shut down the DB
+    #
+    if engine:
+        conn.close()
+        meta.bind = None
+        engine.dispose()
+
+    return row
+
+
 def get_arxiv_listing(dbinfo,
                       utcdate=None,
                       dbkwargs=None):
@@ -626,10 +681,10 @@ def get_arxiv_listing(dbinfo,
             arxiv_listings.c.pdf,
             arxiv_listings.c.local_authors,
             arxiv_listings.c.nvotes,
-            arxiv_listings.c.voter_userids,
-            arxiv_listings.c.presenter_userid,
+            arxiv_listings.c.voter_info,
+            arxiv_listings.c.presenter_info,
             arxiv_listings.c.reserved,
-            arxiv_listings.c.reserved_by_userid,
+            arxiv_listings.c.reserver_info,
             arxiv_listings.c.reserved_on,
             arxiv_listings.c.reserved_until,
         ]).select_from(
@@ -641,7 +696,7 @@ def get_arxiv_listing(dbinfo,
         ).where(
             arxiv_listings.c.reserved.is_(False)
         ).where(
-            arxiv_listings.c.presenter_userid.is_(None)
+            arxiv_listings.c.presenter_info.is_(None)
         ).order_by(
             arxiv_listings.c.nvotes.desc()
         )
@@ -675,10 +730,10 @@ def get_arxiv_listing(dbinfo,
             arxiv_listings.c.pdf,
             arxiv_listings.c.local_authors,
             arxiv_listings.c.nvotes,
-            arxiv_listings.c.voter_userids,
-            arxiv_listings.c.presenter_userid,
+            arxiv_listings.c.voter_info,
+            arxiv_listings.c.presenter_info,
             arxiv_listings.c.reserved,
-            arxiv_listings.c.reserved_by_userid,
+            arxiv_listings.c.reserver_info,
             arxiv_listings.c.reserved_on,
             arxiv_listings.c.reserved_until,
         ]).select_from(
@@ -686,7 +741,7 @@ def get_arxiv_listing(dbinfo,
         ).where(
             arxiv_listings.c.utcdate == utcdate
         ).where(
-            arxiv_listings.c.presenter_userid.isnot(None)
+            arxiv_listings.c.presenter_info.isnot(None)
         ).where(
             arxiv_listings.c.local_authors.is_(None)
         ).where(
@@ -726,10 +781,10 @@ def get_arxiv_listing(dbinfo,
             arxiv_listings.c.pdf,
             arxiv_listings.c.local_authors,
             arxiv_listings.c.nvotes,
-            arxiv_listings.c.voter_userids,
-            arxiv_listings.c.presenter_userid,
+            arxiv_listings.c.voter_info,
+            arxiv_listings.c.presenter_info,
             arxiv_listings.c.reserved,
-            arxiv_listings.c.reserved_by_userid,
+            arxiv_listings.c.reserver_info,
             arxiv_listings.c.reserved_on,
             arxiv_listings.c.reserved_until,
         ]).select_from(
@@ -739,7 +794,7 @@ def get_arxiv_listing(dbinfo,
         ).where(
             arxiv_listings.c.nvotes > 0
         ).where(
-            arxiv_listings.c.presenter_userid.is_(None)
+            arxiv_listings.c.presenter_info.is_(None)
         ).where(
             arxiv_listings.c.local_authors.is_(None)
         ).where(
@@ -782,10 +837,10 @@ def get_arxiv_listing(dbinfo,
             arxiv_listings.c.pdf,
             arxiv_listings.c.local_authors,
             arxiv_listings.c.nvotes,
-            arxiv_listings.c.voter_userids,
-            arxiv_listings.c.presenter_userid,
+            arxiv_listings.c.voter_info,
+            arxiv_listings.c.presenter_info,
             arxiv_listings.c.reserved,
-            arxiv_listings.c.reserved_by_userid,
+            arxiv_listings.c.reserver_info,
             arxiv_listings.c.reserved_on,
             arxiv_listings.c.reserved_until,
         ]).select_from(
@@ -830,10 +885,10 @@ def get_arxiv_listing(dbinfo,
             arxiv_listings.c.pdf,
             arxiv_listings.c.local_authors,
             arxiv_listings.c.nvotes,
-            arxiv_listings.c.voter_userids,
-            arxiv_listings.c.presenter_userid,
+            arxiv_listings.c.voter_info,
+            arxiv_listings.c.presenter_info,
             arxiv_listings.c.reserved,
-            arxiv_listings.c.reserved_by_userid,
+            arxiv_listings.c.reserver_info,
             arxiv_listings.c.reserved_on,
             arxiv_listings.c.reserved_until,
         ]).select_from(
@@ -847,7 +902,7 @@ def get_arxiv_listing(dbinfo,
         ).where(
             arxiv_listings.c.reserved.is_(False)
         ).where(
-            arxiv_listings.c.presenter_userid.is_(None)
+            arxiv_listings.c.presenter_info.is_(None)
         ).where(
             arxiv_listings.c.local_authors.is_(None)
         ).order_by(
@@ -884,10 +939,10 @@ def get_arxiv_listing(dbinfo,
             arxiv_listings.c.pdf,
             arxiv_listings.c.local_authors,
             arxiv_listings.c.nvotes,
-            arxiv_listings.c.voter_userids,
-            arxiv_listings.c.presenter_userid,
+            arxiv_listings.c.voter_info,
+            arxiv_listings.c.presenter_info,
             arxiv_listings.c.reserved,
-            arxiv_listings.c.reserved_by_userid,
+            arxiv_listings.c.reserver_info,
             arxiv_listings.c.reserved_on,
             arxiv_listings.c.reserved_until,
         ]).select_from(
@@ -901,7 +956,7 @@ def get_arxiv_listing(dbinfo,
         ).where(
             arxiv_listings.c.reserved.is_(False)
         ).where(
-            arxiv_listings.c.presenter_userid.is_(None)
+            arxiv_listings.c.presenter_info.is_(None)
         ).where(
             arxiv_listings.c.local_authors.is_(None)
         ).order_by(

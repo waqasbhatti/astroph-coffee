@@ -85,10 +85,10 @@ ArxivListings = Table(
     Column("local_authors", JSON),
     Column("nvotes", Integer, nullable=False, default=0),
     # this contains a list of server userids that voted on this paper
-    Column("voter_userids", JSON),
-    Column("presenter_userid", Text),
+    Column("voter_info", JSON),
+    Column("presenter_info", JSON),
     Column("reserved", Boolean, nullable=False, default=False),
-    Column("reserved_by_userid", Text),
+    Column("reserver_info", JSON),
     Column("reserved_on", DATE),
     Column("reserved_until", DATE),
 )
@@ -117,9 +117,9 @@ FTS_SCRIPT = dedent(
         abstract,
         link,
         pdf,
-        voter_userids,
-        presenter_userid,
-        reserved_by_userid,
+        voter_info,
+        presenter_info,
+        reserver_info,
         content="arxiv_listings",
         tokenize="unicode61"
     );
@@ -137,25 +137,25 @@ FTS_SCRIPT = dedent(
     create trigger fts_after_update after update on arxiv_listings begin
         insert into arxiv_fts(rowid, utcdate, title, article_type,
                               arxiv_id, authors, abstract, link, pdf,
-                              voter_userids, presenter_userid,
-                              reserved_by_userid)
+                              voter_info, presenter_info,
+                              reserver_info)
             values (new.rowid, new.utcdate,
                     new.title, new.article_type, new.arxiv_id,
                     new.authors, new.abstract, new.link, new.pdf,
-                    new.voter_userids, new.presenter_userid,
-                    new.reserved_by_userid);
+                    new.voter_info, new.presenter_info,
+                    new.reserver_info);
         end;
 
     create trigger fts_after_insert after insert on arxiv_listings begin
         insert into arxiv_fts(rowid, utcdate, title, article_type,
                               arxiv_id, authors, abstract, link, pdf,
-                              voter_userids, presenter_userid,
-                              reserved_by_userid)
+                              voter_info, presenter_info,
+                              reserver_info)
             values (new.rowid, new.utcdate,
                     new.title, new.article_type, new.arxiv_id,
                     new.authors, new.abstract, new.link, new.pdf,
-                    new.voter_userids, new.presenter_userid,
-                    new.reserved_by_userid);
+                    new.voter_info, new.presenter_info,
+                    new.reserver_info);
         end;
     """
 )

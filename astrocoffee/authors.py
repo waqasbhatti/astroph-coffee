@@ -172,6 +172,96 @@ def insert_local_authors(
     csvfd.close()
 
 
+def add_local_author(
+        dbinfo,
+        author_name,
+        author_email,
+        author_info=None,
+        dbkwargs=None,
+        overwrite=True,
+):
+    '''
+    This inserts a single local author into the database.
+
+    '''
+
+    #
+    # get the database
+    #
+    dbref, dbmeta = dbinfo
+    if not dbkwargs:
+        dbkwargs = {}
+    if isinstance(dbref, str):
+        engine, conn, meta = database.get_astrocoffee_db(dbref,
+                                                         dbmeta,
+                                                         **dbkwargs)
+    else:
+        engine, conn, meta = None, dbref, dbmeta
+        meta.bind = conn
+
+    #
+    # actual work
+    #
+
+    local_authors = meta.tables['local_authors']
+
+    updated = False
+
+    with conn.begin() as transaction:
+
+        LOGINFO("Inserting local authors...")
+
+        ins = insert(local_authors)
+
+        try:
+
+            res = conn.execute(
+                ins,
+                name=author_name,
+                email=author_email,
+                info=author_info
+            )
+            res = conn.execute(ins)
+            updated = res.rowcount == 1
+
+        except exc.IntegrityError:
+
+            transaction.rollback()
+
+            if not overwrite:
+
+                LOGERROR(
+                    "Author: %s with email: %s already exists "
+                    "in the DB and overwrite=False. Skipping..."
+                    % (author_name, author_email)
+                )
+
+            else:
+
+                upd = update(local_authors).where(
+                    local_authors.c.name == author_name
+                ).values(
+                    name=author_name,
+                    email=author_email,
+                    info=author_info
+                )
+
+                res = conn.execute(upd)
+                updated = res.rowcount == 1
+
+                LOGWARNING("Updated existing author info for author: %s" %
+                           author_name)
+    #
+    # at the end, shut down the DB
+    #
+    if engine:
+        conn.close()
+        meta.bind = None
+        engine.dispose()
+
+    return updated
+
+
 ##############################
 ## NORMALIZING AUTHOR LISTS ##
 ##############################
