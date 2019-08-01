@@ -204,7 +204,8 @@ def record_presenter(dbinfo,
     present a paper. For the second option, anonymous users from the allowed
     CIDR values only can choose to reserver a paper (i.e. on-campus only).
 
-    Only one presenter is allowed per paper.
+    - Only one presenter is allowed per paper.
+    - Papers with reservations can't be presented.
 
     '''
 
@@ -231,7 +232,8 @@ def record_presenter(dbinfo,
 
         # check first
         sel = select([
-            arxiv_listings.c.presenter_info
+            arxiv_listings.c.presenter_info,
+            arxiv_listings.c.reserved,
         ]).select_from(arxiv_listings).where(
             arxiv_listings.c.arxiv_id == arxiv_id
         )
@@ -249,11 +251,21 @@ def record_presenter(dbinfo,
                 % (presenter_info, arxiv_id)
             )
 
+        elif row and row['reserved']:
+
+            updated = False
+            LOGERROR(
+                "Could not set a new presenter. "
+                "Presenter info provided: %r for requested article: %s."
+                "This paper has been reserved for a future coffee meeting."
+                % (presenter_info, arxiv_id)
+            )
+
         else:
 
             existing_presenter = row[0]
 
-            if existing_presenter is not None:
+            if existing_presenter is not None and presenter_info is not None:
 
                 updated = False
                 LOGERROR(
@@ -339,7 +351,8 @@ def record_reservation(dbinfo,
     reserve a paper. For the second option, anonymous users from the allowed
     CIDR values only can choose to reserver a paper (i.e. on-campus only).
 
-    Only one reserver is allowed per paper.
+    - Only one reserver is allowed per paper.
+    - Papers with active presenters can't be reserved.
 
     '''
 
@@ -378,6 +391,8 @@ def record_reservation(dbinfo,
     # actual work
     #
 
+    updated = False
+
     with conn.begin() as transaction:
 
         arxiv_listings = meta.tables['arxiv_listings']
@@ -385,7 +400,8 @@ def record_reservation(dbinfo,
         # check first
         sel = select([
             arxiv_listings.c.reserver_info,
-            arxiv_listings.c.reserved
+            arxiv_listings.c.reserved,
+            arxiv_listings.c.presenter_info,
         ]).select_from(arxiv_listings).where(
             arxiv_listings.c.arxiv_id == arxiv_id
         )
@@ -403,12 +419,24 @@ def record_reservation(dbinfo,
                 % (reserver_info, arxiv_id)
             )
 
+        elif row and row['presenter_info'] is not None:
+
+            updated = False
+            LOGERROR(
+                "Could not set a new reserver. "
+                "Reserver info provided: %r for requested article: %s."
+                "This paper has an active presenter for the "
+                "next coffee meeting."
+                % (reserver_info, arxiv_id)
+            )
+
         else:
 
             existing_reserver = row['reserver_info']
             reservation_exists = row['reserved']
 
-            if existing_reserver is not None or reservation_exists:
+            if ((existing_reserver is not None or reservation_exists) and
+                reserver_info is not None):
 
                 updated = False
                 LOGERROR(
@@ -445,7 +473,7 @@ def record_reservation(dbinfo,
                             'full_name':reserver_info['full_name'],
                         },
                         reserved_on=utcdate_now,
-                        reserved_util=reserve_until_utcdate
+                        reserved_until=reserve_until_utcdate
                     )
 
                     LOGWARNING(
@@ -455,6 +483,7 @@ def record_reservation(dbinfo,
                            utcdate_now,
                            reserve_until_utcdate)
                     )
+
                 try:
 
                     res = conn.execute(upd)
@@ -470,6 +499,7 @@ def record_reservation(dbinfo,
                         "Reserver info provided: %r for requested article: %s."
                         % (reserver_info, arxiv_id)
                     )
+                    updated = False
 
     #
     # at the end, shut down the DB
