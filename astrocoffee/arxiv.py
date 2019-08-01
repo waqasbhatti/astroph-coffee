@@ -31,7 +31,7 @@ from bs4 import BeautifulSoup
 
 from dateutil import parser
 from tornado.escape import squeeze
-from sqlalchemy import select, update, insert, exc
+from sqlalchemy import select, update, insert, exc, func, case
 
 from . import database
 from .authors import strip_affiliations
@@ -768,6 +768,9 @@ def get_arxiv_listing(dbinfo,
         # next, fetch the papers that were reserved only (from either new papers
         # or cross-lists)
         #
+
+        # show only those reserved papers that are still within the requested
+        # time-range
         sel = select([
             arxiv_listings.c.day_serial,
             arxiv_listings.c.arxiv_id,
@@ -791,6 +794,8 @@ def get_arxiv_listing(dbinfo,
             arxiv_listings.c.utcdate == utcdate
         ).where(
             arxiv_listings.c.reserved.is_(True)
+        ).where(
+            arxiv_listings.c.reserved_until > datetime.utcnow().date()
         ).order_by(
             arxiv_listings.c.nvotes.desc()
         )
@@ -812,7 +817,7 @@ def get_arxiv_listing(dbinfo,
         retdict['reserved_papers'] = reserved_papers_rows
 
         #
-        # next, fetch the new papers only
+        # next, fetch the new papers only (not cross-lists)
         #
         sel = select([
             arxiv_listings.c.day_serial,
@@ -928,3 +933,173 @@ def get_arxiv_listing(dbinfo,
         engine.dispose()
 
     return retdict
+
+
+###################
+## PAPER ARCHIVE ##
+###################
+
+MONTH_NAMES = {x:datetime(year=2019,month=x,day=12) for x in range(1,13)}
+
+
+def group_arxiv_dates(dates, npapers, nlocal, nvoted):
+    '''
+    This takes a list of datetime.dates and the number of papers corresponding
+    to each date and builds a nice dict out of it, allowing the following
+    listing (in rev-chron order) to be made:
+
+    YEAR X
+
+    Month X:
+
+    Date X --- <strong>YY<strong> papers
+
+    .
+    .
+    .
+
+    YEAR 1
+
+    Month 1:
+
+    Date 1 --- <strong>YY<strong> papers
+
+    '''
+
+    years, months = [], []
+
+    for x in dates:
+        years.append(x.year)
+        months.append(x.month)
+
+    unique_years = set(years)
+    unique_months = set(months)
+
+    yeardict = {}
+
+    for year in unique_years:
+        yeardict[year] = {}
+        for month in unique_months:
+            yeardict[year][MONTH_NAMES[month]] = [
+                (x,y,z,w) for (x,y,z,w) in zip(dates, npapers, nlocal, nvoted)
+                if (x.year == year and x.month == month)
+            ]
+        for month in yeardict[year].copy():
+            if not yeardict[year][month]:
+                del yeardict[year][month]
+
+    return yeardict
+
+
+def get_coffee_archive(
+        dbinfo,
+        start_date=None,
+        end_date=None,
+        dbkwargs=None,
+        returndict=False,
+):
+    '''
+    This returns all the article counts by date.
+
+    '''
+
+    #
+    # get the database
+    #
+    dbref, dbmeta = dbinfo
+    if not dbkwargs:
+        dbkwargs = {}
+    if isinstance(dbref, str):
+        engine, conn, meta = database.get_astrocoffee_db(dbref,
+                                                         dbmeta,
+                                                         **dbkwargs)
+    else:
+        engine, conn, meta = None, dbref, dbmeta
+        meta.bind = conn
+
+    #
+    # actual work
+    #
+
+    if isinstance(start_date, str):
+        start_date = parser.parse(start_date).date()
+
+    if isinstance(end_date, str):
+        end_date = parser.parse(end_date).date()
+
+    with conn.begin() as transaction:
+
+        arxiv_listings = meta.tables['arxiv_listings']
+
+        sel = select([
+            arxiv_listings.c.utcdate,
+            func.count().label('total_count'),
+            func.sum(
+                case([
+                    (arxiv_listings.c.local_authors.isnot(None), 1),
+                    (arxiv_listings.c.local_authors.is_(None), 0)
+                ])
+            ).label('localauthor_count'),
+            func.sum(
+                case([
+                    (arxiv_listings.c.nvotes > 0, 1),
+                    (arxiv_listings.c.nvotes == 0, 0)
+                ])
+            ).label('voted_count')
+        ]).select_from(
+            arxiv_listings
+        ).group_by(
+            arxiv_listings.c.utcdate
+        ).order_by(
+            arxiv_listings.c.utcdate.desc()
+        )
+
+        if start_date is not None:
+            sel = sel.where(
+                arxiv_listings.c.utcdate >= start_date
+            )
+
+        if end_date is not None:
+            sel = sel.where(
+                arxiv_listings.c.utcdate <= end_date
+            )
+
+        try:
+
+            res = conn.execute(sel)
+            rows = res.fetchall()
+            res.close()
+
+        except Exception:
+            LOGEXCEPTION("Could not fetch coffee archive.")
+            transaction.rollback()
+            rows = []
+
+    #
+    # at the end, shut down the DB
+    #
+    if engine:
+        conn.close()
+        meta.bind = None
+        engine.dispose()
+
+    if len(rows) == 0:
+        LOGERROR("No article lists found for the requested dates.")
+
+    if returndict:
+
+        if len(rows) > 0:
+
+            retdict = group_arxiv_dates(
+                [x['utcdate'] for x in rows],
+                [x['total_count'] for x in rows],
+                [x['localauthor_count'] for x in rows],
+                [x['voted_count'] for x in rows],
+            )
+            return retdict
+        else:
+            return None
+
+    else:
+
+        return rows
