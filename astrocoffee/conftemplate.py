@@ -28,9 +28,12 @@ max_workers = 2
 # This defines the TCP port on which the server listens.
 server_port = 5005
 
-# This defines the address on which the server listens. 0.0.0.0 means it listens
-# on all interfaces, 127.0.0.1 means it only listens for connections from
-# localhost.
+# This defines the address on which the server listens. '0.0.0.0' means it
+# listens on all interfaces (so you can access it from other computers by
+# http://ip-address-of-server:server_port/astro-coffee). '127.0.0.1' means it
+# only listens for connections from localhost so you can only browse to
+# http://127.0.0.1:server_port/astro-coffee on the computer where the server
+# runs.
 server_address = '0.0.0.0'
 
 
@@ -112,8 +115,9 @@ geoip_database = os.path.join(basedir, 'GeoLite2-City.mmdb')
 
 # These are ISO codes for countries and subdivisions from where voting is
 # allowed (http://en.wikipedia.org/wiki/ISO_3166-2).
-allowed_countries = 'US'
-allowed_subdivisions = 'NJ, NY, PA'
+allowed_regions = {
+    'US': ['NJ','NY','PA'],
+}
 
 # These are IP address range definitions in CIDR format (comma-separated)
 # https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing#CIDR_notation.
