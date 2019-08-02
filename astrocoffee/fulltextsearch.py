@@ -142,7 +142,7 @@ def full_text_query(
         last_relevance = 0
 
     return {'result':rows,
-            'nrows':len(rows),
+            'nmatches':len(rows),
             'columns':['rowid'] + query_cols + ['relevance'],
             'weights':relevance_weights,
             'query':q,
