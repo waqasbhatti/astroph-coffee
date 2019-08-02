@@ -62,29 +62,15 @@ modpath = os.path.abspath(os.path.dirname(__file__))
 
 ## define our commandline options ##
 
-# the port the server will listen on
-define('port',
-       default=5005,
-       help='Run on the given TCP port.',
-       type=int)
-
-# the address the server will listen on.
-define('serve',
-       default='0.0.0.0',
-       help=('Bind to given address and serve content. '
-             '0.0.0.0 binds to all network interfaces '
-             '(internal and external). 127.0.0.1 binds to only '
-             'the localhost address so the server will not accept '
-             'external connections.'),
-       type=str)
-
 # basedir is the directory where the server will work.
 define('basedir',
        default=os.getcwd(),
        help=("The base work directory of the server. "
              "This directory contains the astro-coffee and "
              "authentication databases, the server's config file, "
-             "templates, and CSS/JS files."),
+             "templates, and CSS/JS files. "
+             "The default basedir is the current directory "
+             "in which the server was launched."),
        type=str)
 
 # conf is the path to the server config file (this must be a complete conf file)
@@ -166,7 +152,7 @@ def main():
     ## LOCAL IMPORTS ##
     ###################
 
-    from . import firstrun
+    from . import firstrun, modtools
     from astrocoffee.vendored.futures37.process import ProcessPoolExecutor
 
     ####################################
@@ -174,27 +160,27 @@ def main():
     ####################################
 
     BASEDIR = os.path.abspath(options.basedir)
-    PORT = options.port
-    LISTEN = options.serve
 
     firstrun_file = os.path.join(BASEDIR, '.coffee-first-run-done')
-    if options.conf is not None and os.path.exists(options.conf):
-        conf_file = os.path.abspath(options.conf)
-    else:
-        conf_file = os.path.join(BASEDIR, 'astro-coffee.conf')
+    conf_file = os.path.join(BASEDIR, 'coffee_settings.py')
 
-    # this call does the following
-    # - copies over the conf file to the basedir and updates it
-    # - makes the authnzerver auth DB
-    # - makes the astro-coffee DB
-    # - copies over the template subdir to the basedir
-    # - copies over the static directory to the basedir
-    if not os.path.exists(firstrun_file):
-        CONF = firstrun.setup_coffee_server(BASEDIR,
-                                            PORT,
-                                            LISTEN)
-    elif os.path.exists(conf_file):
-        CONF = firstrun.load_config(conf_file)
+    if os.path.exists(firstrun_file) and os.path.exists(conf_file):
+        LOGGER.info("Loading config from: %s" % conf_file)
+        CONF = modtools.module_from_string(conf_file,
+                                           force_reload=True)
+    elif os.path.exists(firstrun_file) and not os.path.exists(conf_file):
+        LOGGER.error("No config file found in basedir: %s, can't continue. "
+                     "Hint: remove the %s file to regenerate it." %
+                     (BASEDIR, firstrun_file))
+        sys.exit(1)
+    elif not os.path.exists(firstrun_file):
+        LOGGER.warning("Generating a new config file and "
+                       "initializing the coffee-server base directory in %s. "
+                       "Existing auth and arXiv databases will be retained." %
+                       BASEDIR)
+        conf_file = firstrun.setup_coffee_server(BASEDIR)
+        CONF = modtools.module_from_string(conf_file,
+                                           force_reload=True)
 
     else:
         LOGGER.error("Could not load the expected config file "
@@ -224,9 +210,9 @@ def main():
     #
     # this is the background executor we'll pass over to the handler
     #
-    EXECUTOR = ProcessPoolExecutor(max_workers=CONF['max_workers'],
+    EXECUTOR = ProcessPoolExecutor(max_workers=CONF.max_workers,
                                    initializer=setup_worker,
-                                   initargs=(CONF['database_url'],),
+                                   initargs=(CONF.database_url,),
                                    finalizer=close_database)
 
     #########################
@@ -251,33 +237,33 @@ def main():
         # index page
         (r'/astro-coffee',
          coffee.IndexHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
         (r'/astro-coffee/',
          coffee.IndexHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
 
         # the local author list page
         (r'/astro-coffee/local-authors',
          coffee.LocalListHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
         (r'/astro-coffee/local-authors/',
          coffee.LocalListHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
 
         # the about page
         (r'/astro-coffee/about',
          coffee.AboutHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
         (r'/astro-coffee/about/',
          coffee.AboutHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
 
         # - /papers/today directs to today
         # - /papers/some-date directs to papers on that date
         # - /papers directs to the archive of papers
         (r'/astro-coffee/papers/?(.*)',
          coffee.CoffeeHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
 
         ##################
         ## API HANDLERS ##
@@ -285,15 +271,15 @@ def main():
 
         (r'/astro-coffee/api/vote',
          coffee.VoteHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
 
         (r'/astro-coffee/api/reserve',
          coffee.ReserveHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
 
         (r'/astro-coffee/api/present',
          coffee.PresentHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
 
         ###################
         ## AUTH HANDLERS ##
@@ -302,47 +288,47 @@ def main():
         # this is the login page
         (r'/astro-coffee/users/login',
          auth.LoginHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
 
         # this is the logout page
         (r'/astro-coffee/users/logout',
          auth.LogoutHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
 
         # this is the new user page
         (r'/astro-coffee/users/new',
          auth.NewUserHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
 
         # this is the verification page for verifying email addresses
         (r'/astro-coffee/users/verify',
          auth.VerifyUserHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
 
         # this is step 1 page for forgotten passwords
         (r'/astro-coffee/users/forgot-password-step1',
          auth.ForgotPassStep1Handler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
 
         # this is the verification page for verifying email addresses
         (r'/astro-coffee/users/forgot-password-step2',
          auth.ForgotPassStep2Handler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
 
         # this is the password change page
         (r'/astro-coffee/users/password-change',
          auth.ChangePassHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
 
         # this is the user-prefs page
         (r'/astro-coffee/users/home',
          auth.UserHomeHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
 
         # this is the user-delete page
         (r'/astro-coffee/users/delete',
          auth.DeleteUserHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
 
         ####################
         ## ADMIN HANDLERS ##
@@ -351,22 +337,22 @@ def main():
         # this is the admin index page
         (r'/astro-coffee/czar',
          admin.AdminIndexHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
 
         # this handles email settings updates
         (r'/astro-coffee/czar/email',
          admin.EmailSettingsHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
 
         # this handles user updates
         (r'/astro-coffee/czar/users',
          admin.UserAdminHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
 
         # this handles arxiv settings updates
         (r'/astro-coffee/czar/arxiv',
          admin.ArxivSettingsHandler,
-         {'basedir': BASEDIR, 'conf':CONF, 'executor':EXECUTOR}),
+         {'conf':CONF, 'executor':EXECUTOR}),
 
     ]
 
@@ -375,12 +361,12 @@ def main():
     ########################
 
     app = tornado.web.Application(
-        static_path=CONF['asset_path'],
+        static_path=CONF.asset_path,
         handlers=HANDLERS,
-        template_path=CONF['template_path'],
+        template_path=CONF.template_path,
         static_url_prefix='/astro-coffee/static/',
         compress_response=True,
-        cookie_secret=CONF['session_secret'],
+        cookie_secret=CONF.session_secret,
         xsrf_cookies=True,
         xsrf_cookie_kwargs={'samesite':'Lax'},
     )
@@ -396,16 +382,17 @@ def main():
     # make sure the port we're going to listen on is ok
     # inspired by how Jupyter notebook does this
     portok = False
-    serverport = options.port
+    serverport = CONF.server_port
+    serveraddress = CONF.server_address
     maxtries = 10
     thistry = 0
     while not portok and thistry < maxtries:
         try:
-            http_server.listen(serverport, options.serve)
+            http_server.listen(serverport, serveraddress)
             portok = True
         except socket.error:
             LOGGER.warning('%s:%s is already in use, trying port %s' %
-                           (options.serve, serverport, serverport + 1))
+                           (serveraddress, serverport, serverport + 1))
             serverport = serverport + 1
 
     if not portok:
@@ -414,9 +401,9 @@ def main():
         sys.exit(1)
 
     LOGGER.info('Started coffee-server. listening on http://%s:%s' %
-                (options.serve, serverport))
+                (serveraddress, serverport))
     LOGGER.info('Background worker processes: %s, IOLoop in use: %s' %
-                (CONF['max_workers'], IOLOOP_SPEC))
+                (CONF.max_workers, IOLOOP_SPEC))
     LOGGER.info('The current base directory is: %s' % os.path.abspath(BASEDIR))
 
     # register the signal callbacks
