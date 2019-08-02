@@ -325,7 +325,7 @@ def fetch_arxiv_listing(
                 LOGERROR("Could not get articles from %s" % url)
                 continue
 
-            new_papers, cross_lists, listing_hash = parse_arxiv_soup(soup)
+            new_papers, cross_lists = parse_arxiv_soup(soup)
 
             if len(new_papers) == 0:
                 LOGERROR("No new papers available from URL: %s" % url)
@@ -337,7 +337,6 @@ def fetch_arxiv_listing(
                 'new_papers':new_papers,
                 'ncrosslists':len(cross_lists),
                 'cross_lists':cross_lists,
-                'hash':listing_hash
             }
 
             # if everything finished OK for this URL, break out
