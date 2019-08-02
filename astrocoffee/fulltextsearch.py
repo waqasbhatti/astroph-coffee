@@ -60,6 +60,11 @@ def full_text_query(
         column_weights=None,
         max_rows=500,
         start_relevance=None,
+        highlight=(
+            'title',
+            'authors',
+            'abstract'
+        )
 ):
     '''This runs an FTS query.
 
@@ -77,21 +82,39 @@ def full_text_query(
          "order by bm25(arxiv_fts{relevance_weights})"
          "{limit_string}")
 
+    # get the valid query columns
     query_cols = list(set(FTS_COLUMNS.keys()) & set(columns))
 
     if len(query_cols) == 0:
         LOGERROR("All requested query columns are unavailable: %r" % columns)
         return None
 
-    column_str = ', '.join('arxiv_listings.%s' % x for x in query_cols)
+    # format the query columns
+    query_col_list = query_cols[::]
+    query_cols = ['arxiv_listings.%s' % x for x in query_col_list]
+    highlight_col_list = []
 
-    if column_weights is not None and len(column_weights) == len(query_cols):
+    # handle any highlight requests
+    if highlight is not None:
+
+        highlight_str = """\
+highlight(arxiv_fts, %s, '<span>','</span>')"""
+
+        for hcol in highlight:
+            query_cols.append(highlight_str % FTS_COLUMNS[hcol]['column'])
+            highlight_col_list.append('%s_highlight' % hcol)
+
+    # put together all the columns into a column string
+    column_str = ', '.join(x for x in query_cols)
+
+    if (column_weights is not None and
+        len(column_weights) == len(query_col_list)):
         relevance_weights = (
             ', %s' % ', '.join('%.1f' % x for x in column_weights)
         )
     else:
         relevance_weights = ', %s' % ', '.join(
-            '%.1f' % FTS_COLUMNS[x]['weight'] for x in query_cols
+            '%.1f' % FTS_COLUMNS[x]['weight'] for x in query_col_list
         )
 
     query_params = [query_string]
@@ -143,8 +166,12 @@ def full_text_query(
 
     return {'result':rows,
             'nmatches':len(rows),
-            'columns':['rowid'] + query_cols + ['relevance'],
-            'weights':relevance_weights,
+            'columns':(['rowid'] + query_col_list +
+                       highlight_col_list + ['relevance']),
+            'weights':{
+                x:float(y) for x,y in
+                zip(query_col_list, relevance_weights.lstrip(', ').split(','))
+            },
             'query':q,
             'top_relevance':top_relevance,
             'last_relevance':last_relevance}
