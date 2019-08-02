@@ -412,11 +412,11 @@ def insert_arxiv_listing(dbinfo,
             comments = arxiv_dict['new_papers'][new_paper]['comments']
             abstract = arxiv_dict['new_papers'][new_paper]['abstract']
             link = (
-                'https://arxiv.org/%s' %
+                'https://arxiv.org%s' %
                 arxiv_dict['new_papers'][new_paper]['link']
             )
             pdf = (
-                'https://arxiv.org/%s' %
+                'https://arxiv.org%s' %
                 arxiv_dict['new_papers'][new_paper]['pdf']
             )
 
@@ -475,11 +475,11 @@ def insert_arxiv_listing(dbinfo,
             comments = arxiv_dict['cross_lists'][cross_list]['comments']
             abstract = arxiv_dict['cross_lists'][cross_list]['abstract']
             link = (
-                'https://arxiv.org/%s' %
+                'https://arxiv.org%s' %
                 arxiv_dict['cross_lists'][cross_list]['link']
             )
             pdf = (
-                'https://arxiv.org/%s' %
+                'https://arxiv.org%s' %
                 arxiv_dict['cross_lists'][cross_list]['pdf']
             )
 

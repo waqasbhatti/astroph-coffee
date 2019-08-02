@@ -18,25 +18,23 @@ LOGERROR = LOGGER.error
 LOGEXCEPTION = LOGGER.exception
 
 
-#############
-## IMPORTS ##
-#############
-
-import sqlite3
-import copy
-
-
 ############
 ## CONFIG ##
 ############
 
-# the columns available for search and their default relevance weights
+# the columns available for search, their default relevance weights, and their
+# column numbers in the arxiv_fts table.
 FTS_COLUMNS = {
-    'utcdate':1.0,
-    'title':4.0,
-    'arxiv_id':1.0,
-    'authors':5.0,
-    'abstract':3.0,
+    'utcdate':{'weight':1.0, 'column':0},
+    'title':{'weight':4.0, 'column':1},
+    'arxiv_id':{'weight':1.0,'column':3},
+    'authors':{'weight':5.0,'column':4},
+    'abstract':{'weight':3.0,'column':5},
+    'link':{'weight':0.0,'column':6},
+    'pdf':{'weight':0.0,'column':7},
+    'voter_info':{'weight':0.0,'column':8},
+    'presenter_info':{'weight':0.0,'column':9},
+    'reserver_info':{'weight':0.0,'column':10},
 }
 
 
@@ -47,7 +45,18 @@ FTS_COLUMNS = {
 def full_text_query(
         connection,
         query_string,
-        columns,
+        columns=(
+            'utcdate',
+            'title',
+            'arxiv_id',
+            'authors',
+            'abstract',
+            'link',
+            'pdf',
+            'voter_info',
+            'presenter_info',
+            'reserver_info',
+        ),
         column_weights=None,
         max_rows=500,
         start_relevance=None,
@@ -82,7 +91,7 @@ def full_text_query(
         )
     else:
         relevance_weights = ', %s' % ', '.join(
-            '%.1f' % FTS_COLUMNS[x] for x in query_cols
+            '%.1f' % FTS_COLUMNS[x]['weight'] for x in query_cols
         )
 
     query_params = [query_string]
@@ -111,11 +120,8 @@ def full_text_query(
         (query_string, column_str, relevance_weights.lstrip(', '))
     )
 
-    existing_row_factory = copy.deepcopy(connection.row_factory)
-
     try:
 
-        connection.row_factory = sqlite3.Row
         cursor = connection.cursor()
         cursor.execute(q, tuple(query_params))
         rows = cursor.fetchall()
@@ -127,10 +133,6 @@ def full_text_query(
             "Could not execute FTS query: '%s'" % query_string
         )
         rows = []
-
-    finally:
-
-        connection.row_factory = existing_row_factory
 
     if len(rows) > 0:
         top_relevance = rows[0][-1]
