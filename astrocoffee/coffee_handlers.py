@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-'''
+'''This contains the main Astro-Coffee URL handlers.
 
 '''
 
@@ -21,3 +21,8 @@ LOGEXCEPTION = LOGGER.exception
 #############
 ## IMPORTS ##
 #############
+
+
+#########################
+## BASIC PAGE HANDLERS ##
+#########################

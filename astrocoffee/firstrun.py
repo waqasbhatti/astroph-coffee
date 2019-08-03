@@ -171,6 +171,8 @@ def setup_coffee_server(basedir, nodb=False):
 
     '''
 
+    basedir = os.path.abspath(basedir)
+
     conf_file = prepare_conf_file(basedir)
 
     if not nodb:
@@ -186,8 +188,24 @@ def setup_coffee_server(basedir, nodb=False):
                                         database.ASTROCOFFEE),
                                        arxivdict)
 
-    # get the GeoLite2 DB
+    # get/update the GeoLite2 DB
     get_geolite2_db(basedir)
+
+    # check if template and static dirs exist. if not, copy them over
+    templatedir = os.path.join(basedir, 'templates')
+    staticdir = os.path.join(basedir, 'static')
+
+    moddir = os.path.dirname(os.path.abspath(__file__))
+
+    dist_templatedir = os.path.join(moddir, 'templates')
+    dist_staticdir = os.path.join(moddir,'static')
+
+    if not os.path.exists(templatedir):
+        LOGINFO("Copying astro-coffee HTML template files to %s" % templatedir)
+        shutil.copytree(dist_templatedir, templatedir)
+    if not os.path.exists(staticdir):
+        LOGINFO("Copying astro-coffee CSS and JS files to %s" % staticdir)
+        shutil.copytree(dist_staticdir, staticdir)
 
     with open(os.path.join(basedir, '.coffee-first-run-done'), 'w') as outfd:
         outfd.write('Completed at %sUTC\n' % datetime.utcnow())
