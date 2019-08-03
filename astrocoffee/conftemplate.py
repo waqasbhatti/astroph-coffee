@@ -217,5 +217,5 @@ email_username = 'username@gmail.com'
 email_password = 'google-app-password-for-gmail-goes-here-if-you-use-gmail-here'
 
 # the name and email address the emails will be addressed from
-email_sender_name = 'Astro-coffee server at %s' % institution
-email_sender_address = 'username@gmail.com'
+email_sender_name = admin_name
+email_sender_address = admin_email
