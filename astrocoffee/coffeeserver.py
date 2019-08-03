@@ -178,7 +178,7 @@ def main():
                        "initializing the coffee-server base directory in %s. "
                        "Existing auth and arXiv databases will be retained." %
                        BASEDIR)
-        conf_file = firstrun.setup_coffee_server(BASEDIR)
+        conf_file = firstrun.setup_coffee_server(BASEDIR, nodb=True)
         CONF = modtools.module_from_string(conf_file,
                                            force_reload=True)
 
@@ -279,6 +279,10 @@ def main():
 
         (r'/astro-coffee/api/present',
          coffee.PresentHandler,
+         {'conf':CONF, 'executor':EXECUTOR}),
+
+        (r'/astro-coffee/api/edit',
+         coffee.EditHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
         ###################

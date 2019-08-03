@@ -71,7 +71,7 @@ def module_from_string(module, force_reload=False):
     Notes
     -----
 
-    Hypens are not allowed in module filenames.
+    Hyphens are not allowed in module filenames.
 
     '''
 
