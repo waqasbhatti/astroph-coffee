@@ -37,13 +37,51 @@ server_port = 5005
 server_address = '0.0.0.0'
 
 
+###################
+## LOCAL AUTHORS ##
+###################
+
+# this is the path to the local authors CSV that will be used to initially
+# populate the list of local authors. this should contain rows in the following
+# format:
+#
+# author_name,author_email,author_special_affiliation
+#
+# author_special_affiliation can be an empty string to indicate the author is
+# associated with the main group of people that'll be using the server. If the
+# author belongs to another institution but should be counted as a local author,
+# include that institution's name in this column.
+local_author_csv = os.path.join(basedir, 'local-authors.csv')
+
+
 ####################
 ## AUTHENTICATION ##
 ####################
 
 # This is the SQLAlchemy database URL for the database tracking users, logins,
 # signups, etc.
-authdb_url = 'sqlite:///%s' % os.path.join(basedir,'authdb.sqlite')
+authdb_url = 'sqlite:///%s' % os.path.join(basedir,'.authdb.sqlite')
+
+# This is the secret token used to sign session cookies
+session_secret = '{{ session_secret }}'
+
+# These are session settings.
+session_settings = {
+    'expiry_days': 30,
+    'cookie_name':'astrocoffee_session',
+    'cookie_secure':True
+}
+
+# These are API settings.
+api_settings = {
+    'maxrate_60sec':10000,
+    'version':1,
+    'expiry_days':30,
+    'issuer':None
+}
+
+# This is the cache directory for the server.
+cache_dir = '/tmp/astrocoffee-server'
 
 
 ###############
@@ -84,24 +122,27 @@ institution = 'Example University'
 ## TIMES ##
 ###########
 
-# This is the timezone where the astro-coffee server is located in. used to
-# handle times when no listings are available yet, and convert times below to
-# UTC (used for scheduling updates, and opening/closing voting windows). The
-# timezone below must be in the Olson TZ database
-# (http://en.wikipedia.org/wiki/Tz_database).
-server_tz = 'America/New_York'
+# The default voting start time is 21:00 local time.
+voting_start_localtime = '21:00'
 
-# The default voting start time is 20:45 local time.
-voting_start_localtime = '20:45'
-
-# The default voting cutoff time is 10:29 in the morning.
+# The default voting cutoff time is 10:29 local time.
 voting_end_localtime = '10:29'
 
-# Astro Coffee at Princeton is at 10:30 in the morning.
+# Astro Coffee at Princeton is Monday through Friday in local time
+# arXiv is updated Monday through Friday between 00:00 to 01:00 UTC
+# This will set when the server will update its listings
+coffee_days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+
+# Astro Coffee at Princeton is at 10:30 local time.
 coffee_at_localtime = '10:30'
 
-# This sets how long to keep a paper in the reserved list.
-reserve_interval_days = 5
+# This sets the maximum days allowed to keep a paper in the reserved list.
+reserve_days = 5
+
+# These set the update times in UTC for each day of coffee_days.
+# We update late on Monday UTC because the arXiv updates later that day.
+update_utc_times = ["00:50", "00:40", "00:40", "00:40", "00:40"]
+update_utc_days = coffee_days
 
 
 ####################
@@ -157,18 +198,24 @@ email_domains = {
     'otherinstitute.edu',
 }
 
-###################
-## LOCAL AUTHORS ##
-###################
 
-# this is the path to the local authors CSV that will be used to initially
-# populate the list of local authors. this should contain rows in the following
-# format:
-#
-# author_name,author_email,author_special_affiliation
-#
-# author_special_affiliation can be an empty string to indicate the author is
-# associated with the main group of people that'll be using the server. If the
-# author belongs to another institution but should be counted as a local author,
-# include that institution's name in this column.
-local_author_csv = os.path.join(basedir, 'local-authors.csv')
+###########################
+## EMAIL SERVER SETTINGS ##
+###########################
+
+# the address of the email server that will send out account verification and
+# reminder emails
+email_server = 'smtp.gmail.com'
+
+# the SMTP port number to use
+email_port = 587
+
+# the username of the email server account to use
+email_username = 'username@gmail.com'
+
+# the password of the email server account
+email_password = 'google-app-password-for-gmail-goes-here-if-you-use-gmail-here'
+
+# the name and email address the emails will be addressed from
+email_sender_name = 'Astro-coffee server at %s' % institution
+email_sender_address = 'username@gmail.com'

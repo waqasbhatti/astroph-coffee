@@ -10,7 +10,14 @@ listings
 #############
 
 import logging
+from astrocoffee import log_sub, log_fmt, log_date_fmt
 LOGGER = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    style=log_sub,
+    format=log_fmt,
+    datefmt=log_date_fmt,
+)
 
 LOGDEBUG = LOGGER.debug
 LOGINFO = LOGGER.info
