@@ -36,6 +36,12 @@ server_port = 5005
 # runs.
 server_address = '0.0.0.0'
 
+# The server will serve all of its pages starting from this URL as the root,
+# e.g. the current arXiv listings page will be served at:
+# {base_url}/papers/today.
+# Set this to '' to serve all pages from the root URL: /.
+base_url = '/astro-coffee'
+
 
 ###################
 ## LOCAL AUTHORS ##
@@ -156,40 +162,49 @@ geoip_database = os.path.join(basedir, 'GeoLite2-City.mmdb')
 
 # These are ISO codes for countries and subdivisions from where voting is
 # allowed (http://en.wikipedia.org/wiki/ISO_3166-2).
+
+# Set allowed_regions to None if you want only the IP addresses in the ranges
+# described below in voting_cidr to be able to vote on papers.
 allowed_regions = {
     'US': ['NJ','NY','PA'],
 }
 
 # These are IP address range definitions in CIDR format (comma-separated)
 # https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing#CIDR_notation.
-# These are used to make sure certain IPs can always vote. Look these up for
-# your institution using https://ipinfo.io/ (find the AS number and click on it
-# to get the IP address ranges associated with it).
+# Look these up for your institution using https://ipinfo.io/ (find the AS
+# number and click on it to get the IP address ranges associated with it).
+
+# These are local (intranet) associated network ranges that allow all actions.
+internal_cidr = {
+    '10.0.0.0/8',
+    '172.16.0.0/12',
+    '192.168.0.0/16',
+    '127.0.0.0/8',
+}
+
+# These are IP address ranges for users that will have voting permissions. These
+# will be applied before any geo-fencing.
 voting_cidr = {
     '128.0.0.0/8',
-    '10.0.0.0/4',
-}
+} + internal_cidr
 
 # These are IP address range definitions for users that will have reserving
 # permissions. These should be ideally restricted to the department only.
 reserve_cidr = {
     '128.0.0.0/8',
-    '10.0.0.0/4',
-}
+} + internal_cidr
 
 # These are IP address range definitions for users that will sign up to present
 # papers. These should be ideally restricted to the department only.
 present_cidr = {
     '128.0.0.0/8',
-    '10.0.0.0/4',
-}
+} + internal_cidr
 
 # These are IP address range definitions for users that will have edit
 # permissions. These should be ideally restricted to the department only.
 edit_cidr = {
     '128.0.0.0/8',
-    '10.0.0.0/4',
-}
+} + internal_cidr
 
 # These are the email address domain names for which signups are allowed.
 email_domains = {

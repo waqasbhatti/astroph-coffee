@@ -111,6 +111,7 @@ class BaseHandler(tornado.web.RequestHandler):
         '''
 
         self.executor = executor
+        self.conf = conf
 
         #
         # load the config as needed
@@ -122,6 +123,11 @@ class BaseHandler(tornado.web.RequestHandler):
         self.session_expiry = conf.session_settings['expiry_days']
         self.session_cookie_name = conf.session_settings['cookie_name']
         self.session_cookie_secure = conf.session_settings['cookie_secure']
+
+        # localhost secure cookies over HTTP don't work anymore
+        if self.request.remote_ip == '127.0.0.1':
+            self.session_cookie_secure = False
+
         self.cachedir = conf.cachedir
         self.email_settings = conf.email_settings
         self.ratelimit = self.api_settings['maxrate_60sec']
@@ -212,7 +218,8 @@ class BaseHandler(tornado.web.RequestHandler):
 
         return ok, response, messages
 
-    async def new_session_token(self, user_id,
+    async def new_session_token(self,
+                                user_id,
                                 expires_days=None,
                                 extra_info=None):
         '''
@@ -623,6 +630,69 @@ class BaseHandler(tornado.web.RequestHandler):
                 ),
                 'result':None
             }
+
+    def render_blocked_message(self):
+        '''
+        This renders the template indicating that the user is blocked.
+
+        '''
+
+        self.set_status(403)
+        self.render(
+            'errorpage.html',
+            error_message=(
+                "Sorry, it appears that you're not authorized to "
+                "view the page you were trying to get to. "
+                "If you believe this is in error, please contact "
+                "the admins of this server instance."
+            ),
+            page_title="403 - You cannot access this page",
+            boxmode='normal',
+            baseurl=self.baseurl,
+            current_user_name=self.current_user['full_name'] or '',
+        )
+
+    def save_flash_messages(self, messages, alert_type):
+        '''
+        This saves the flash messages to a secure cookie.
+
+        '''
+
+        if isinstance(messages, list):
+            outmsg = json.dumps({
+                'text':messages,
+                'type':alert_type
+            })
+
+        elif isinstance(messages,str):
+            outmsg = json.dumps({
+                'text':[messages],
+                'type':alert_type
+            })
+
+        else:
+            outmsg = ''
+
+        self.set_secure_cookie(
+            'server_messages',
+            outmsg,
+            httponly=True,
+            secure=self.csecure,
+            samesite='lax',
+        )
+
+    def get_flash_messages(self):
+        '''
+        This gets the previous saved flash messages from a secure cookie.
+
+        '''
+
+        messages = self.get_secure_cookie('server_messages')
+        messages = json.loads(self.flash_messages)
+        message_text = messages['text']
+        alert_type = messages['type']
+
+        return message_text, alert_type
 
     async def prepare(self):
         '''This async talks to the authnzerver to get info on the current user.

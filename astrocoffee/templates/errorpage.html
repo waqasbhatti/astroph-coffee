@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block pagecontent %}
+
+<div class="container">
+
+  <div class="row mt-4">
+    <div class="col-12">
+
+      <h1>Uh oh, something went wrong!</h1>
+
+      <p>{{ error_message }}</p>
+
+    </div>
+  </div>
+
+</div>
+
+
+{% end %}
+
+
+{% block pagejs %}
+
+<script>
+  $(document).ready(function() {
+
+  });
+</script>
+{% end %}

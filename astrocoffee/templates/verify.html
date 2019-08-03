@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block pagecontent %}
+
+<div class="container" >
+  <div class="row justify-content-center" >
+    <div class="col-sm-12 col-md-9" >
+      {% raw flash_messages %}
+    </div>
+  </div>
+
+  <div class="row align-items-center justify-content-center" >
+    <div class="col-sm-12 col-md-5" >
+
+      {% if 'signups_allowed' in siteinfo and siteinfo['signups_allowed'] is True %}
+
+      <div class="card mt-4 mb-1">
+        <div class="card-body">
+          <div class="card-title" >
+            <h4>Verify your account sign up request</h4>
+          </div>
+          <div class="card-text" >
+            <form action="/users/verify" method="post">
+              {% module xsrf_form_html() %}
+
+              <div class="form-group" >
+                <label for="email" >Email address</label>
+                <input type="email" class="form-control"
+                       name="email" id="email" required
+                       minlength="4" maxlength="280"
+                       placeholder="Enter your email address">
+              </div>
+
+              <div class="form-group" >
+                <label for="verificationcode" >Verification code</label>
+                <input type="text" class="form-control"
+                       minlength="12" maxlength="1024"
+                       name="verificationcode" id="verificationcode" required
+                       placeholder="Enter the verification code you received">
+              </div>
+
+              <button type="submit" class="btn btn-primary" >
+                Verify sign up and log in
+              </button>
+
+            </form>
+          </div>
+        </div>
+      </div>
+
+      {% else %}
+
+      <p class="mt-4">Sorry, the admins of this server instance have
+        disabled user sign-ups or an email server is not yet configured,
+        so user verification is unavailable. </p>
+
+      {% end %}
+
+    </div>
+  </div>
+
+</div>
+
+{% end %}

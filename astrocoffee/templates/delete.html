@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block pagecontent %}
+
+<div class="container" >
+  <div class="row justify-content-center" >
+    <div class="col-sm-12 col-md-9" >
+      {% raw flash_messages %}
+    </div>
+  </div>
+
+  <div class="row align-items-center justify-content-center" >
+    <div class="col-sm-12 col-md-5" >
+
+      <div class="card mt-4 mb-1">
+        <div class="card-body">
+
+          <div class="card-title" >
+            <h4>Delete your user account</h4>
+          </div>
+
+          <div class="card-text" >
+            <form action="/users/delete" method="post" id="user-delete-form">
+              {% module xsrf_form_html() %}
+
+              <div class="form-group" >
+                <label for="email" >Email address to confirm deletion</label>
+                <input type="email" class="form-control"
+                       autocomplete="off"
+                       name="email" id="email" required
+                       minlength="4" maxlength="280"
+                       placeholder="Enter your email address to confirm deletion">
+              </div>
+
+              <div class="form-group" >
+                <label for="password" >Password to confirm deletion</label>
+                <input type="password" class="form-control"
+                       autocomplete="off"
+                       minlength="12" maxlength="1024"
+                       name="password" id="password" required
+                       placeholder="Enter your password to confirm deletion">
+              </div>
+
+              <div class="mt-2 mb-4" >
+                <p>There is no undo button after you confirm this action.</p>
+              </div>
+
+              <button type="submit" class="btn btn-danger btn-block" >
+                I understand. Delete my account.
+              </button>
+
+            </form>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+{% end %}
+
+{% block pagejs %}
+
+<script>
+  $(document).ready(function() {
+
+    $('#user-delete-form').on('submit', function (evt) {
+
+      // clear user's apikeys from localStorage so they don't show up again
+      localStorage.clear();
+
+    });
+
+  });
+</script>
+{% end %}

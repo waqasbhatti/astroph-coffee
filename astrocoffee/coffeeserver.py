@@ -219,6 +219,7 @@ def main():
     ## IMPORT URL HANDLERS ##
     #########################
 
+    from . import baseuimodules
     from . import coffee_handlers as coffee
     from . import auth_handlers as auth
     from . import admin_handlers as admin
@@ -365,6 +366,7 @@ def main():
     ########################
 
     app = tornado.web.Application(
+        ui_modules=baseuimodules,
         static_path=CONF.asset_path,
         handlers=HANDLERS,
         template_path=CONF.template_path,
