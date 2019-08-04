@@ -24,3 +24,11 @@ footer img {
 .navbar-dark .navbar-brand {
   color: #FF8F00;
 }
+
+a {
+  color: #0054b5;
+}
+
+a:hover, a:focus {
+  color: #060485;
+}
