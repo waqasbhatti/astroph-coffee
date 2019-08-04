@@ -201,13 +201,10 @@ class BaseHandler(tornado.web.RequestHandler):
 
         '''
 
-        execfn = partial(
-            auth_request_functions[request_type],
-            override_authdb_path=self.authdb_url
-        )
-
         response = await self.loop.run_in_executor(
-            self.executor, execfn, request_body
+            self.executor,
+            auth_request_functions[request_type],
+            request_body
         )
 
         ok = response['success']
@@ -749,9 +746,10 @@ class BaseHandler(tornado.web.RequestHandler):
             # belongs to
             if session_token is not None:
 
+                # FIXME: apparently we need to decode the bytes now?
                 ok, resp, msgs = await self.authnzerver_request(
                     'session-exists',
-                    {'session_token': session_token}
+                    {'session_token': session_token.decode()}
                 )
 
                 # if we found the session successfully, set the current_user

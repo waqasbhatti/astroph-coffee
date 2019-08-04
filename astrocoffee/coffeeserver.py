@@ -95,6 +95,7 @@ def setup_worker(database_url, authdb_url):
     '''
 
     from . import database
+    from authnzerver import authdb
 
     # unregister interrupt signals so they don't get to the worker
     # and the executor can kill them cleanly (hopefully)
@@ -107,6 +108,11 @@ def setup_worker(database_url, authdb_url):
     # variables
     currproc.engine, currproc.connection, currproc.metadata = (
         database.get_astrocoffee_db(database_url)
+    )
+
+    # setup the authnzerver DB
+    currproc.authdb_engine, currproc.authdb_conn, currproc.authdb_meta = (
+        authdb.get_auth_db(authdb_url)
     )
 
 
@@ -129,7 +135,18 @@ def close_database():
         currproc.engine.dispose()
         del currproc.engine
 
-    print('Shutting down database engine in process: %s' % currproc.name,
+    if getattr(currproc, 'authdb_meta', None):
+        del currproc.authdb_meta
+
+    if getattr(currproc, 'authdb_conn', None):
+        currproc.authdb_conn.close()
+        del currproc.authdb_conn
+
+    if getattr(currproc, 'authdb_engine', None):
+        currproc.authdb_engine.dispose()
+        del currproc.authdb_engine
+
+    print('Database engines in worker process: %s shutdown.' % currproc.name,
           file=sys.stdout)
 
 
