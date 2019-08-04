@@ -403,7 +403,9 @@ def get_local_authors(dbinfo,
             ):
 
                 this_actual_name = an
-                if include_affiliations and info.get('affiliation') is not None:
+                if (include_affiliations and
+                    info.get('affiliation') is not None and
+                    info.get('affiliation') != ''):
                     this_actual_name = '%s (%s)' % (an, info.get('affiliation'))
 
                 author_dict[fn] = {
