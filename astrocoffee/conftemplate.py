@@ -80,7 +80,7 @@ session_settings = {
 
 # These are API settings.
 api_settings = {
-    'maxrate_60sec':10000,
+    'ratelimit_active':True,
     'version':1,
     'expiry_days':30,
     'issuer':None

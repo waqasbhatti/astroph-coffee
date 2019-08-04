@@ -123,9 +123,8 @@ class BaseHandler(tornado.web.RequestHandler):
         if self.request.remote_ip == '127.0.0.1':
             self.session_cookie_secure = False
 
-        self.cachedir = conf.cachedir
-        self.email_settings = conf.email_settings
-        self.ratelimit = self.api_settings['maxrate_60sec']
+        self.cachedir = conf.cache_dir
+        self.ratelimit_active = conf.api_settings['ratelimit_active']
 
         # initialize this to None
         # we'll set this later in self.prepare()
@@ -302,21 +301,21 @@ class BaseHandler(tornado.web.RequestHandler):
 
         '''
 
-        if (self.email_settings['email_server'] is not None and
+        if (self.conf.email_server is not None and
             (self.current_user['user_role'] in
              ('superuser', 'staff', 'authenticated'))):
 
             emailfn = partial(
                 actions.authnzerver_send_email,
-                '%s <%s>' % (self.email_sender_name,
-                             self.email_sender_address),
+                '%s <%s>' % (self.conf.email_sender_name,
+                             self.conf.email_sender_address),
                 email_subject,
                 email_body,
                 [self.current_user['email']],
-                self.email_settings['email_server'],
-                self.email_settings['email_username'],
-                self.email_settings['email_password'],
-                port=self.email_settings['email_port']
+                self.conf.email_server,
+                self.conf.email_username,
+                self.conf.email_password,
+                port=self.conf.email_port
             )
 
             response = await self.loop.run_in_executor(
@@ -326,6 +325,9 @@ class BaseHandler(tornado.web.RequestHandler):
             return response
 
         else:
+            LOGERROR("Either the email server is not set up "
+                     "in coffee_settings.py or "
+                     "the current user is not eligible to be emailed.")
             return False
 
     async def check_auth_header_apikey(self):
@@ -686,11 +688,13 @@ class BaseHandler(tornado.web.RequestHandler):
         '''
 
         messages = self.get_secure_cookie('server_messages')
-        messages = json.loads(self.flash_messages)
-        message_text = messages['text']
-        alert_type = messages['type']
-
-        return message_text, alert_type
+        if messages is not None:
+            messages = json.loads(messages)
+            message_text = messages['text']
+            alert_type = messages['type']
+            return message_text, alert_type
+        else:
+            return '', None
 
     async def prepare(self):
         '''This async talks to the authnzerver to get info on the current user.
@@ -758,26 +762,33 @@ class BaseHandler(tornado.web.RequestHandler):
                     self.user_id = self.current_user['user_id']
                     self.user_role = self.current_user['user_role']
 
-                    if self.ratelimit:
+                    if self.ratelimit_active:
 
-                        # increment the rate counter for this session token
-                        reqcount = await self.executor.submit(
+                        incrementfn = partial(
                             cache.cache_increment,
                             session_token,
                             cache_dirname=self.cachedir
+                        )
 
+                        # increment the rate counter for this session token
+                        reqcount = await self.loop.run_in_executor(
+                            self.executor,
+                            incrementfn
                         )
 
                         # rate limit only after 25 requests have been counted
                         if reqcount > 25:
 
+                            getratefn = partial(
+                                cache.cache_getrate,
+                                session_token,
+                                cache_dirname=self.cachedir
+                            )
+
                             # check the rate for this session token
                             request_rate, keycount, time_zero = (
-                                await self.executor.submit(
-                                    cache.cache_getrate,
-                                    session_token,
-                                    cache_dirname=self.cachedir
-                                )
+                                await self.loop.run_in_executor(self.executor,
+                                                                getratefn)
                             )
                             rate_ok = check_role_limits(self.user_role,
                                                         rate_60sec=request_rate)
@@ -853,16 +864,20 @@ class BaseHandler(tornado.web.RequestHandler):
                     self.user_id = self.current_user['user_id']
                     self.user_role = self.current_user['user_role']
 
-                    if self.ratelimit:
+                    if self.ratelimit_active:
 
                         # increment the rate counter for this session token. we
                         # just increase the count to 1 since this is the first
                         # time we've seen this user.
-                        await self.executor.submit(
+
+                        incrementfn = partial(
                             cache.cache_increment,
                             session_token,
                             cache_dirname=self.cachedir
                         )
+
+                        await self.loop.run_in_executor(self.executor,
+                                                        incrementfn)
 
                 else:
 
@@ -948,26 +963,31 @@ class BaseHandler(tornado.web.RequestHandler):
                 self.user_id = self.current_user['user_id']
                 self.user_role = self.current_user['user_role']
 
-                if self.ratelimit:
+                if self.ratelimit_active:
 
-                    # increment the rate counter for this session token
-                    reqcount = await self.executor.submit(
+                    incrementfn = partial(
                         cache.cache_increment,
                         self.apikey_dict['tkn'],
                         cache_dirname=self.cachedir
-
                     )
+
+                    # increment the rate counter for this session token
+                    reqcount = await self.loop.run_in_executor(self.executor,
+                                                               incrementfn)
 
                     # rate limit only after 25 requests have been counted
                     if reqcount > 25:
 
+                        getratefn = partial(
+                            cache.cache_getrate,
+                            self.apikey_dict['tkn'],
+                            cache_dirname=self.cachedir
+                        )
+
                         # check the rate for this session token
                         request_rate, keycount, time_zero = (
-                            await self.executor.submit(
-                                cache.cache_getrate,
-                                self.apikey_dict['tkn'],
-                                cache_dirname=self.cachedir
-                            )
+                            await self.loop.run_in_executor(self.executor,
+                                                            getratefn)
                         )
                         rate_ok = check_role_limits(self.user_role,
                                                     rate_60sec=request_rate)

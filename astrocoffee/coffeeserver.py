@@ -432,7 +432,7 @@ def main():
         # add our periodic callback for the arxiv worker
         # runs every 15 minutes to check if it's close to voting start time
         # if it is, schedules the arxiv update
-        periodic_arxiv_updater = loop.PeriodicCallback(
+        periodic_arxiv_updater = tornado.ioloop.PeriodicCallback(
             periodic_arxiv_update_fn,
             900000.0,
             jitter=0.1,

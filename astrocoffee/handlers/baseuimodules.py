@@ -45,7 +45,7 @@ class LoginBoxModule(tornado.web.UIModule):
 
         if (current_user and
             current_user.get('user_role') and
-            current_user['current_role'] == 'authenticated'):
+            current_user['user_role'] == 'authenticated'):
 
             boxmode = 'signedin'
             current_user_name = (
@@ -56,7 +56,7 @@ class LoginBoxModule(tornado.web.UIModule):
 
         elif (current_user and
               current_user.get('user_role') and
-              current_user['current_role'] in ('superuser','staff')):
+              current_user['user_role'] in ('superuser','staff')):
 
             boxmode = 'admin'
             current_user_name = (
@@ -87,7 +87,6 @@ class FlashMessageModule(tornado.web.UIModule):
 
     def render(self,
                flash_message_list=None,
-               message_separator='<br>',
                alert_type=None):
         '''
         This returns a login box UI module.
@@ -105,7 +104,7 @@ class FlashMessageModule(tornado.web.UIModule):
         if not flash_message_list:
             flash_messages = None
         else:
-            flash_messages = message_separator.join(flash_message_list)
+            flash_messages = '<br>'.join(flash_message_list)
 
         return self.render_string(
             "loginbox-uimodule.html",
