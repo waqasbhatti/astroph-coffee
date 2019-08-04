@@ -121,7 +121,8 @@ building = 'Example Hall'
 department = 'Department of Astronomy'
 
 # The name of institution where Astro Coffee happens.
-institution = 'Example University'
+institution_full_name = 'Example University'
+institution_short_name = 'Example'
 
 # The URL of the department where Astro Coffee happens
 department_url = 'https://www.astro.example.edu'

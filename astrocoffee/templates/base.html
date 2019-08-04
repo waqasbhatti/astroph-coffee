@@ -66,31 +66,27 @@
         <div class="col-12">
           <div id="alert-box">
             {% module FlashMessageModule(flash_message_list=flash_message_list,
-                                         alert_type=alert_type) %}
+            alert_type=alert_type) %}
           </div>
         </div>
       </div>
     </div>
 
     {% block pagecontent %}
-    <div class="container">
-
-      <h1>Hello, world! This is the {{ page_title }} page.</h1>
-
-    </div>
     {% end %}
 
-    <footer class="text-muted">
-      <div class="container" >
+    <div class="container" >
+      <footer class="text-muted">
+
         <div class="row" >
-          <div class="col-sm-12" >
+          <div class="col-12" >
             <hr>
           </div>
         </div>
 
-        <div class="row justify-content-between p-1">
+        <div class="row justify-content-between">
 
-          <div class="col-sm-12 col-md-5" >
+          <div class="col-sm-12 col-md-6" >
             <ul class="list-unstyled" >
               <li>
                 Article listings generated from the <a href="http://www.arxiv.org">
@@ -111,24 +107,25 @@
             </ul>
           </div>
 
-          <div class="col-sm-12 col-md-5 text-right" >
+          <div class="col-sm-12 col-md-6 text-right" >
             <ul class="list-unstyled" >
               <li>
                 <a href="{{ conf.department_url }}">
-                  {{ conf.department }} at {{ conf.institution }}
+                  {{ conf.department }}
                 </a>
               </li>
               <li>
                 <a href="{{ conf.institution_url }}">
-                  <img src="{{ baseurl }}/static/{{ conf.institution_logo_file }}">
+                  <img src="{{ baseurl }}/static/{{ conf.institution_logo_file }}"
+                       alt="link to {{ conf.institution_full_name }} website">
                 </a>
               </li>
             </ul>
           </div>
 
         </div>
-      </div>
-    </footer>
+      </footer>
+    </div>
 
     <!-- bootstrap scripts -->
     <script src="{{ static_url('js/jquery.min.js') }}"></script>

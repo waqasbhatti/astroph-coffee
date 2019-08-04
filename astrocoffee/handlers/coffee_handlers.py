@@ -44,7 +44,7 @@ class IndexHandler(basehandler.BaseHandler):
             baseurl=self.conf.base_url,
             current_user=self.current_user,
             conf=self.conf,
-            page_title='Astro-Coffee@%s' % self.conf.institution,
+            page_title='Astro-Coffee@%s' % self.conf.institution_short_name,
             flash_message_list=flash_message_list,
             alert_type=alert_type,
         )
@@ -65,7 +65,7 @@ class LocalAuthorListHandler(basehandler.BaseHandler):
             baseurl=self.conf.base_url,
             current_user=self.current_user,
             conf=self.conf,
-            page_title='Astro-Coffee@%s' % self.conf.institution,
+            page_title='Astro-Coffee@%s' % self.conf.institution_short_name,
             flash_message_list=flash_message_list,
             alert_type=alert_type,
         )
@@ -86,7 +86,7 @@ class AboutHandler(basehandler.BaseHandler):
             baseurl=self.conf.base_url,
             current_user=self.current_user,
             conf=self.conf,
-            page_title='Astro-Coffee@%s' % self.conf.institution,
+            page_title='Astro-Coffee@%s' % self.conf.institution_short_name,
             flash_message_list=flash_message_list,
             alert_type=alert_type,
         )
@@ -107,7 +107,7 @@ class CoffeeHandler(basehandler.BaseHandler):
             baseurl=self.conf.base_url,
             current_user=self.current_user,
             conf=self.conf,
-            page_title='Astro-Coffee@%s' % self.conf.institution,
+            page_title='Astro-Coffee@%s' % self.conf.institution_short_name,
             flash_message_list=flash_message_list,
             alert_type=alert_type,
         )

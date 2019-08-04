@@ -5,15 +5,14 @@
 
 
 {% block pagecontent %}
-
 <div class="container" >
 
   <div class="row" >
-    <div class="col" >
+    <div class="col-12" >
 
-      <h1>Welcome to Astro-Coffee@{{ conf.institution }}!</h1>
+      <h1>Welcome to Astro-Coffee@{{ conf.institution_short_name }}!</h1>
 
-      <p>Every weekday, the {{ conf.department }} at {{ conf.institution }}
+      <p>Every weekday, the {{ conf.department }} at {{ conf.institution_full_name }}
         gathers in <strong>{{ conf.building }}'s {{ conf.room }}</strong> to
         discuss the latest <a href="{{ baseurl }}/papers/today">arXiv
         astro-ph</a> posting at <strong>{{ conf.coffee_at_localtime }}</strong>
@@ -32,10 +31,11 @@
         the morning of Astro-Coffee. Everyone gets five votes (one per paper) to
         use as they please.</p>
     </div>
-</div>
+  </div>
 
-<!-- end of page content -->
+</div>
 {% end %}
+<!-- end of page content -->
 
 {% block pagejs_modules %}
 {% end %}

@@ -1,0 +1,13 @@
+@media (min-width:1200px) {
+  .container {
+    max-width:60em;
+  }
+}
+
+footer {
+  font-size: smaller;
+}
+
+footer img {
+  max-height: 5rem;
+}
