@@ -186,25 +186,25 @@ internal_cidr = {
 # will be applied before any geo-fencing.
 voting_cidr = {
     '128.0.0.0/8',
-} + internal_cidr
+} | internal_cidr
 
 # These are IP address range definitions for users that will have reserving
 # permissions. These should be ideally restricted to the department only.
 reserve_cidr = {
     '128.0.0.0/8',
-} + internal_cidr
+} | internal_cidr
 
 # These are IP address range definitions for users that will sign up to present
 # papers. These should be ideally restricted to the department only.
 present_cidr = {
     '128.0.0.0/8',
-} + internal_cidr
+} | internal_cidr
 
 # These are IP address range definitions for users that will have edit
 # permissions. These should be ideally restricted to the department only.
 edit_cidr = {
     '128.0.0.0/8',
-} + internal_cidr
+} | internal_cidr
 
 # These are the email address domain names for which signups are allowed.
 email_domains = {

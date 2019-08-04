@@ -58,11 +58,11 @@ setup(
     packages=find_packages(),
     install_requires=INSTALL_REQUIRES,
     extras_require=EXTRAS_REQUIRE,
-    # entry_points={
-    #     'console_scripts':[
-    #         'astrocoffee-server=astrocoffee.main:main',
-    #     ],
-    # },
+    entry_points={
+        'console_scripts':[
+            'astrocoffee-server=astrocoffee.coffeeserver:main',
+        ],
+    },
     include_package_data=True,
     zip_safe=False,
     python_requires='>=3.6',

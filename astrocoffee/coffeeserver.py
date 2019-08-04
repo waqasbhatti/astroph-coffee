@@ -85,7 +85,7 @@ define('conf',
 ## UTILS ##
 ###########
 
-def setup_worker(database_url):
+def setup_worker(database_url, authdb_url):
     '''This sets up the workers to ignore the INT signal, which is handled by
     the main process.
 
@@ -153,7 +153,7 @@ def main():
     ###################
 
     from . import firstrun, modtools
-    from astrocoffee.vendored.futures37.process import ProcessPoolExecutor
+    from authnzerver.external.futures37.process import ProcessPoolExecutor
 
     ####################################
     ## SET UP THE BASEDIR IF NOT DONE ##
@@ -210,24 +210,29 @@ def main():
     #
     # this is the background executor we'll pass over to the handler
     #
-    EXECUTOR = ProcessPoolExecutor(max_workers=CONF.max_workers,
-                                   initializer=setup_worker,
-                                   initargs=(CONF.database_url,),
-                                   finalizer=close_database)
+    EXECUTOR = ProcessPoolExecutor(
+        max_workers=CONF.max_workers,
+        initializer=setup_worker,
+        initargs=(CONF.database_url, CONF.authdb_url),
+        finalizer=close_database
+    )
 
     #########################
     ## IMPORT URL HANDLERS ##
     #########################
 
-    from . import baseuimodules
-    from . import coffee_handlers as coffee
-    from . import auth_handlers as auth
-    from . import admin_handlers as admin
+    from .handlers import baseuimodules
+    from .handlers import coffee_handlers as coffee
+    from .handlers import auth_handlers as auth
+    from .handlers import admin_handlers as admin
+    from .handlers import api_handlers as api
     from .arxivupdate import periodic_arxiv_update
 
     #####################
     ## DEFINE HANDLERS ##
     #####################
+
+    BASEURL = CONF.base_url
 
     HANDLERS = [
 
@@ -236,33 +241,33 @@ def main():
         ###################
 
         # index page
-        (r'/astro-coffee',
+        (r'{baseurl}'.format(baseurl=BASEURL),
          coffee.IndexHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
-        (r'/astro-coffee/',
+        (r'{baseurl}/'.format(baseurl=BASEURL),
          coffee.IndexHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
         # the local author list page
-        (r'/astro-coffee/local-authors',
-         coffee.LocalListHandler,
+        (r'{baseurl}/local-authors'.format(baseurl=BASEURL),
+         coffee.LocalAuthorListHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
-        (r'/astro-coffee/local-authors/',
-         coffee.LocalListHandler,
+        (r'{baseurl}/local-authors/'.format(baseurl=BASEURL),
+         coffee.LocalAuthorListHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
         # the about page
-        (r'/astro-coffee/about',
+        (r'{baseurl}/about'.format(baseurl=BASEURL),
          coffee.AboutHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
-        (r'/astro-coffee/about/',
+        (r'{baseurl}/about/'.format(baseurl=BASEURL),
          coffee.AboutHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
         # - /papers/today directs to today
         # - /papers/some-date directs to papers on that date
         # - /papers directs to the archive of papers
-        (r'/astro-coffee/papers/?(.*)',
+        (r'{baseurl}/papers/?(.*)'.format(baseurl=BASEURL),
          coffee.CoffeeHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
@@ -270,20 +275,20 @@ def main():
         ## API HANDLERS ##
         ##################
 
-        (r'/astro-coffee/api/vote',
-         coffee.VoteHandler,
+        (r'{baseurl}/api/vote'.format(baseurl=BASEURL),
+         api.VoteHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
-        (r'/astro-coffee/api/reserve',
-         coffee.ReserveHandler,
+        (r'{baseurl}/api/reserve'.format(baseurl=BASEURL),
+         api.ReserveHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
-        (r'/astro-coffee/api/present',
-         coffee.PresentHandler,
+        (r'{baseurl}/api/present'.format(baseurl=BASEURL),
+         api.PresentHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
-        (r'/astro-coffee/api/edit',
-         coffee.EditHandler,
+        (r'{baseurl}/api/edit'.format(baseurl=BASEURL),
+         api.EditHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
         ###################
@@ -291,47 +296,42 @@ def main():
         ###################
 
         # this is the login page
-        (r'/astro-coffee/users/login',
+        (r'{baseurl}/users/login'.format(baseurl=BASEURL),
          auth.LoginHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
         # this is the logout page
-        (r'/astro-coffee/users/logout',
+        (r'{baseurl}/users/logout'.format(baseurl=BASEURL),
          auth.LogoutHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
         # this is the new user page
-        (r'/astro-coffee/users/new',
+        (r'{baseurl}/users/new'.format(baseurl=BASEURL),
          auth.NewUserHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
         # this is the verification page for verifying email addresses
-        (r'/astro-coffee/users/verify',
+        (r'{baseurl}/users/verify'.format(baseurl=BASEURL),
          auth.VerifyUserHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
         # this is step 1 page for forgotten passwords
-        (r'/astro-coffee/users/forgot-password-step1',
+        (r'{baseurl}/users/forgot-password-step1'.format(baseurl=BASEURL),
          auth.ForgotPassStep1Handler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
         # this is the verification page for verifying email addresses
-        (r'/astro-coffee/users/forgot-password-step2',
+        (r'{baseurl}/users/forgot-password-step2'.format(baseurl=BASEURL),
          auth.ForgotPassStep2Handler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
         # this is the password change page
-        (r'/astro-coffee/users/password-change',
+        (r'{baseurl}/users/password-change'.format(baseurl=BASEURL),
          auth.ChangePassHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
-        # this is the user-prefs page
-        (r'/astro-coffee/users/home',
-         auth.UserHomeHandler,
-         {'conf':CONF, 'executor':EXECUTOR}),
-
         # this is the user-delete page
-        (r'/astro-coffee/users/delete',
+        (r'{baseurl}/users/delete'.format(baseurl=BASEURL),
          auth.DeleteUserHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
@@ -340,22 +340,22 @@ def main():
         ####################
 
         # this is the admin index page
-        (r'/astro-coffee/czar',
+        (r'{baseurl}/czar'.format(baseurl=BASEURL),
          admin.AdminIndexHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
         # this handles email settings updates
-        (r'/astro-coffee/czar/email',
+        (r'{baseurl}/czar/email'.format(baseurl=BASEURL),
          admin.EmailSettingsHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
         # this handles user updates
-        (r'/astro-coffee/czar/users',
+        (r'{baseurl}/czar/users'.format(baseurl=BASEURL),
          admin.UserAdminHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
         # this handles arxiv settings updates
-        (r'/astro-coffee/czar/arxiv',
+        (r'{baseurl}/czar/arxiv'.format(baseurl=BASEURL),
          admin.ArxivSettingsHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
@@ -370,7 +370,7 @@ def main():
         static_path=CONF.asset_path,
         handlers=HANDLERS,
         template_path=CONF.template_path,
-        static_url_prefix='/astro-coffee/static/',
+        static_url_prefix='{baseurl}/static/'.format(baseurl=BASEURL),
         compress_response=True,
         cookie_secret=CONF.session_secret,
         xsrf_cookies=True,
@@ -430,10 +430,11 @@ def main():
         periodic_arxiv_update_fn()
 
         # add our periodic callback for the arxiv worker
-        # runs every 15 minutes
+        # runs every 15 minutes to check if it's close to voting start time
+        # if it is, schedules the arxiv update
         periodic_arxiv_updater = loop.PeriodicCallback(
             periodic_arxiv_update_fn,
-            86400000.0,
+            900000.0,
             jitter=0.1,
         )
         periodic_arxiv_updater.start()

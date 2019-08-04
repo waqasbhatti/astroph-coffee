@@ -29,7 +29,7 @@ from . import basehandler
 ## BASIC PAGE HANDLERS ##
 #########################
 
-class LoginHandler(basehandler.BaseHandler):
+class VoteHandler(basehandler.BaseHandler):
 
     def get(self):
         '''
@@ -50,7 +50,7 @@ class LoginHandler(basehandler.BaseHandler):
         )
 
 
-class LogoutHandler(basehandler.BaseHandler):
+class ReserveHandler(basehandler.BaseHandler):
 
     def get(self):
         '''
@@ -71,7 +71,7 @@ class LogoutHandler(basehandler.BaseHandler):
         )
 
 
-class NewUserHandler(basehandler.BaseHandler):
+class PresentHandler(basehandler.BaseHandler):
 
     def get(self):
         '''
@@ -92,91 +92,7 @@ class NewUserHandler(basehandler.BaseHandler):
         )
 
 
-class VerifyUserHandler(basehandler.BaseHandler):
-
-    def get(self):
-        '''
-        This handles the basic index page.
-
-        '''
-
-        flash_message_list, alert_type = self.get_flash_messages()
-
-        self.render(
-            'index.html',
-            baseurl=self.conf.base_url,
-            current_user=self.current_user,
-            conf=self.conf,
-            page_title='Astro-Coffee@%s' % self.conf.institution,
-            flash_message_list=flash_message_list,
-            alert_type=alert_type,
-        )
-
-
-class ForgotPassStep1Handler(basehandler.BaseHandler):
-
-    def get(self):
-        '''
-        This handles the basic index page.
-
-        '''
-
-        flash_message_list, alert_type = self.get_flash_messages()
-
-        self.render(
-            'index.html',
-            baseurl=self.conf.base_url,
-            current_user=self.current_user,
-            conf=self.conf,
-            page_title='Astro-Coffee@%s' % self.conf.institution,
-            flash_message_list=flash_message_list,
-            alert_type=alert_type,
-        )
-
-
-class ForgotPassStep2Handler(basehandler.BaseHandler):
-
-    def get(self):
-        '''
-        This handles the basic index page.
-
-        '''
-
-        flash_message_list, alert_type = self.get_flash_messages()
-
-        self.render(
-            'index.html',
-            baseurl=self.conf.base_url,
-            current_user=self.current_user,
-            conf=self.conf,
-            page_title='Astro-Coffee@%s' % self.conf.institution,
-            flash_message_list=flash_message_list,
-            alert_type=alert_type,
-        )
-
-
-class ChangePassHandler(basehandler.BaseHandler):
-
-    def get(self):
-        '''
-        This handles the basic index page.
-
-        '''
-
-        flash_message_list, alert_type = self.get_flash_messages()
-
-        self.render(
-            'index.html',
-            baseurl=self.conf.base_url,
-            current_user=self.current_user,
-            conf=self.conf,
-            page_title='Astro-Coffee@%s' % self.conf.institution,
-            flash_message_list=flash_message_list,
-            alert_type=alert_type,
-        )
-
-
-class DeleteUserHandler(basehandler.BaseHandler):
+class EditHandler(basehandler.BaseHandler):
 
     def get(self):
         '''

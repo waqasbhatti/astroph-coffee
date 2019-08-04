@@ -123,3 +123,23 @@ def update_schedule(
     This figures out the recurrence rule for the periodic arxiv update.
 
     '''
+
+
+######################
+## ROLL UP FUNCTION ##
+######################
+
+def periodic_arxiv_update(conf):
+    '''This rolls up the functions above.
+
+    Runs every 15 minutes to check if it's getting close to arxiv update time.
+    If it's within 15 minutes of arxiv update time, schedules the arxiv update
+    function. That function then reschedules itself for another run
+    continuously after an interval of 3 minutes until new arxiv listings
+    appear.
+
+    '''
+
+    LOGINFO("Running periodic arxiv update check...")
+
+    return True

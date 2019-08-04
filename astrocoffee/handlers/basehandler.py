@@ -44,7 +44,7 @@ from tornado import httputil
 
 from authnzerver.external.cookies import cookies
 from authnzerver import actions
-from authnzerver.authdb import check_role_limits
+from authnzerver.permissions import check_role_limits
 from authnzerver import cache
 
 #
@@ -76,11 +76,6 @@ auth_request_functions = {
     'apikey-new':actions.issue_new_apikey,
     'apikey-verify':actions.verify_apikey,
 }
-
-
-###################
-## LOCAL IMPORTS ##
-###################
 
 
 ########################
@@ -207,10 +202,13 @@ class BaseHandler(tornado.web.RequestHandler):
 
         '''
 
-        response = await self.loop.run_in_executor(
-            self.executor,
+        execfn = partial(
             auth_request_functions[request_type],
-            request_body
+            override_authdb_path=self.authdb_url
+        )
+
+        response = await self.loop.run_in_executor(
+            self.executor, execfn, request_body
         )
 
         ok = response['success']
