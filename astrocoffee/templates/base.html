@@ -23,7 +23,7 @@
 
     {% block topnav %}
     <!-- the top bar -->
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 
       <button class="navbar-toggler"
               type="button"
@@ -40,14 +40,12 @@
         <div class="navbar-nav mr-auto">
 
           <a class="nav-item nav-link coffee-title"
-             title="HSC-SSP Visual Inspection"
+             title="{{ page_title }}"
              href="/">
-            Astro-Coffee
+            {{ page_title }}
           </a>
 
-          <a class="nav-item nav-link active">
-            <strong>{{ page_title }}</strong> <span class="sr-only">(current)</span>
-          </a>
+          <!-- other links go here -->
 
         </div>
 
@@ -75,7 +73,7 @@
     </div>
 
     {% block pagecontent %}
-    <div class="container-fluid">
+    <div class="container">
 
       <h1>Hello, world! This is the {{ page_title }} page.</h1>
 
@@ -83,19 +81,46 @@
     {% end %}
 
     <footer class="text-muted">
-      <div class="container-fluid" >
+      <div class="container" >
         <div class="row" >
           <div class="col-sm-12" >
             <hr>
           </div>
         </div>
-        <div class="row justify-content-between p-3">
 
-          <div class="col-sm-12 col-md-3" >
+        <div class="row justify-content-between p-1">
+
+          <div class="col-sm-12 col-md-5" >
             <ul class="list-unstyled" >
               <li>
+                Article listings generated from the <a href="http://www.arxiv.org">
+                arXiv.org e-Print archive</a>
+              </li>
+              <li>
+                astro-coffee v2 &mdash;
+                <a href="{{ baseurl }}/about">
+                  about
+                </a> &mdash;
                 <a href="https://github.com/waqasbhatti/astroph-coffee" >
-                  astro-coffee v2
+                  code
+                </a> &mdash;
+                <a href="https://github.com/waqasbhatti/astroph-coffee/issues" >
+                  bugs
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="col-sm-12 col-md-5 text-right" >
+            <ul class="list-unstyled" >
+              <li>
+                <a href="{{ conf.department_url }}">
+                  {{ conf.department }} at {{ conf.institution }}
+                </a>
+              </li>
+              <li>
+                <a href="{{ conf.institution_url }}">
+                  <img src="{{ baseurl }}/static/{{ conf.institution_logo_file }}">
                 </a>
               </li>
             </ul>

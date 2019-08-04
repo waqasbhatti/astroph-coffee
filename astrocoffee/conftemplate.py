@@ -123,6 +123,16 @@ department = 'Department of Astronomy'
 # The name of institution where Astro Coffee happens.
 institution = 'Example University'
 
+# The URL of the department where Astro Coffee happens
+department_url = 'https://www.astro.example.edu'
+
+# The URL of the institution where Astro Coffee happens
+institution_url = 'https://www.example.edu'
+
+# path to the logo for the department relative to the assets_dir sub directory
+# defined above. Copy your logo into this directory before using it here.
+institution_logo_file = 'images/logo.png'
+
 
 ###########
 ## TIMES ##

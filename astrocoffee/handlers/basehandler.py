@@ -746,7 +746,7 @@ class BaseHandler(tornado.web.RequestHandler):
             # belongs to
             if session_token is not None:
 
-                # FIXME: apparently we need to decode the bytes now?
+                # NOTE: get_secure_cookie returns bytes if successful
                 ok, resp, msgs = await self.authnzerver_request(
                     'session-exists',
                     {'session_token': session_token.decode()}
