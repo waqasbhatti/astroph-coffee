@@ -25,6 +25,8 @@
     <!-- the top bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 
+      <a class="navbar-brand" href="{{ baseurl }}">{{ page_title }}</a>
+
       <button class="navbar-toggler"
               type="button"
               data-toggle="collapse"
@@ -39,21 +41,51 @@
 
         <div class="navbar-nav mr-auto">
 
-          <a class="nav-item nav-link coffee-title"
-             title="{{ page_title }}"
-             href="/">
-            {{ page_title }}
-          </a>
-
-          <!-- other links go here -->
+          <div class="form-inline">
+            <a class="btn btn-primary ml-2"
+               role="button" href="{{ baseurl }}/papers/today">
+              Today's papers
+            </a>
+            <a class="btn btn-primary ml-4"
+               role="button" href="{{ baseurl }}/papers">
+              Astro-Coffee archive
+            </a>
+          </div>
 
         </div>
 
-        <form class="form-inline" action="/users/logout"
-              id="user-logout-form" method="POST" >
-          {% module xsrf_form_html() %}
-          {% module LoginBoxModule(baseurl=baseurl,current_user=current_user) %}
-        </form>
+        <div class="navbar-nav ml-auto">
+
+          <form class="form-inline" id="astrocoffee-search-form">
+            <div class="input-group">
+
+              <input class="form-control"
+                     type="search"
+                     placeholder="Search the Astro-Coffee archive"
+                     aria-label="Search">
+
+              <div class="input-group-append">
+                <button class="btn btn-primary"
+                        type="submit">Go</button>
+              </div>
+
+            </div>
+          </form>
+
+          <a class="nav-item nav-link" href="{{ baseurl }}/search">
+            Search help
+          </a>
+          <a class="nav-item nav-link" href="{{ baseurl }}/local-authors">
+            Local authors
+          </a>
+
+          <form class="form-inline" action="/users/logout"
+                id="user-logout-form" method="POST" >
+            {% module xsrf_form_html() %}
+            {% module LoginBoxModule(baseurl=baseurl,current_user=current_user) %}
+          </form>
+
+        </div>
 
       </div>
 

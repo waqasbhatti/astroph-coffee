@@ -15,13 +15,6 @@
     Admin
   </a>
 </div>
-<div class="user-prefs-box">
-  <a class="nav-item nav-link user-prefs-link"
-     title="Change user preferences"
-     href="{{ baseurl }}/users/home">
-    {{ current_user_name }}
-  </a>
-</div>
 <div class="user-signout-box">
   <button type="submit" class="btn btn-secondary btn-sm">
     Sign out
@@ -29,13 +22,6 @@
 </div>
 
 {% elif boxmode == 'signedin' %}
-<div class="user-prefs-box">
-  <a class="nav-item nav-link user-prefs-link"
-     title="Change user preferences"
-     href="{{ baseurl }}/users/home">
-    {{ current_user_name }}
-  </a>
-</div>
 <div class="user-signout-box">
   <button type="submit" class="btn btn-secondary btn-sm">
     Sign out
@@ -48,13 +34,6 @@
      title="Sign in to your user account"
      href="{{ baseurl }}/users/login">
     Sign in
-  </a>
-</div>
-<div class="user-signup-box">
-  <a class="nav-item nav-link"
-     title="Sign up for a user account"
-     href="{{ baseurl }}/users/new">
-    Sign up
   </a>
 </div>
 
