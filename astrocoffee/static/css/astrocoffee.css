@@ -9,19 +9,18 @@ footer {
 }
 
 footer img {
-  max-height: 5rem;
+  max-height: 4rem;
 }
 
-.navbar-expand-lg .navbar-nav .nav-link {
-  padding-right: 1rem;
-  padding-left: 1rem;
-}
-
-.navbar-nav form .input-group input {
+#astrocoffee-search-input {
   width: 16.5rem;
 }
 
 .navbar-dark .navbar-brand {
+  color: #FF8F00;
+}
+
+.navbar-dark .navbar-brand:focus, .navbar-dark .navbar-brand:hover {
   color: #FF8F00;
 }
 
