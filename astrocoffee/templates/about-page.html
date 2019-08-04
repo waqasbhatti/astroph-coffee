@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block pagecss %}
+{% end %}
+
+{% block pagecontent %}
+<div class="container" >
+
+  <div class="row mt-2" >
+    <div class="col-12" >
+
+      <p>The Astro-Coffee Server is a small platform to view and vote on arXiv
+        astro-ph papers, and helps to organize paper discussions. It's a bit
+        like <a href="http://voxcharta.org">VoxCharta</a>, but much simpler, and can
+        be fully installed on a local department server.</p>
+
+      <h2>Astro-Coffee administrator</h2>
+
+      <p>The local astro-coffee admin for this installation is
+        <a href="mailto:{{ conf.admin_email }}">{{ conf.admin_name }}</a>.</p>
+
+      <h2>Code and bug-reports</h2>
+
+      <p>The server's code is hosted
+        on <a href="https://github.com/waqasbhatti/astroph-coffee">Github</a>, and
+        it's meant to be simple to install and use. Please let
+        <a href="mailto:waqas.afzal.bhatti@gmail.com">Waqas Bhatti</a> know if
+        something doesn't look right, or is completely broken, or if you have
+        questions about the code.</p>
+
+      <h2>Acknowledgments</h2>
+
+      <p>astroph-coffee uses the following open-source libraries:</p>
+
+      <ul>
+        <li><a href="http://www.tornadoweb.org">Tornado</a></li>
+        <li><a href="http://www.sqlite.org">SQLite</a></li>
+        <li><a href="http://www.python-requests.org">Requests</a></li>
+        <li><a href="http://www.crummy.com/software/BeautifulSoup/">BeautifulSoup</a></li>
+        <li><a href="https://pypi.python.org/pypi/geoip2">geoip2</a></li>
+        <li><a href="http://www.jquery.com">jQuery</a></li>
+        <li><a href="https://www.mathjax.org/">MathJax</a></li>
+        <li>TODO add other bits</li>
+      </ul>
+
+      <p>This product includes GeoLite2 data created by MaxMind, available from
+        <a href="http://www.maxmind.com">http://www.maxmind.com</a>.</p>
+
+      <p>The astro-ph article listings are generated from
+        the <a href="http://www.arxiv.org">arXiv e-print server</a>.</p>
+
+    </div>
+  </div>
+
+
+</div>
+{% end %}
+<!-- end of page content -->
+
+{% block pagejs_modules %}
+{% end %}
+
+
+{% block pagejs %}
+<script>
+  $(document).ready(function() {
+
+  });
+</script>
+{% end %}
