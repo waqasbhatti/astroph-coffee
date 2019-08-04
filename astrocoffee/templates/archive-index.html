@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block pagecss %}
+{% end %}
+
+{% block pagecontent %}
+<div class="container" >
+
+  <div class="row">
+    <div class="col-12">
+      <h1>Astro-Coffee archive</h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <p>Papers from all Astro-Coffee discussions are archived here.</p>
+
+    </div>
+  </div>
+
+  {% for year in reversed(sorted(paper_archives.keys())) %}
+  <div class="row mt-2">
+    <div class="col-sm-12">
+
+      <h2>{{ year }}</h2>
+
+      {% set yearpapers = paper_archives[year] %}
+
+      {% for month in reversed(sorted(yearpapers.keys())) %}
+      <div class="row mt-2">
+        <div class="col-sm-12">
+
+          <h3>{{ month.strftime('%B') }}</h3>
+
+          <div class="row">
+            <div class="col-sm-9">
+
+              {% set monthpapers = paper_archives[year][month] %}
+
+              {% for paperdate in reversed(sorted(monthpapers)) %}
+
+              {% set papertitle = paperdate[0].strftime('%A, %B %d %Y') %}
+
+              <div class="row">
+                <div class="col-sm-5">
+                  <a href="{{ baseurl }}/papers/{{ paperdate[0].strftime('%Y%m%d') }}">
+                    {{ papertitle }}
+                  </a>
+                </div>
+                <div class="col-sm-2">
+                  <strong>{{ paperdate[1] }}</strong> papers
+                </div>
+                <div class="col-sm-3">
+                  {% if paperdate[2] > 0 %}
+                  <strong>{{ paperdate[2] }}</strong> with local authors
+                  {% end %}
+                </div>
+                <div class="col-sm-2">
+                  {% if paperdate[3] > 0 %}
+                  <strong>{{ paperdate[3] }}</strong> with votes
+                  {% end %}
+                </div>
+              </div>
+
+              {% end %}
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+      {% end %}
+
+    </div>
+  </div>
+  {% end %}
+
+</div>
+{% end %}
+<!-- end of page content -->
+
+{% block pagejs_modules %}
+{% end %}
+
+
+{% block pagejs %}
+<script>
+  $(document).ready(function() {
+
+  });
+</script>
+{% end %}

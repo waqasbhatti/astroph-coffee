@@ -47,3 +47,47 @@ def get_local_authors(include_affiliations=True):
 
     author_list = list(local_authors.keys())
     return author_list, local_authors
+
+
+###############################
+## PAPER DISCUSSION ARCHIVES ##
+###############################
+
+def get_coffee_archive():
+    '''
+    This gets the full archive of papers.
+
+    '''
+
+    currproc = mp.current_process()
+    conn, meta = currproc.connection, currproc.metadata
+
+    paper_archive = arxiv.get_coffee_archive(
+        (conn, meta),
+        returndict=True
+    )
+
+    return paper_archive
+
+
+#############################
+## GETTING ARTICLE LISTING ##
+#############################
+
+def get_arxiv_listing(utcdate=None):
+    '''
+    This fetches the arxiv listing for given utcdate.
+
+    If utcdate is None, gets the latest available utcdate's listings.
+
+    '''
+
+    currproc = mp.current_process()
+    conn, meta = currproc.connection, currproc.metadata
+
+    arxiv_listing = arxiv.get_arxiv_listing(
+        (conn, meta),
+        utcdate=utcdate
+    )
+
+    return arxiv_listing

@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block pagecss %}
+{% end %}
+
+
+{% block pagecontent %}
+
+<!-- the header -->
+<div class="container-fluid" >
+
+  <div class="row" >
+    <div class="col-12" >
+      <h1>Papers for {{ current_articles['utcdate'].strftime('%A, %B %d %Y') }}</h1>
+    </div>
+  </div>
+
+</div>
+
+<!-- links to paper lists -->
+<div class="container-fluid" >
+
+  <div class="row mt-2" >
+    <div class="col-12" >
+
+      {% if len(current_articles['local_papers']) == 1 %}
+      <a class="btn btn-secondary  mr-2" href="#local-papers">
+        <strong>1</strong> paper with local authors
+      </a>
+      {% elif len(current_articles['local_papers']) > 1 %}
+      <a class="btn btn-secondary  mr-2" href="#local-papers">
+        <strong>{{ len(current_articles['local_papers']) }}</strong> papers with local authors
+      </a>
+      {% end %}
+
+      {% if len(current_articles['papers_with_presenters']) == 1 %}
+      <a class="btn btn-secondary  mr-2" href="#papers-with-presenters">
+        <strong>1</strong> paper with a presenter
+      </a>
+      {% elif len(current_articles['papers_with_presenters']) > 1 %}
+      <a class="btn btn-secondary  mr-2" href="#papers-with-presenters">
+        <strong>{{ len(current_articles['papers_with_presenters']) }}</strong> papers with presenters
+      </a>
+      {% end %}
+
+      {% if len(current_articles['papers_with_votes']) == 1 %}
+      <a class="btn btn-secondary  mr-2" href="#papers-with-votes">
+        <strong>1</strong> paper with votes
+      </a>
+      {% elif len(current_articles['papers_with_votes']) > 1 %}
+      <a class="btn btn-secondary  mr-2" href="#papers-with-votes">
+        <strong>{{ len(current_articles['papers_with_votes']) }}</strong> papers with votes
+      </a>
+      {% end %}
+
+
+      {% if len(current_articles['reserved_papers']) == 1 %}
+      <a class="btn btn-secondary  mr-2" href="#reserved-papers">
+        <strong>1</strong> papers reserved for later discussion
+      </a>
+      {% elif len(current_articles['reserved_papers']) > 1 %}
+      <a class="btn btn-secondary  mr-2" href="#reserved-papers">
+        <strong>{{ len(current_articles['reserved_papers']) }}</strong> papers reserved for later discussion
+      </a>
+      {% end %}
+
+      {% if len(current_articles['other_new_papers']) == 1 %}
+      <a class="btn btn-secondary  mr-2" href="#other-new-papers">
+        <strong>1</strong> new paper
+      </a>
+      {% elif len(current_articles['other_new_papers']) > 1 %}
+      <a class="btn btn-secondary  mr-2" href="#other-new-papers">
+        <strong>{{ len(current_articles['other_new_papers']) }}</strong> new papers
+      </a>
+      {% end %}
+
+      {% if len(current_articles['cross_listed_papers']) == 1 %}
+      <a class="btn btn-secondary  mr-2" href="#cross-listed-papers">
+        <strong>1</strong> cross-listed papers
+      </a>
+      {% elif len(current_articles['cross_listed_papers']) > 1 %}
+      <a class="btn btn-secondary  mr-2" href="#cross-listed-papers">
+        <strong>{{ len(current_articles['cross_listed_papers']) }}</strong> cross-listed papers
+      </a>
+      {% end %}
+
+    </div>
+  </div>
+
+</div>
+
+<!-- local paper container -->
+{% if len(current_articles['local_papers']) > 0 %}
+<div class="container" >
+</div>
+{% end %}
+
+<!-- papers with presenters -->
+{% if len(current_articles['papers_with_presenters']) > 0 %}
+<div class="container" >
+</div>
+{% end %}
+
+<!-- papers with votes -->
+{% if len(current_articles['papers_with_votes']) > 0 %}
+<div class="container" >
+</div>
+{% end %}
+
+<!-- reserved papers -->
+{% if len(current_articles['reserved_papers']) > 0 %}
+<div class="container" >
+</div>
+{% end %}
+
+<!-- other new papers -->
+{% if len(current_articles['other_new_papers']) > 0 %}
+<div class="container" >
+</div>
+{% end %}
+
+<!-- cross-lists -->
+{% if len(current_articles['cross_listed_papers']) > 0 %}
+<div class="container" >
+</div>
+{% end %}
+
+
+{% end %}
+<!-- end of page content -->
+
+{% block pagejs_modules %}
+{% end %}
+
+
+{% block pagejs %}
+<script>
+  $(document).ready(function() {
+
+  });
+</script>
+{% end %}

@@ -282,10 +282,24 @@ def main():
          {'conf':CONF, 'executor':EXECUTOR}),
 
         # - /papers/today directs to today
-        # - /papers/some-date directs to papers on that date
+        (r'{baseurl}/papers/today'.format(baseurl=BASEURL),
+         coffee.ArticleListingHandler,
+         {'conf':CONF, 'executor':EXECUTOR}),
+        (r'{baseurl}/papers/today/'.format(baseurl=BASEURL),
+         coffee.ArticleListingHandler,
+         {'conf':CONF, 'executor':EXECUTOR}),
+
+        # - /papers/YYYYMMDD directs to papers on that date
+        (r'{baseurl}/papers/(\d{{8}})'.format(baseurl=BASEURL),
+         coffee.ArchiveListingHandler,
+         {'conf':CONF, 'executor':EXECUTOR}),
+
         # - /papers directs to the archive of papers
-        (r'{baseurl}/papers/?(.*)'.format(baseurl=BASEURL),
-         coffee.CoffeeHandler,
+        (r'{baseurl}/papers'.format(baseurl=BASEURL),
+         coffee.ArchiveIndexHandler,
+         {'conf':CONF, 'executor':EXECUTOR}),
+        (r'{baseurl}/papers/'.format(baseurl=BASEURL),
+         coffee.ArchiveIndexHandler,
          {'conf':CONF, 'executor':EXECUTOR}),
 
         ##################
