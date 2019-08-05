@@ -670,7 +670,7 @@ def get_arxiv_listing(dbinfo,
         elif isinstance(utcdate, str):
             utcdate = parser.parse(utcdate).date()
 
-        LOGINFO("Fetching arxiv listings for date: %s" % utcdate)
+        LOGINFO("Retrieving DB arXiv listings for date: %s" % utcdate)
         retdict['utcdate'] = utcdate
 
         #

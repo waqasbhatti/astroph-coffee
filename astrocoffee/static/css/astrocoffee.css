@@ -29,5 +29,32 @@ a {
 }
 
 a:hover, a:focus {
-  color: #060485;
+  /* color: #060485; */
+  color: #6363DB;
+  text-decoration: none;
+}
+
+.author-list {
+  line-height: 1.1;
+  color: #636363;
+}
+
+.local-author-tag {
+  color: #105fba;
+}
+
+.comments-para {
+  font-size: small;
+}
+
+p.abstract-para-medium {
+  font-size: 1.125rem;
+}
+
+p.abstract-para-large {
+  font-size: 1.5rem;
+}
+
+p.abstract-para-small {
+  font-size: small;
 }

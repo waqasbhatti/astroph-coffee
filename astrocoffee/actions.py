@@ -101,56 +101,63 @@ def record_vote(dbinfo,
         else:
 
             # check if there's no recorded votes ever
-            if row[0] is None:
+            if row['voter_info'] is None:
+                existing_votes = {}
+            else:
+                existing_votes = row['voter_info']
 
-                new_value = {voter_session_token: True}
+            if (voter_session_token not in existing_votes and
+                vote_type == 'up'):
+
+                LOGINFO(
+                    "Voter session token: %s voting up on %s"
+                    % (voter_session_token, arxiv_id)
+                )
+                existing_votes[voter_session_token] = True
+                nvote_add = 1
+                updated = True
+
+            elif (voter_session_token not in existing_votes and
+                  vote_type == 'down'):
+
+                LOGINFO(
+                    "Voter session token: %s has never voted before on "
+                    "%s, ignoring their downvote..."
+                    % (voter_session_token, arxiv_id)
+                )
+                nvote_add = 0
+                updated = False
+
+            elif (voter_session_token in existing_votes and
+                  vote_type == 'up'):
+
+                LOGINFO(
+                    "Voter session token: %s has already voted "
+                    "up on %s, ignoring..." % (voter_session_token,
+                                               arxiv_id)
+                )
+                nvote_add = 0
+                updated = False
+
+            elif (voter_session_token in existing_votes and
+                  vote_type == 'down'):
+
+                LOGINFO(
+                    "Voter session token: %s is removing their upvote "
+                    "on %s" % (voter_session_token, arxiv_id)
+                )
+                nvote_add = -1
+                del existing_votes[voter_session_token]
+                updated = True
 
             else:
 
-                existing_votes = row[0]
-
-                if (voter_session_token not in existing_votes and
-                    vote_type == 'up'):
-
-                    LOGWARNING(
-                        "Voter session token: %s voting up on %s"
-                        % (voter_session_token, arxiv_id)
-                    )
-                    existing_votes[voter_session_token] = True
-                    nvote_add = 1
-
-                elif (voter_session_token not in existing_votes and
-                      vote_type == 'down'):
-
-                    LOGWARNING(
-                        "Voter session token: %s has never voted before on "
-                        "%s, ignoring their downvote..."
-                        % (voter_session_token, arxiv_id)
-                    )
-                    nvote_add = 0
-
-                elif (voter_session_token in existing_votes and
-                      vote_type == 'up'):
-
-                    LOGWARNING(
-                        "Voter session token: %s has already voted "
-                        "up on %s, ignoring..." % (voter_session_token,
-                                                   arxiv_id)
-                    )
-                    nvote_add = 0
-
-                elif (voter_session_token in existing_votes and
-                      vote_type == 'down'):
-
-                    LOGWARNING(
-                        "Voter session token: %s is removing their upvote "
-                        "on %s" % (voter_session_token, arxiv_id)
-                    )
-                    nvote_add = -1
-                    del existing_votes[voter_session_token]
-
-                new_value = existing_votes
-                print(new_value)
+                LOGERROR(
+                    "Could not understand vote action on %s: %s for %s" %
+                    (arxiv_id, vote_type, voter_session_token)
+                )
+                nvote_add = 0
+                updated = False
 
             upd = update(
                 arxiv_listings
@@ -158,7 +165,7 @@ def record_vote(dbinfo,
                 arxiv_listings.c.arxiv_id == arxiv_id
             ).values({
                 'nvotes':arxiv_listings.c.nvotes + nvote_add,
-                'voter_info':new_value
+                'voter_info':existing_votes
             })
 
             try:
@@ -292,8 +299,8 @@ def record_presenter(dbinfo,
                         presenter_info=None
                     )
 
-                    LOGWARNING("Removing existing presenter: %r for paper: %s"
-                               % (existing_presenter, arxiv_id))
+                    LOGINFO("Removing existing presenter: %r for paper: %s"
+                            % (existing_presenter, arxiv_id))
 
                 else:
 
@@ -306,8 +313,8 @@ def record_presenter(dbinfo,
                         }
                     )
 
-                    LOGWARNING("Adding new presenter: %r for paper: %s"
-                               % (presenter_info, arxiv_id))
+                    LOGINFO("Adding new presenter: %r for paper: %s"
+                            % (presenter_info, arxiv_id))
                 try:
 
                     res = conn.execute(upd)
@@ -466,8 +473,8 @@ def record_reservation(dbinfo,
                         reserved_on=None,
                     )
 
-                    LOGWARNING("Removing existing reserver: %r for paper: %s"
-                               % (existing_reserver, arxiv_id))
+                    LOGINFO("Removing existing reserver: %r for paper: %s"
+                            % (existing_reserver, arxiv_id))
 
                 else:
 
@@ -483,7 +490,7 @@ def record_reservation(dbinfo,
                         reserved_until=reserve_until_utcdate
                     )
 
-                    LOGWARNING(
+                    LOGINFO(
                         "Adding new reserver: %r for paper: %s."
                         "Reserved on: %s, until: %s"
                         % (reserver_info, arxiv_id,

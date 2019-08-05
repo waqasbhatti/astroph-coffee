@@ -90,4 +90,32 @@ def get_arxiv_listing(utcdate=None):
         utcdate=utcdate
     )
 
+    for article_ind, article in enumerate(arxiv_listing['local_papers']):
+
+        work_article = {x:y for x,y in article.items()}
+
+        if work_article['local_authors'] is not None:
+
+            # highlight the local authors in all papers marked as such
+            author_list = work_article['authors']['list']
+            local_indices = work_article['local_authors']['indices']
+            for ind in local_indices:
+                author_list[ind] = ('<span class="local-author-tag">%s</span>' %
+                                    author_list[ind])
+            work_article['authors']['list'] = author_list
+
+            # also handle the special affiliation bits
+            specaffils = work_article['local_authors']['specaffil']
+            specaffils = [x for x in specaffils if len(x) > 0]
+            if (len(specaffils) > 0 and
+                work_article['local_authors']['mark_other_affil']):
+                work_article['local_authors']['specaffil'] = ', '.join(
+                    work_article['local_authors']['specaffil']
+                )
+            else:
+                work_article['local_authors']['specaffil'] = None
+
+            # update the paper
+            arxiv_listing['local_papers'][article_ind] = work_article
+
     return arxiv_listing

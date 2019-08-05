@@ -122,6 +122,9 @@ class ArticleListingHandler(basehandler.BaseHandler):
             self.conf.coffee_at_localtime,
         )
 
+        # FIXME: for dev
+        in_voting_mode = False
+
         # get the current articles
         current_articles = await self.loop.run_in_executor(
             self.executor,
@@ -130,12 +133,15 @@ class ArticleListingHandler(basehandler.BaseHandler):
 
         if in_voting_mode:
 
-            self.render(
+            await self.render(
                 'listing-voting-active.html',
                 baseurl=self.conf.base_url,
                 current_user=self.current_user,
                 conf=self.conf,
-                page_title='Astro-Coffee@%s' % self.conf.institution_short_name,
+                page_title=(
+                    'Vote on papers for %s' %
+                    current_articles['utcdate'].strftime('%A, %B %d %Y')
+                ),
                 flash_message_list=flash_message_list,
                 alert_type=alert_type,
                 current_articles=current_articles,
@@ -143,12 +149,15 @@ class ArticleListingHandler(basehandler.BaseHandler):
 
         else:
 
-            self.render(
+            await self.render(
                 'listing-voting-inactive.html',
                 baseurl=self.conf.base_url,
                 current_user=self.current_user,
                 conf=self.conf,
-                page_title='Astro-Coffee@%s' % self.conf.institution_short_name,
+                page_title=(
+                    'Papers for %s' %
+                    current_articles['utcdate'].strftime('%A, %B %d %Y')
+                ),
                 flash_message_list=flash_message_list,
                 alert_type=alert_type,
                 current_articles=current_articles,
