@@ -1,13 +1,46 @@
 {% extends 'base.html' %}
 
-{% block pagecss %}
+{% block topjs %}
+<!-- mathjax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'],['$$','$$']],
+      processEscapes: true,
+      processEnvironments: false,
+      processClass: "mathjax",
+      ignoreClass: "no-mathjax"
+    },
+    asciimath2jax: {
+      delimiters: [['$','$']],
+      processClass: "mathjax",
+      ignoreClass: "no-mathjax"
+    },
+    TeX: {
+      Macros: {
+        AA: "\\unicode{x212B}",
+        Ha: "\\mathrm{H}\\alpha",
+        MEarth:"M_{\\oplus}",
+        farcs:".^{\\prime\\prime}",
+        MJup:"M_{\\mathrm{J}}",
+        mjup:"M_{\\mathrm{J}}",
+        Msun:"M_{\\odot}",
+        msun:"M_{\\odot}"
+      }
+    }
+  });
+</script>
+<script
+  type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
 {% end %}
 
 
 {% block pagecontent %}
 
 <!-- the header -->
-<div class="container" >
+<div class="container no-mathjax" >
 
   <div class="row" >
     <div class="col-12" >
@@ -18,7 +51,7 @@
 </div>
 
 <!-- links to paper lists -->
-<div class="container" >
+<div class="container no-mathjax" >
 
   <div class="row mt-2 mb-4" >
     <div class="col-12" >
@@ -64,13 +97,15 @@
       </a>
       {% end %}
 
+      {% set xpc = len(current_articles['local_papers']) + len(current_articles['papers_with_presenters']) + len(current_articles['papers_with_votes']) + len(current_articles['reserved_papers']) %}
+
       {% if len(current_articles['other_new_papers']) == 1 %}
       <a class="btn btn-outline-secondary mb-2 mr-2" href="#other-new-papers">
-        <strong>1</strong> other paper
+        <strong>1</strong> {{ 'other' if xpc > 0 else 'new' }} paper
       </a>
       {% elif len(current_articles['other_new_papers']) > 1 %}
       <a class="btn btn-outline-secondary mb-2 mr-2" href="#other-new-papers">
-        <strong>{{ len(current_articles['other_new_papers']) }}</strong> other papers
+        <strong>{{ len(current_articles['other_new_papers']) }}</strong> {{ 'other' if xpc > 0 else 'new' }} papers
       </a>
       {% end %}
 

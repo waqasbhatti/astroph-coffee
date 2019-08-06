@@ -13,7 +13,9 @@
     <link rel="stylesheet" href="{{ static_url('css/astrocoffee.css') }}">
 
     {% block pagecss %}
+    {% end %}
 
+    {% block topjs %}
     {% end %}
 
     <title>{{ page_title }}</title>
@@ -178,7 +180,6 @@
     <script src="{{ static_url('js/astrocoffee.js') }}"></script>
 
     {% block pagejs_modules %}
-
     {% end %}
 
     {% block pagejs %}
