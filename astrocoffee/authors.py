@@ -51,20 +51,41 @@ from . import database
 # "author1 (1, 2, & 3), author1 (1, 2, and 3), ((1) blah1, (2) blah2)"
 # into:
 # "author1, author2"
-affil_regex1 = re.compile(r'\([0-9, &and]+\)')
+affil_regex3 = re.compile(r'\([0-9, &and]+\)')
 
 # this gets rid of patterns like (blah)
-affil_regex2 = re.compile(r'\([^)]*\)')
+affil_regex1 = re.compile(r'\([^)]*\)')
 
 # this gets rid of patterns like (blah)
-affil_regex3 = re.compile(r'\(\w+|\s+\)')
+affil_regex2 = re.compile(r'\(\w*|\d*\s*\)')
 
 
 #######################
 ## UTILITY FUNCTIONS ##
 #######################
 
-def strip_affiliations(authorstr, subchar=','):
+def remove_nested_parens(input_str):
+    """Returns a copy of 'input_str' with any parenthesized text removed.
+
+    Nested parentheses are handled.
+
+    This clever function was taken from: https://stackoverflow.com/a/47823114.
+
+    """
+
+    result = ''
+    paren_level = 0
+    for ch in input_str:
+        if ch == '(':
+            paren_level += 1
+        elif (ch == ')') and paren_level:
+            paren_level -= 1
+        elif not paren_level:
+            result += ch
+    return result
+
+
+def strip_affiliations(authorstr):
     '''
     This tries to strip author affils from authorstr.
 
@@ -86,10 +107,9 @@ def strip_affiliations(authorstr, subchar=','):
 
     initial = authorstr.replace("Authors: ","")
     initial = authorstr.replace('\n','')
-    prelim = affil_regex1.sub(subchar, initial)
-    intermed1 = affil_regex2.sub(subchar, prelim)
-    intermed2 = affil_regex3.sub(subchar, intermed1)
-    cleaned = intermed2.split(',')
+
+    noparens = remove_nested_parens(initial)
+    cleaned = noparens.split(',')
     final = [squeeze(x.strip()) for x in cleaned if len(x) > 1]
 
     return final

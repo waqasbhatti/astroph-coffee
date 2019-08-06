@@ -29,7 +29,6 @@ a {
 }
 
 a:hover, a:focus {
-  color: #6363DB;
   text-decoration: none;
 }
 
