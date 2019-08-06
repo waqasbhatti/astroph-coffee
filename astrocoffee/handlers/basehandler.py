@@ -637,16 +637,43 @@ class BaseHandler(tornado.web.RequestHandler):
         self.set_status(403)
         self.render(
             'errorpage.html',
+            baseurl=self.conf.base_url,
+            current_user=self.current_user,
+            conf=self.conf,
+            page_title="403 - You cannot access this page",
+            flash_message_list=self.flash_message_list,
+            alert_type=self.alert_type,
             error_message=(
                 "Sorry, it appears that you're not authorized to "
                 "view the page you were trying to get to. "
                 "If you believe this is in error, please contact "
                 "the admins of this server instance."
             ),
-            page_title="403 - You cannot access this page",
-            boxmode='normal',
-            baseurl=self.baseurl,
-            current_user_name=self.current_user['full_name'] or '',
+        )
+
+    def render_page_not_found(self, message=None):
+        '''
+        This renders the template indicating that the user is blocked.
+
+        '''
+
+        if not message:
+            error_message = (
+                "Sorry, we can't find a server page with that name."
+            )
+        else:
+            error_message = message
+
+        self.set_status(404)
+        self.render(
+            'errorpage.html',
+            baseurl=self.conf.base_url,
+            current_user=self.current_user,
+            conf=self.conf,
+            page_title="404 - Item not found",
+            flash_message_list=self.flash_message_list,
+            alert_type=self.alert_type,
+            error_message=error_message,
         )
 
     def save_flash_messages(self, messages, alert_type):
@@ -722,6 +749,9 @@ class BaseHandler(tornado.web.RequestHandler):
            fail the request.
 
         '''
+
+        # get the flash messages
+        self.flash_message_list, self.alert_type = self.get_flash_messages()
 
         # localhost secure cookies over HTTP don't work anymore
         if self.request.remote_ip != '127.0.0.1':
@@ -1019,3 +1049,13 @@ class BaseHandler(tornado.web.RequestHandler):
                             )
                         })
                         raise tornado.web.Finish()
+
+
+class PageNotFoundHandler(BaseHandler):
+    '''This is suitable for use in Tornado Application.settings as a default
+    handler.
+
+    '''
+
+    def get(self):
+        self.render_page_not_found()

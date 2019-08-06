@@ -1,0 +1,1305 @@
+{% extends 'base.html' %}
+
+{% block topjs %}
+<!-- mathjax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'],['$$','$$']],
+      processEscapes: true,
+      processEnvironments: false,
+      processClass: "mathjax",
+      ignoreClass: "no-mathjax"
+    },
+    asciimath2jax: {
+      delimiters: [['$','$']],
+      processClass: "mathjax",
+      ignoreClass: "no-mathjax"
+    },
+    TeX: {
+      Macros: {
+        AA: "\\unicode{x212B}",
+        Ha: "\\mathrm{H}\\alpha",
+        MEarth:"M_{\\oplus}",
+        farcs:".^{\\prime\\prime}",
+        MJup:"M_{\\mathrm{J}}",
+        mjup:"M_{\\mathrm{J}}",
+        Msun:"M_{\\odot}",
+        msun:"M_{\\odot}"
+      }
+    }
+  });
+</script>
+<script
+  type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+{% end %}
+
+
+{% block pagecontent %}
+
+<!-- the header -->
+<div class="container no-mathjax" >
+
+  <div class="row" >
+    <div class="col-12" >
+      <h1>Papers for {{ current_articles['utcdate'].strftime('%A, %B %d %Y') }}</h1>
+    </div>
+  </div>
+
+</div>
+
+<!-- links to paper lists -->
+<div class="container no-mathjax" >
+
+  <div class="row mt-2 mb-4" >
+    <div class="col-12" >
+
+      {% if len(current_articles['local_papers']) == 1 %}
+      <a class="btn btn-outline-secondary mb-2 mr-2" href="#local-papers">
+        <strong>1</strong> paper with local authors
+      </a>
+      {% elif len(current_articles['local_papers']) > 1 %}
+      <a class="btn btn-outline-secondary mb-2 mr-2" href="#local-papers">
+        <strong>{{ len(current_articles['local_papers']) }}</strong> papers with local authors
+      </a>
+      {% end %}
+
+      {% if len(current_articles['papers_with_presenters']) == 1 %}
+      <a class="btn btn-outline-secondary mb-2 mr-2" href="#papers-with-presenters">
+        <strong>1</strong> paper with a presenter
+      </a>
+      {% elif len(current_articles['papers_with_presenters']) > 1 %}
+      <a class="btn btn-outline-secondary mb-2 mr-2" href="#papers-with-presenters">
+        <strong>{{ len(current_articles['papers_with_presenters']) }}</strong> papers with presenters
+      </a>
+      {% end %}
+
+      {% if len(current_articles['papers_with_votes']) == 1 %}
+      <a class="btn btn-outline-secondary mb-2 mr-2" href="#papers-with-votes">
+        <strong>1</strong> paper with votes
+      </a>
+      {% elif len(current_articles['papers_with_votes']) > 1 %}
+      <a class="btn btn-outline-secondary mb-2 mr-2" href="#papers-with-votes">
+        <strong>{{ len(current_articles['papers_with_votes']) }}</strong> papers with votes
+      </a>
+      {% end %}
+
+
+      {% if len(current_articles['reserved_papers']) == 1 %}
+      <a class="btn btn-outline-secondary mb-2 mr-2" href="#reserved-papers">
+        <strong>1</strong> reserved paper
+      </a>
+      {% elif len(current_articles['reserved_papers']) > 1 %}
+      <a class="btn btn-outline-secondary mb-2 mr-2" href="#reserved-papers">
+        <strong>{{ len(current_articles['reserved_papers']) }}</strong> reserved papers
+      </a>
+      {% end %}
+
+      {% set xpc = len(current_articles['local_papers']) + len(current_articles['papers_with_presenters']) + len(current_articles['papers_with_votes']) + len(current_articles['reserved_papers']) %}
+
+      {% if len(current_articles['other_new_papers']) == 1 %}
+      <a class="btn btn-outline-secondary mb-2 mr-2" href="#other-new-papers">
+        <strong>1</strong> {{ 'other' if xpc > 0 else 'new' }} paper
+      </a>
+      {% elif len(current_articles['other_new_papers']) > 1 %}
+      <a class="btn btn-outline-secondary mb-2 mr-2" href="#other-new-papers">
+        <strong>{{ len(current_articles['other_new_papers']) }}</strong> {{ 'other' if xpc > 0 else 'new' }} papers
+      </a>
+      {% end %}
+
+      {% if len(current_articles['cross_listed_papers']) == 1 %}
+      <a class="btn btn-outline-secondary mb-2 mr-2" href="#cross-listed-papers">
+        <strong>1</strong> cross-listed papers
+      </a>
+      {% elif len(current_articles['cross_listed_papers']) > 1 %}
+      <a class="btn btn-outline-secondary mb-2 mr-2" href="#cross-listed-papers">
+        <strong>{{ len(current_articles['cross_listed_papers']) }}</strong> cross-listed papers
+      </a>
+      {% end %}
+
+    </div>
+  </div>
+
+</div>
+
+<!-- local paper container -->
+{% if len(current_articles['local_papers']) > 0 %}
+<div class="container" >
+
+  <div class="row mt-2" >
+    <div class="col-12" >
+      <h2 id="local-papers">Papers with local authors</h2>
+    </div>
+  </div>
+
+  {% for article in current_articles['local_papers'] %}
+  <div class="row mt-2 no-gutters" >
+    <div class="col-sm-12 col-md-9" >
+
+      <!-- the paper title -->
+      <div class="row" >
+        <div class="col-12" >
+          {% if article['local_authors']['specaffil'] is not None %}
+          <h4 class="paper-title mathjax" data-arxivid="{{ article['arxiv_id'] }}">
+            <a href="#" title="click to see/hide abstract">
+              [{{ article['local_authors']['specaffil'] }}] {{ article['title'] }}
+            </a>
+          </h4>
+          {% else %}
+          <h4 class="paper-title mathjax" data-arxivid="{{ article['arxiv_id'] }}">
+            <a href="#" title="click to see/hide abstract">
+              {{ article['title'] }}
+            </a>
+          </h4>
+          {% end %}
+        </div>
+      </div>
+
+      <!-- the article authors (already pre-processed to highlight locals by backend) -->
+      <div class="row" >
+        <div class="col-12" >
+          <h6 class="author-list">
+            {% raw ', '.join(article['authors']['list']) %}
+          </h6>
+        </div>
+      </div>
+
+      <!-- the article comments -->
+      {% if len(article['comments']) > 0 %}
+      <div class="row" >
+        <div class="col-12" >
+          <p class="comments-para">{% raw article['comments'] %}</p>
+        </div>
+      </div>
+      {% end %}
+
+    </div>
+
+    <!-- the control and vote info bar (not shown on small devices)-->
+    <div class="col-sm-12 col-md-3 d-none d-sm-none d-md-block d-lg-block d-xl-block text-right" >
+
+      <!-- the vote count -->
+      {% if article['nvotes'] == 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> vote</h5>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% elif article['nvotes'] > 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> votes</h5>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% else %}
+
+      <!-- the PDF button -->
+      <div class="row mb-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      {% end %}
+
+    </div>
+
+    <!-- the control and vote info bar (this version is shown on small devices)-->
+    <div class="col-sm-12 d-block d-sm-block d-md-none d-lg-none d-xl-none text-center" >
+
+      <!-- the vote count -->
+      {% if article['nvotes'] == 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> vote</h5>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% elif article['nvotes'] > 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> votes</h5>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% else %}
+
+      <!-- the PDF button -->
+      <div class="row mb-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      {% end %}
+
+    </div>
+
+  </div>
+
+  <!-- the article's abstract -->
+  <div class="row paper-abstract" data-arxivid="{{ article['arxiv_id'] }}">
+    <div class="col-12">
+      <p class="abstract-para-medium mathjax">{{ article['abstract'] }}</p>
+    </div>
+  </div>
+  {% end %}
+
+</div>
+{% end %}
+<!-- end of local papers -->
+
+<!-- papers with presenters -->
+{% if len(current_articles['papers_with_presenters']) > 0 %}
+<div class="container" >
+
+  <div class="row mt-2" >
+    <div class="col-12" >
+      <h2 id="papers-with-presenters">Papers with presenters</h2>
+    </div>
+  </div>
+
+  {% for article in current_articles['papers_with_presenters'] %}
+  <div class="row mt-2 no-gutters" >
+    <div class="col-sm-12 col-md-9" >
+
+      <!-- the paper title -->
+      <div class="row" >
+        <div class="col-12" >
+          <h4 class="paper-title mathjax" data-arxivid="{{ article['arxiv_id'] }}">
+            <a href="#" title="click to see/hide abstract">
+              {{ article['title'] }}
+            </a>
+          </h4>
+        </div>
+      </div>
+
+      <!-- the article authors -->
+      <div class="row" >
+        <div class="col-12" >
+          <h6 class="author-list">
+            {% raw ', '.join(article['authors']['list']) %}
+          </h6>
+        </div>
+      </div>
+
+      <!-- the article comments -->
+      {% if len(article['comments']) > 0 %}
+      <div class="row" >
+        <div class="col-12" >
+          <p class="comments-para">{% raw article['comments'] %}</p>
+        </div>
+      </div>
+      {% end %}
+
+    </div>
+
+    <!-- the control and vote info bar (not shown on small devices)-->
+    <div class="col-sm-12 col-md-3 d-none d-sm-none d-md-block d-lg-block d-xl-block text-right" >
+
+      <!-- the vote count -->
+      {% if article['nvotes'] == 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> vote</h5>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% elif article['nvotes'] > 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> votes</h5>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% else %}
+
+      <!-- the PDF button -->
+      <div class="row mb-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      {% end %}
+
+    </div>
+
+    <!-- the control and vote info bar (this version is shown on small devices)-->
+    <div class="col-sm-12 d-block d-sm-block d-md-none d-lg-none d-xl-none text-center" >
+
+      <!-- the vote count -->
+      {% if article['nvotes'] == 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> vote</h5>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% elif article['nvotes'] > 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> votes</h5>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% else %}
+
+      <!-- the PDF button -->
+      <div class="row mb-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      {% end %}
+
+    </div>
+
+  </div>
+
+  <!-- the article's abstract -->
+  <div class="row paper-abstract" data-arxivid="{{ article['arxiv_id'] }}">
+    <div class="col-12">
+      <p class="abstract-para-medium mathjax">{{ article['abstract'] }}</p>
+    </div>
+  </div>
+  {% end %}
+
+</div>
+{% end %}
+<!-- end of papers with presenters -->
+
+
+<!-- papers with votes -->
+{% if len(current_articles['papers_with_votes']) > 0 %}
+<div class="container" >
+
+  <div class="row mt-2" >
+    <div class="col-12" >
+      <h2 id="papers-with-votes">Papers with votes</h2>
+    </div>
+  </div>
+
+  {% for article in current_articles['papers_with_votes'] %}
+  <div class="row mt-2 no-gutters" >
+    <div class="col-sm-12 col-md-9" >
+
+      <!-- the paper title -->
+      <div class="row" >
+        <div class="col-12" >
+          <h4 class="paper-title mathjax" data-arxivid="{{ article['arxiv_id'] }}">
+            <a href="#" title="click to see/hide abstract">
+              {{ article['title'] }}
+            </a>
+          </h4>
+        </div>
+      </div>
+
+      <!-- the article authors -->
+      <div class="row" >
+        <div class="col-12" >
+          <h6 class="author-list">
+            {% raw ', '.join(article['authors']['list']) %}
+          </h6>
+        </div>
+      </div>
+
+      <!-- the article comments -->
+      {% if len(article['comments']) > 0 %}
+      <div class="row" >
+        <div class="col-12" >
+          <p class="comments-para">{% raw article['comments'] %}</p>
+        </div>
+      </div>
+      {% end %}
+
+    </div>
+
+    <!-- the control and vote info bar (not shown on small devices)-->
+    <div class="col-sm-12 col-md-3 d-none d-sm-none d-md-block d-lg-block d-xl-block text-right" >
+
+      <!-- the vote count -->
+      {% if article['nvotes'] == 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> vote</h5>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% elif article['nvotes'] > 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> votes</h5>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% else %}
+
+      <!-- the PDF button -->
+      <div class="row mb-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      {% end %}
+
+    </div>
+
+    <!-- the control and vote info bar (this version is shown on small devices)-->
+    <div class="col-sm-12 d-block d-sm-block d-md-none d-lg-none d-xl-none text-center" >
+
+      <!-- the vote count -->
+      {% if article['nvotes'] == 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> vote</h5>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% elif article['nvotes'] > 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> votes</h5>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% else %}
+
+      <!-- the PDF button -->
+      <div class="row mb-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      {% end %}
+
+    </div>
+
+  </div>
+
+  <!-- the article's abstract -->
+  <div class="row paper-abstract" data-arxivid="{{ article['arxiv_id'] }}">
+    <div class="col-12">
+      <p class="abstract-para-medium mathjax">{{ article['abstract'] }}</p>
+    </div>
+  </div>
+  {% end %}
+
+</div>
+{% end %}
+<!-- end of papers with votes -->
+
+
+<!-- reserved papers -->
+{% if len(current_articles['reserved_papers']) > 0 %}
+<div class="container" >
+
+  <div class="row mt-2" >
+    <div class="col-12" >
+      <h2 id="reserved-papers">Reserved papers</h2>
+    </div>
+  </div>
+
+  {% for article in current_articles['reserved_papers'] %}
+  <div class="row mt-2 no-gutters" >
+    <div class="col-sm-12 col-md-9" >
+
+      <!-- the paper title -->
+      <div class="row" >
+        <div class="col-12" >
+          <h4 class="paper-title mathjax" data-arxivid="{{ article['arxiv_id'] }}">
+            <a href="#" title="click to see/hide abstract">
+              {{ article['title'] }}
+            </a>
+          </h4>
+        </div>
+      </div>
+
+      <!-- the article authors -->
+      <div class="row" >
+        <div class="col-12" >
+          <h6 class="author-list">
+            {% raw ', '.join(article['authors']['list']) %}
+          </h6>
+        </div>
+      </div>
+
+      <!-- the article comments -->
+      {% if len(article['comments']) > 0 %}
+      <div class="row" >
+        <div class="col-12" >
+          <p class="comments-para">{% raw article['comments'] %}</p>
+        </div>
+      </div>
+      {% end %}
+
+    </div>
+
+    <!-- the control and vote info bar (not shown on small devices)-->
+    <div class="col-sm-12 col-md-3 d-none d-sm-none d-md-block d-lg-block d-xl-block text-right" >
+
+      <!-- the vote count -->
+      {% if article['nvotes'] == 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> vote</h5>
+
+      <!-- the reserver info -->
+      <div class="row text-right" >
+        <div class="col-12" >
+          <h6><strong>Reserved until {{ article['reserved_until'].strftime('%A, %Y-%m-%d') }}</h6>
+        </div>
+      </div>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% elif article['nvotes'] > 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> votes</h5>
+
+      <!-- the reserver info -->
+      <div class="row text-right" >
+        <div class="col-12" >
+          <h6><strong>Reserved until {{ article['reserved_until'].strftime('%A, %Y-%m-%d') }}</h6>
+        </div>
+      </div>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% else %}
+
+      <!-- the PDF button -->
+      <div class="row mb-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      <!-- the reserver info -->
+      <div class="row text-right" >
+        <div class="col-12" >
+          <h6><strong>Reserved until {{ article['reserved_until'].strftime('%A, %Y-%m-%d') }}</h6>
+        </div>
+      </div>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      {% end %}
+
+    </div>
+
+    <!-- the control and vote info bar (this version is shown on small devices)-->
+    <div class="col-sm-12 d-block d-sm-block d-md-none d-lg-none d-xl-none text-center" >
+
+      <!-- the vote count -->
+      {% if article['nvotes'] == 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> vote</h5>
+
+      <!-- the reserver info -->
+      <div class="row text-center" >
+        <div class="col-12" >
+          <h6><strong>Reserved until {{ article['reserved_until'].strftime('%A, %Y-%m-%d') }}</h6>
+        </div>
+      </div>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% elif article['nvotes'] > 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> votes</h5>
+
+      <!-- the reserver info -->
+      <div class="row text-center" >
+        <div class="col-12" >
+          <h6><strong>Reserved until {{ article['reserved_until'].strftime('%A, %Y-%m-%d') }}</h6>
+        </div>
+      </div>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% else %}
+
+      <!-- the PDF button -->
+      <div class="row mb-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      <!-- the reserver info -->
+      <div class="row text-center" >
+        <div class="col-12" >
+          <h6><strong>Reserved until {{ article['reserved_until'].strftime('%A, %Y-%m-%d') }}</h6>
+        </div>
+      </div>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      {% end %}
+
+    </div>
+
+  </div>
+
+  <!-- the article's abstract -->
+  <div class="row paper-abstract" data-arxivid="{{ article['arxiv_id'] }}">
+    <div class="col-12">
+      <p class="abstract-para-medium mathjax">{{ article['abstract'] }}</p>
+    </div>
+  </div>
+  {% end %}
+
+</div>
+{% end %}
+<!-- end of reserved papers -->
+
+<!-- other new papers -->
+{% if len(current_articles['other_new_papers']) > 0 %}
+<div class="container" >
+
+  <div class="row mt-2" >
+    <div class="col-12" >
+      <h2 id="other-new-papers">All other papers</h2>
+    </div>
+  </div>
+
+  {% for article in current_articles['other_new_papers'] %}
+  <div class="row mt-2 no-gutters" >
+    <div class="col-sm-12 col-md-9" >
+
+      <!-- the paper title -->
+      <div class="row" >
+        <div class="col-12" >
+          <h4 class="paper-title mathjax" data-arxivid="{{ article['arxiv_id'] }}">
+            <a href="#" title="click to see/hide abstract">
+              {{ article['title'] }}
+            </a>
+          </h4>
+        </div>
+      </div>
+
+      <!-- the article authors -->
+      <div class="row" >
+        <div class="col-12" >
+          <h6 class="author-list">
+            {% raw ', '.join(article['authors']['list']) %}
+          </h6>
+        </div>
+      </div>
+
+      <!-- the article comments -->
+      {% if len(article['comments']) > 0 %}
+      <div class="row" >
+        <div class="col-12" >
+          <p class="comments-para">{% raw article['comments'] %}</p>
+        </div>
+      </div>
+      {% end %}
+
+    </div>
+
+    <!-- the control and vote info bar (not shown on small devices)-->
+    <div class="col-sm-12 col-md-3 d-none d-sm-none d-md-block d-lg-block d-xl-block text-right" >
+
+      <!-- the vote count -->
+      {% if article['nvotes'] == 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> vote</h5>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% elif article['nvotes'] > 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> votes</h5>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% else %}
+
+      <!-- the PDF button -->
+      <div class="row mb-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      {% end %}
+
+    </div>
+
+    <!-- the control and vote info bar (this version is shown on small devices)-->
+    <div class="col-sm-12 d-block d-sm-block d-md-none d-lg-none d-xl-none text-center" >
+
+      <!-- the vote count -->
+      {% if article['nvotes'] == 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> vote</h5>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% elif article['nvotes'] > 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> votes</h5>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% else %}
+
+      <!-- the PDF button -->
+      <div class="row mb-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      {% end %}
+
+    </div>
+    <div class="col-sm-12 col-md-3" >
+    </div>
+
+  </div>
+
+  <!-- the article's abstract -->
+  <div class="row paper-abstract" data-arxivid="{{ article['arxiv_id'] }}">
+    <div class="col-12">
+      <p class="abstract-para-medium mathjax">{{ article['abstract'] }}</p>
+    </div>
+  </div>
+  {% end %}
+
+</div>
+{% end %}
+<!-- end of other new papers -->
+
+<!-- cross-lists -->
+{% if len(current_articles['cross_listed_papers']) > 0 %}
+<div class="container" >
+
+  <div class="row mt-2" >
+    <div class="col-12" >
+      <h2 id="cross-listed-papers">Cross-listed papers</h2>
+    </div>
+  </div>
+
+  {% for article in current_articles['cross_listed_papers'] %}
+  <div class="row mt-2 no-gutters" >
+    <div class="col-sm-12 col-md-9" >
+
+      <!-- the paper title -->
+      <div class="row" >
+        <div class="col-12" >
+          <h4 class="paper-title mathjax" data-arxivid="{{ article['arxiv_id'] }}">
+            <a href="#" title="click to see/hide abstract">
+              {{ article['title'] }}
+            </a>
+          </h4>
+        </div>
+      </div>
+
+      <!-- the article authors -->
+      <div class="row" >
+        <div class="col-12" >
+          <h6 class="author-list">
+            {% raw ', '.join(article['authors']['list']) %}
+          </h6>
+        </div>
+      </div>
+
+      <!-- the article comments -->
+      {% if len(article['comments']) > 0 %}
+      <div class="row" >
+        <div class="col-12" >
+          <p class="comments-para">{% raw article['comments'] %}</p>
+        </div>
+      </div>
+      {% end %}
+
+    </div>
+
+    <!-- the control and vote info bar (not shown on small devices)-->
+    <div class="col-sm-12 col-md-3 d-none d-sm-none d-md-block d-lg-block d-xl-block text-right" >
+
+      <!-- the vote count -->
+      {% if article['nvotes'] == 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> vote</h5>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% elif article['nvotes'] > 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> votes</h5>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% else %}
+
+      <!-- the PDF button -->
+      <div class="row mb-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      {% end %}
+
+    </div>
+
+    <!-- the control and vote info bar (this version is shown on small devices)-->
+    <div class="col-sm-12 d-block d-sm-block d-md-none d-lg-none d-xl-none text-center" >
+
+      <!-- the vote count -->
+      {% if article['nvotes'] == 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> vote</h5>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% elif article['nvotes'] > 1 %}
+
+      <h5><strong>{{ article['nvotes'] }}</strong> votes</h5>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      <!-- the PDF button -->
+      <div class="row mt-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      {% else %}
+
+      <!-- the PDF button -->
+      <div class="row mb-1" >
+        <div class="col-12" >
+          <a class="btn btn-success btn-lg" href="{{ article['pdf'] }}">Get PDF</a>
+        </div>
+      </div>
+
+      <!-- the arxiv link -->
+      <div class="row" >
+        <div class="col-12" >
+          Paper {{ article['day_serial'] }} &mdash;
+          <a href="{{ article['link'] }}">{{ article['arxiv_id'] }}</a>
+        </div>
+      </div>
+
+      {% end %}
+
+    </div>
+
+  </div>
+
+  <!-- the article's abstract -->
+  <div class="row paper-abstract" data-arxivid="{{ article['arxiv_id'] }}">
+    <div class="col-12">
+      <p class="abstract-para-medium mathjax">{{ article['abstract'] }}</p>
+    </div>
+  </div>
+  {% end %}
+
+</div>
+{% end %}
+<!-- end of cross-lists -->
+
+
+{% end %}
+<!-- end of page content -->
+
+{% block pagejs_modules %}
+{% end %}
+
+
+{% block pagejs %}
+<script>
+  $(document).ready(function() {
+
+  });
+</script>
+{% end %}

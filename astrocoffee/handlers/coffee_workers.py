@@ -74,7 +74,8 @@ def get_coffee_archive():
 ## GETTING ARTICLE LISTING ##
 #############################
 
-def get_arxiv_listing(utcdate=None):
+def get_arxiv_listing(utcdate=None,
+                      for_archive_listing=False):
     '''
     This fetches the arxiv listing for given utcdate.
 
@@ -87,7 +88,8 @@ def get_arxiv_listing(utcdate=None):
 
     arxiv_listing = arxiv.get_arxiv_listing(
         (conn, meta),
-        utcdate=utcdate
+        utcdate=utcdate,
+        for_archive_listing=for_archive_listing,
     )
 
     for article_ind, article in enumerate(arxiv_listing['local_papers']):

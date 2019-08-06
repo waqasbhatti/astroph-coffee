@@ -605,10 +605,14 @@ def get_single_article(dbinfo,
 
 
 def get_arxiv_listing(dbinfo,
+                      for_archive_listing=False,
                       utcdate=None,
                       dbkwargs=None):
-    '''
-    This gets all articles from the database for the given UTC date.
+    '''This gets all articles from the database for the given UTC date.
+
+    If for_archive_listing = True and utcdate is not None all reserved papers on
+    the specified utcdate are returned regardless of whether they've expired or
+    not.
 
     Returns a dict of the form::
 
@@ -645,7 +649,8 @@ def get_arxiv_listing(dbinfo,
         'papers_with_presenters':[],
         'reserved_papers':[],
         'other_new_papers':[],
-        'cross_listed_papers':[]
+        'cross_listed_papers':[],
+        'ntotal':0,
     }
 
     #
@@ -720,6 +725,7 @@ def get_arxiv_listing(dbinfo,
             local_papers_rows = []
 
         retdict['local_papers'] = local_papers_rows
+        retdict['ntotal'] += len(local_papers_rows)
 
         #
         # next, fetch the papers with presenters (from either new papers
@@ -771,6 +777,7 @@ def get_arxiv_listing(dbinfo,
             papers_with_presenters_rows = []
 
         retdict['papers_with_presenters'] = papers_with_presenters_rows
+        retdict['ntotal'] += len(papers_with_presenters_rows)
 
         #
         # next, fetch the papers with voters only (from either new papers or
@@ -824,14 +831,12 @@ def get_arxiv_listing(dbinfo,
             papers_with_votes_rows = []
 
         retdict['papers_with_votes'] = papers_with_votes_rows
+        retdict['ntotal'] += len(papers_with_votes_rows)
 
         #
         # next, fetch the papers that were reserved only (from either new papers
         # or cross-lists)
         #
-
-        # show only those reserved papers that are still within the requested
-        # time-range
         sel = select([
             arxiv_listings.c.day_serial,
             arxiv_listings.c.arxiv_id,
@@ -855,11 +860,16 @@ def get_arxiv_listing(dbinfo,
             arxiv_listings.c.utcdate == utcdate
         ).where(
             arxiv_listings.c.reserved.is_(True)
-        ).where(
-            arxiv_listings.c.reserved_until > datetime.utcnow().date()
         ).order_by(
             arxiv_listings.c.nvotes.desc()
         )
+
+        # show only those reserved papers that are still within the requested
+        # time-range if for_archive_listing is False
+        if not for_archive_listing:
+            sel = sel.where(
+                arxiv_listings.c.reserved_until > datetime.utcnow().date()
+            )
 
         try:
 
@@ -876,6 +886,7 @@ def get_arxiv_listing(dbinfo,
             reserved_papers_rows = []
 
         retdict['reserved_papers'] = reserved_papers_rows
+        retdict['ntotal'] += len(reserved_papers_rows)
 
         #
         # next, fetch the new papers only (not cross-lists)
@@ -930,6 +941,7 @@ def get_arxiv_listing(dbinfo,
             other_new_papers_rows = []
 
         retdict['other_new_papers'] = other_new_papers_rows
+        retdict['ntotal'] += len(other_new_papers_rows)
 
         #
         # finally, fetch the cross-lists
@@ -984,6 +996,7 @@ def get_arxiv_listing(dbinfo,
             cross_listed_papers_rows = []
 
         retdict['cross_listed_papers'] = cross_listed_papers_rows
+        retdict['ntotal'] += len(cross_listed_papers_rows)
 
     #
     # at the end, shut down the DB

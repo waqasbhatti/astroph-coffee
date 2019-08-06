@@ -239,6 +239,7 @@ def main():
     #########################
 
     from .handlers import baseuimodules
+    from .handlers.basehandler import PageNotFoundHandler
     from .handlers import coffee_handlers as coffee
     from .handlers import auth_handlers as auth
     from .handlers import admin_handlers as admin
@@ -406,6 +407,8 @@ def main():
         cookie_secret=CONF.session_secret,
         xsrf_cookies=True,
         xsrf_cookie_kwargs={'samesite':'Lax'},
+        default_handler_class=PageNotFoundHandler,
+        default_handler_args={'conf':CONF, 'executor':EXECUTOR},
     )
 
     # start up the HTTP server and our application. xheaders = True turns on
