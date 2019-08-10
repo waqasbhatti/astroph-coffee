@@ -31,6 +31,7 @@ LOGEXCEPTION = LOGGER.exception
 
 import re
 import csv
+from io import StringIO
 
 from dateutil import parser
 from tornado.escape import squeeze
@@ -165,7 +166,10 @@ def insert_local_authors(
     local_authors = meta.tables['local_authors']
 
     # read the CSV
-    csvfd = open(author_csv,'r')
+    if isinstance(author_csv, StringIO):
+        csvfd = author_csv
+    else:
+        csvfd = open(author_csv,'r')
 
     with conn.begin() as transaction:
 
@@ -190,7 +194,7 @@ def insert_local_authors(
                 affiliation = None
 
             info = {
-                'affiliation':row['affiliation'],
+                'affiliation':affiliation,
                 'server_user_id':None,
                 'server_user_role':None
             }

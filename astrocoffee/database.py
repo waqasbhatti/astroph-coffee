@@ -81,7 +81,7 @@ ArxivListings = Table(
            index=True, nullable=False, default="newarticle"),
     Column("arxiv_id", Text, unique=True, nullable=False, index=True),
     # this contains the list of authors
-    Column("authors", JSON, nullable=False),
+    Column("authors", JSON(none_as_null=True), nullable=False),
     Column("comments", Text),
     Column("abstract", Text),
     Column("link", Text),
@@ -89,13 +89,13 @@ ArxivListings = Table(
     # this contains a list of the indices of the paper author list that
     # correspond to local authors. also contains corresponding lists of local
     # author affiliations
-    Column("local_authors", JSON),
+    Column("local_authors", JSON(none_as_null=True)),
     Column("nvotes", Integer, nullable=False, default=0),
     # this contains a list of server userids that voted on this paper
-    Column("voter_info", JSON),
-    Column("presenter_info", JSON),
+    Column("voter_info", JSON(none_as_null=True)),
+    Column("presenter_info", JSON(none_as_null=True)),
     Column("reserved", Boolean, nullable=False, default=False),
-    Column("reserver_info", JSON),
+    Column("reserver_info", JSON(none_as_null=True)),
     Column("reserved_on", DATE),
     Column("reserved_until", DATE),
 )

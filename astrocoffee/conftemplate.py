@@ -106,6 +106,22 @@ database_url = 'sqlite:///%s' % os.path.join(basedir,'astro-coffee.sqlite')
 admin_name = 'Admin Contact'
 admin_email = 'coffeeadmin@institution.edu'
 
+# These are emails of people that will be automatically promoted to the staff
+# privilege level when they sign up for an account. These accounts can tag/untag
+# local author papers and manually run an arxiv update.
+staff_email_addresses = {
+    'staff1@example.edu',
+    'staff2@example.edu',
+}
+
+# These are domain names of the email address allowed to sign up for an
+# account. Signed up users can vote, reserve, and sign-up to be presenters from
+# anywhere (and not just from the locations defined below in ACCESS CONTROL)
+email_domains = {
+    'astro.example.edu',
+    'institute.edu',
+}
+
 
 ############
 ## PLACES ##
@@ -216,13 +232,6 @@ present_cidr = {
 edit_cidr = {
     '128.0.0.0/8',
 } | internal_cidr
-
-# These are the email address domain names for which signups are allowed.
-email_domains = {
-    'astro.institution.edu',
-    'physics.institution.edu',
-    'otherinstitute.edu',
-}
 
 
 ###########################

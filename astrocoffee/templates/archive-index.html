@@ -34,7 +34,7 @@
           <h3>{{ month.strftime('%B') }}</h3>
 
           <div class="row">
-            <div class="col-sm-9">
+            <div class="col-sm-12">
 
               {% set monthpapers = paper_archives[year][month] %}
 
@@ -43,7 +43,7 @@
               {% set papertitle = paperdate[0].strftime('%A, %B %d %Y') %}
 
               <div class="row">
-                <div class="col-sm-5">
+                <div class="col-sm-4 offset-sm-1">
                   <a href="{{ baseurl }}/papers/{{ paperdate[0].strftime('%Y%m%d') }}">
                     {{ papertitle }}
                   </a>

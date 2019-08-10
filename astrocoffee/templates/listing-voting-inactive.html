@@ -39,6 +39,8 @@
 
 {% block pagecontent %}
 
+{% set xpc = len(current_articles['local_papers']) + len(current_articles['papers_with_presenters']) + len(current_articles['papers_with_votes']) + len(current_articles['reserved_papers']) %}
+
 <!-- the header -->
 <div class="container no-mathjax" >
 
@@ -96,8 +98,6 @@
         <strong>{{ len(current_articles['reserved_papers']) }}</strong> reserved papers
       </a>
       {% end %}
-
-      {% set xpc = len(current_articles['local_papers']) + len(current_articles['papers_with_presenters']) + len(current_articles['papers_with_votes']) + len(current_articles['reserved_papers']) %}
 
       {% if len(current_articles['other_new_papers']) == 1 %}
       <a class="btn btn-outline-secondary mb-2 mr-2" href="#other-new-papers">
@@ -787,7 +787,7 @@
       <!-- the reserver info -->
       <div class="row text-right" >
         <div class="col-12" >
-          <h6><strong>{{ article['reserver_info']['full_name'] }}</strong> reserved this until {{ article['reserved_until'].strftime('%A, %Y-%m-%d') }}</h6>
+          <h6><strong>{{ article['reserver_info']['full_name'] }}</strong> reserved this until {{ article['reserved_until'].strftime('%Y-%m-%d') }}</h6>
         </div>
       </div>
 
@@ -813,7 +813,7 @@
       <!-- the reserver info -->
       <div class="row text-right" >
         <div class="col-12" >
-          <h6><strong>{{ article['reserver_info']['full_name'] }}</strong> reserved this until {{ article['reserved_until'].strftime('%A, %Y-%m-%d') }}</h6>
+          <h6><strong>{{ article['reserver_info']['full_name'] }}</strong> reserved this until {{ article['reserved_until'].strftime('%Y-%m-%d') }}</h6>
         </div>
       </div>
 
@@ -844,7 +844,7 @@
       <!-- the reserver info -->
       <div class="row text-right" >
         <div class="col-12" >
-          <h6><strong>{{ article['reserver_info']['full_name'] }}</strong> reserved this until {{ article['reserved_until'].strftime('%A, %Y-%m-%d') }}</h6>
+          <h6><strong>{{ article['reserver_info']['full_name'] }}</strong> reserved this until {{ article['reserved_until'].strftime('%Y-%m-%d') }}</h6>
         </div>
       </div>
 
@@ -871,7 +871,7 @@
       <!-- the reserver info -->
       <div class="row text-center" >
         <div class="col-12" >
-          <h6><strong>{{ article['reserver_info']['full_name'] }}</strong> reserved this until {{ article['reserved_until'].strftime('%A, %Y-%m-%d') }}</h6>
+          <h6><strong>{{ article['reserver_info']['full_name'] }}</strong> reserved this until {{ article['reserved_until'].strftime('%Y-%m-%d') }}</h6>
         </div>
       </div>
 
@@ -897,7 +897,7 @@
       <!-- the reserver info -->
       <div class="row text-center" >
         <div class="col-12" >
-          <h6><strong>{{ article['reserver_info']['full_name'] }}</strong> reserved this until {{ article['reserved_until'].strftime('%A, %Y-%m-%d') }}</h6>
+          <h6><strong>{{ article['reserver_info']['full_name'] }}</strong> reserved this until {{ article['reserved_until'].strftime('%Y-%m-%d') }}</h6>
         </div>
       </div>
 
@@ -928,7 +928,7 @@
       <!-- the reserver info -->
       <div class="row text-center" >
         <div class="col-12" >
-          <h6><strong>{{ article['reserver_info']['full_name'] }}</strong> reserved this until {{ article['reserved_until'].strftime('%A, %Y-%m-%d') }}</h6>
+          <h6><strong>{{ article['reserver_info']['full_name'] }}</strong> reserved this until {{ article['reserved_until'].strftime('%Y-%m-%d') }}</h6>
         </div>
       </div>
 
@@ -964,7 +964,11 @@
 
   <div class="row mt-2" >
     <div class="col-12" >
+      {% if xpc > 0 %}
       <h2 id="other-new-papers">All other papers</h2>
+      {% else %}
+      <h2 id="other-new-papers">All new papers</h2>
+      {% end %}
     </div>
   </div>
 

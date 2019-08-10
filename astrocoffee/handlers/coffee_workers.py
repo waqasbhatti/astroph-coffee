@@ -108,7 +108,7 @@ def get_arxiv_listing(utcdate=None,
 
             # also handle the special affiliation bits
             specaffils = work_article['local_authors']['specaffil']
-            specaffils = [x for x in specaffils if len(x) > 0]
+            specaffils = [x for x in specaffils if (x and len(x) > 0)]
             if (len(specaffils) > 0 and
                 work_article['local_authors']['mark_other_affil']):
                 work_article['local_authors']['specaffil'] = ', '.join(
