@@ -868,7 +868,7 @@ def get_arxiv_listing(dbinfo,
         # time-range if for_archive_listing is False
         if not for_archive_listing:
             sel = sel.where(
-                arxiv_listings.c.reserved_until > datetime.utcnow().date()
+                arxiv_listings.c.reserved_until >= datetime.utcnow().date()
             )
 
         try:
