@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block pagecontent %}
+
+<div class="container" >
+  <div class="row justify-content-center" >
+    <div class="col-sm-12 col-md-9" >
+      {% raw flash_messages %}
+    </div>
+  </div>
+
+  <div class="row align-items-center justify-content-center" >
+    <div class="col-sm-12 col-md-5" >
+
+      {% if 'logins_allowed' in siteinfo and siteinfo['logins_allowed'] is True %}
+
+      <div class="card mt-4 mb-1">
+        <div class="card-body">
+          <div class="card-title" >
+            <h4>Reset your account password</h4>
+          </div>
+          <div class="card-text" >
+            <form action="/users/forgot-password-step2" method="post">
+              {% module xsrf_form_html() %}
+
+              <div class="form-group" >
+                <label for="verificationcode" >Verification code</label>
+                <input type="text" class="form-control"
+                       name="verificationcode" id="verificationcode" required
+                       placeholder="Enter the verification code you received"
+                       minlength="12" maxlength="280">
+              </div>
+
+              <div class="form-group" >
+                <label for="email" >Email address</label>
+                <input type="text" class="form-control"
+                       name="email" id="email" required
+                       placeholder="Enter your email address"
+                       minlength="4" maxlength="280">
+              </div>
+
+              <div class="form-group" >
+                <label for="password" >New password</label>
+                <input type="password" class="form-control"
+                       name="password" id="password" required
+                       aria-describedby="passhelp"
+                       autocomplete="new-password"
+                       placeholder="Enter a new password"
+                       minlength="12" maxlength="1024">
+                <small id="passhelp"
+                       class="form-text text-muted">
+                  Must be at least 12 characters long.
+                </small>
+              </div>
+
+              <button type="submit" class="btn btn-primary" >
+                Reset password
+              </button>
+
+            </form>
+          </div>
+        </div>
+      </div>
+
+      {% else %}
+
+      <p class="mt-4">Sorry, the admins of this servers instance have disabled
+        user sign-ins or an email server is not yet configured, so password
+        resets are unavailable. </p>
+
+      {% end %}
+
+    </div>
+  </div>
+
+
+</div>
+
+{% end %}

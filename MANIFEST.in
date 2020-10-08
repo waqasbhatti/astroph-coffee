@@ -1,0 +1,16 @@
+recursive-include astrocoffee/templates *.html
+recursive-include astrocoffee/static *.js
+recursive-include astrocoffee/static *.css
+
+include LICENSE
+include README.md
+include requirements.txt
+
+include versioneer.py
+include lccserver/_version.py
+
+global-exclude *.pkl
+global-exclude *.pyc
+global-exclude .DS_Store
+global-exclude *.map
+include astrocoffee/_version.py

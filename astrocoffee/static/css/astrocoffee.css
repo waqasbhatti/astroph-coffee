@@ -1,0 +1,58 @@
+@media (min-width:1200px) {
+  .container {
+    max-width:60em;
+  }
+}
+
+footer {
+  font-size: smaller;
+}
+
+footer img {
+  max-height: 4rem;
+}
+
+#astrocoffee-search-input {
+  width: 15.5rem;
+}
+
+.navbar-dark .navbar-brand {
+  color: #FF8F00;
+}
+
+.navbar-dark .navbar-brand:focus, .navbar-dark .navbar-brand:hover {
+  color: #FF8F00;
+}
+
+a {
+  color: #0054b5;
+}
+
+a:hover, a:focus {
+  text-decoration: none;
+}
+
+.author-list {
+  line-height: 1.2;
+  color: #636363;
+}
+
+.local-author-tag {
+  color: #105fba;
+}
+
+.comments-para {
+  font-size: small;
+}
+
+p.abstract-para-medium {
+  font-size: 1.125rem;
+}
+
+p.abstract-para-large {
+  font-size: 1.5rem;
+}
+
+p.abstract-para-small {
+  font-size: small;
+}

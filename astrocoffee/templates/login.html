@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block pagecontent %}
+
+<div class="container" >
+  <div class="row justify-content-center" >
+    <div class="col-sm-12 col-md-9" >
+      {% raw flash_messages %}
+    </div>
+  </div>
+
+  <div class="row align-items-center justify-content-center" >
+    <div class="col-sm-12 col-md-5" >
+
+      {% if 'logins_allowed' in siteinfo and siteinfo['logins_allowed'] is True %}
+
+      <div class="card mt-4 mb-1">
+        <div class="card-body">
+          <div class="card-title" >
+            <h4>Sign in to your user account</h4>
+          </div>
+          <div class="card-text" >
+            <form action="/users/login" method="post">
+              {% module xsrf_form_html() %}
+
+              <div class="form-group" >
+                <label for="email" >Email address</label>
+                <input type="email" class="form-control"
+                       name="email" id="email" required
+                       minlength="4" maxlength="280"
+                       placeholder="user@example.org">
+              </div>
+
+              <div class="form-group" >
+                <label for="password" >Password</label>
+                <input type="password" class="form-control"
+                       autocomplete="current-password"
+                       minlength="12" maxlength="1024"
+                       name="password" id="password" required
+                       placeholder="Type in your password">
+              </div>
+
+              <button type="submit" class="btn btn-primary" >Sign in</button>
+
+            </form>
+
+            <div class="mt-2 text-right" >
+              <a href="/users/forgot-password-step1" >Forgot your password? Reset it.</a>
+            </div>
+            {% if 'signups_allowed' in siteinfo and siteinfo['signups_allowed'] is True %}
+            <div class="text-right">
+              <a href="/users/new" >New user? Create an account.</a>
+            </div>
+            {% end %}
+
+          </div>
+        </div>
+      </div>
+
+      {% else %}
+
+      <p class="mt-4" >Sorry, the admins of this server instance have disabled
+        user sign-ins or an email server is not yet configured.</p>
+
+      {% end %}
+
+    </div>
+  </div>
+
+</div>
+
+{% end %}

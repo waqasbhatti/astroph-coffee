@@ -1,0 +1,40 @@
+{% if boxmode == 'nosignup' %}
+<div class="user-signin-box">
+  <a class="nav-item nav-link"
+     title="Sign in to your user account"
+     href="{{ baseurl }}/users/login">
+    Sign in
+  </a>
+</div>
+
+{% elif boxmode == 'admin' %}
+<div class="superuser-admin-box">
+  <a class="nav-item nav-link admin-portal-link"
+     title="Admin portal"
+     href="{{ baseurl }}/admin">
+    Admin
+  </a>
+</div>
+<div class="user-signout-box">
+  <button type="submit" class="btn btn-secondary btn-sm">
+    Sign out
+  </button>
+</div>
+
+{% elif boxmode == 'signedin' %}
+<div class="user-signout-box">
+  <button type="submit" class="btn btn-secondary btn-sm">
+    Sign out
+  </button>
+</div>
+
+{% else %}
+<div class="user-signin-box">
+  <a class="nav-item nav-link"
+     title="Sign in to your user account"
+     href="{{ baseurl }}/users/login">
+    Sign in
+  </a>
+</div>
+
+{% end %}

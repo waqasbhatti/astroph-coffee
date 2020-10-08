@@ -1,0 +1,336 @@
+{% extends 'base.html' %}
+
+{% block pagecontent %}
+
+<div class="container" >
+
+  <div class="row mt-2 justify-content-center" id="alert-box">
+    <div class="col-sm-12 col-md-9" >
+      {% raw flash_messages %}
+    </div>
+  </div>
+
+  {% if current_user['user_role'] == 'superuser' %}
+
+  <ul class="nav nav-tabs mt-2" id="admin-tabs" role="tablist">
+
+    <li class="nav-item">
+      <a class="nav-link active" id="email-settings-tab"
+         data-toggle="tab" href="#email-settings"
+         role="tab" aria-controls="email-settings"
+         aria-selected="true">
+        Email settings
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" id="user-settings-tab"
+         data-toggle="tab" href="#user-settings"
+         role="tab" aria-controls="user-settings"
+         aria-selected="false">
+        User settings
+      </a>
+    </li>
+
+
+  </ul>
+
+  <div class="tab-content" id="admin-tab-content">
+
+    <!-- email settings tab -->
+
+    <div class="tab-pane show active" id="email-settings"
+         role="tabpanel" aria-labelledby="email-settings-tab">
+
+      <form class="mt-2" action="/admin/email"
+            method="post" id="admin-email-update-form">
+        {% module xsrf_form_html() %}
+
+        <div class="row" >
+
+          <div class="col-sm-12 col-md-6" >
+
+            <fieldset>
+              <legend>Email server settings</legend>
+              <div class="form-group" >
+                <label for="emailsender" >Email sender address</label>
+                <input type="email" class="form-control"
+                       name="emailsender" id="emailsender" required
+                       placeholder="The email address used in outgoing emails"
+                       minlength="5" maxlength="1024"
+                       value="{{ siteinfo['email_sender'] }}">
+              </div>
+
+              <div class="form-group" >
+                <label for="emailserver" >Email server</label>
+                <input type="text" class="form-control"
+                       name="emailserver" id="emailserver" required
+                       placeholder="The email server to use for email sending"
+                       minlength="5" maxlength="1024"
+                       value="{{ siteinfo['email_server'] }}">
+              </div>
+
+              <div class="form-group" >
+                <label for="emailport" >SMTP port for email server</label>
+                <input type="text" class="form-control"
+                       name="emailport" id="emailport" required
+                       placeholder="The email port to use for email sending"
+                       minlength="5" maxlength="1024"
+                       value="{{ siteinfo['email_port'] }}">
+              </div>
+
+              <div class="form-group" >
+                <label for="emailuser" >User name for email server</label>
+                <input type="text" class="form-control"
+                       name="emailuser" id="emailuser" required
+                       placeholder="The user name for the email server"
+                       minlength="5" maxlength="1024"
+                       value="{{ siteinfo['email_user'] }}">
+              </div>
+
+              <div class="form-group" >
+                <label for="emailpass" >Password for email server</label>
+                <input type="password" class="form-control"
+                       name="emailpass" id="emailpass" required
+                       placeholder="The password for the email server"
+                       minlength="5" maxlength="1024"
+                       value="{{ siteinfo['email_pass'] }}">
+              </div>
+
+            </fieldset>
+
+          </div>
+
+          <div class="col-sm-12 col-md-6" >
+
+            <fieldset>
+              <legend>Are <strong>existing users</strong> allowed to sign in?</legend>
+
+              {% if siteinfo['logins_allowed'] is True %}
+
+              <div class="form-check form-check-inline">
+                <input type="radio" id="loginradio-yes" value="login-allowed"
+                       name="loginradio" class="form-check-input" checked>
+                <label class="form-check-label" for="loginradio-yes">Yes</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input type="radio" id="loginradio-no" value="login-disallowed"
+                       name="loginradio" class="form-check-input">
+                <label class="form-check-label" for="loginradio-no">No</label>
+              </div>
+
+              {% else %}
+
+              <div class="form-check form-check-inline">
+                <input type="radio" id="loginradio-yes" value="login-allowed"
+                       name="loginradio" class="form-check-input">
+                <label class="form-check-label" for="loginradio-yes">Yes</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input type="radio" id="loginradio-no" value="login-disallowed"
+                       name="loginradio" class="form-check-input" checked>
+                <label class="form-check-label" for="loginradio-no">No</label>
+              </div>
+
+              {% end %}
+
+            </fieldset>
+
+            <fieldset>
+              <legend>Are <strong>new users</strong> allowed to sign up?</legend>
+
+              {% if siteinfo['signups_allowed'] is True %}
+
+              <div class="form-check form-check-inline">
+                <input type="radio" id="signupradio-yes" value="signup-allowed"
+                       name="signupradio" class="form-check-input" checked>
+                <label class="form-check-label" for="signupradio-yes">Yes</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input type="radio" id="signupradio-no" value="signup-disallowed"
+                       name="signupradio" class="form-check-input">
+                <label class="form-check-label" for="signupradio-no">No</label>
+              </div>
+
+              {% else %}
+
+              <div class="form-check form-check-inline">
+                <input type="radio" id="signupradio-yes" value="signup-allowed"
+                       name="signupradio" class="form-check-input">
+                <label class="form-check-label" for="signupradio-yes">Yes</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input type="radio" id="signupradio-no" value="signup-disallowed"
+                       name="signupradio" class="form-check-input" checked>
+                <label class="form-check-label" for="signupradio-no">No</label>
+              </div>
+
+              {% end %}
+
+            </fieldset>
+
+            <fieldset class="mt-2">
+              <legend>Email addresses that are allowed to sign up</legend>
+
+              <div class="form-group" >
+                <label for="admin-allowed-email-addrs" >Type in email addresses separated by commas</label>
+                <input type="text" class="form-control"
+                       name="allowedemailaddr" id="admin-allowed-email-addrs"
+                       placeholder="user1@example.edu, user2@example.edu, user3@example.edu"
+                       minlength="5" maxlength="2048"
+                       value="{{ ', '.join(siteinfo['allowed_user_emailaddr']) }}">
+              </div>
+
+            </fieldset>
+
+          </div>
+
+        </div>
+
+        <div class="row">
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary" id="admin-email-update" >
+              Update email server and sign-ins
+            </button>
+          </div>
+        </div>
+
+      </form>
+
+    </div>
+
+    <!-- user settings tab -->
+
+    <div class="tab-pane" id="user-settings"
+         role="tabpanel" aria-labelledby="user-settings-tab">
+
+      <form class="mt-4" id="admin-users-update-form">
+        {% module xsrf_form_html() %}
+
+        {% for item in userlist %}
+        <!-- we will not show the anon and locked users -->
+
+        {% if item['user_id'] not in (2,3) %}
+
+        <div class="row" >
+          <div class="col-12" >
+            <h5>User ID: {{ item['user_id'] }}</h5>
+
+            <table class="table table-hover table-sm">
+
+              <tr>
+                <th scope="row">User is active</th>
+                <td>{{ item['is_active'] }}</td>
+              </tr>
+
+              <tr>
+                <th scope="row">Created</th>
+                <td class="moment-format">{{ item['created_on'] }}Z</td>
+              </tr>
+
+            </table>
+
+          </div>
+        </div>
+
+        <div class="row" >
+          <div class="col-12" >
+
+            <div class="form-group" >
+              <label for="userlist-email-id{{ item['user_id'] }}"">Email address</label>
+              <input type="email" class="form-control userlist-emailaddress"
+                     id="userlist-email-id{{ item['user_id'] }}"
+                     data-userid="{{ item['user_id'] }}"
+                     placeholder="User's email address"
+                     minlength="5" maxlength="1024"
+                     value="{{ item['email'] }}" required>
+            </div>
+
+            <div class="form-group" >
+              <label for="userlist-fullname-id{{ item['user_id'] }}">User name</label>
+              <input type="text" class="form-control userlist-fullname"
+                     id="userlist-fullname-id{{ item['user_id'] }}"
+                     data-userid="{{ item['user_id'] }}"
+                     placeholder="User's full name"
+                     minlength="5" maxlength="1024"
+                     value="{{ item['full_name'] or '' }}" required>
+            </div>
+
+            <div class="form-group" >
+              <label for="userlist-role-id{{ item['user_id'] }}">User role</label>
+              <input type="text" class="form-control userlist-role"
+                     id="userlist-role-id{{ item['user_id'] }}"
+                     data-userid="{{ item['user_id'] }}"
+                     pattern="superuser|staff|authenticated|locked"
+                     placeholder="User's role"
+                     minlength="5" maxlength="1024"
+                     value="{{ item['user_role'] }}" required>
+              <small class="form-text text-muted" >
+                Must be one of <code>superuser</code>,  <code>staff</code>,
+                <code>authenticated</code>,  <code>locked</code>.
+              </small>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="row mb-4" >
+          <div class="col-12 d-flex justify-content-center align-items-center" >
+
+            <button type="button"
+                    class="btn btn-outline-danger btn-sm admin-user-update-btn"
+                    data-userid="{{ item['user_id'] }}">
+              Update this user
+            </button>
+
+          </div>
+        </div>
+
+        {% end %}
+
+        {% end %}
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <!-- end of superuser only material -->
+  {% end %}
+
+</div>
+
+{% end %}
+
+
+{% block pagejs_modules %}
+<script src="{{ static_url('js/vizinspect-admin.js') }}"></script>
+{% end %}
+
+
+{% block pagejs %}
+
+<script>
+  $(document).ready(function() {
+
+    // format all the moments
+    $('.moment-format').each(function (index, elem) {
+
+      // get the text we need
+      var mt = moment($(this).text()).fromNow();
+      $(this).html($(this).text() + ' <strong>(' + mt + ')</strong>');
+
+    });
+
+    // UI action setup
+    ui.action_setup();
+
+    // admin action setup
+    admin.action_setup();
+
+  });
+</script>
+
+{% end %}

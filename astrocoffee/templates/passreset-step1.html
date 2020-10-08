@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block pagecontent %}
+
+<div class="container" >
+  <div class="row justify-content-center" >
+    <div class="col-sm-12 col-md-9" >
+      {% raw flash_messages %}
+    </div>
+  </div>
+
+
+  <div class="row align-items-center justify-content-center" >
+    <div class="col-sm-12 col-md-5" >
+
+      {% if 'logins_allowed' in siteinfo and siteinfo['logins_allowed'] is True %}
+
+      <div class="card mt-4 mb-1">
+        <div class="card-body">
+          <div class="card-title" >
+            <h4>Reset your account password</h4>
+          </div>
+          <div class="card-text" >
+            <form action="/users/forgot-password-step1" method="post">
+              {% module xsrf_form_html() %}
+
+              <div class="form-group" >
+                <label for="email" >Email address</label>
+                <input type="email" class="form-control"
+                       name="email" id="email" required
+                       minlength="4" maxlength="280"
+                       placeholder="Enter the email address you used to sign up">
+              </div>
+
+              <button type="submit" class="btn btn-primary" >
+                Send verification code
+              </button>
+
+            </form>
+          </div>
+        </div>
+      </div>
+
+      {% else %}
+
+      <p class="mt-4">Sorry, the admins of this server instance have disabled
+        user sign-ins or an email server is not yet configured, so password
+        resets are unavailable.</p>
+
+      {% end %}
+
+    </div>
+  </div>
+
+</div>
+
+{% end %}

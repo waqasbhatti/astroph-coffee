@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ static_url('css/bootstrap.min.css') }}">
+
+    <!-- our own CSS -->
+    <link rel="stylesheet" href="{{ static_url('css/astrocoffee.css') }}">
+
+    {% block pagecss %}
+    {% end %}
+
+    {% block topjs %}
+    {% end %}
+
+    <title>{{ page_title }}</title>
+  </head>
+
+  <body>
+
+    {% block topnav %}
+    <!-- the top bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+      <a class="navbar-brand" href="{{ baseurl }}">
+        Astro-Coffee@{{ conf.institution_short_name }}
+      </a>
+
+      <button class="navbar-toggler"
+              type="button"
+              data-toggle="collapse"
+              data-target="#navbarNavAltMarkup"
+              aria-controls="navbarNavAltMarkup"
+              aria-expanded="false"
+              aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+
+        <div class="navbar-nav mr-auto">
+
+          <div class="form-inline">
+            <a class="btn btn-primary mx-2"
+               role="button" href="{{ baseurl }}/papers/today">
+              Today's papers
+            </a>
+          </div>
+
+          <div class="form-inline">
+            <a class="btn btn-primary mx-2"
+               role="button" href="{{ baseurl }}/papers">
+              Astro-Coffee archive
+            </a>
+          </div>
+
+        </div>
+
+        <form class="form-inline ml-auto" id="astrocoffee-search-form">
+          <div class="input-group">
+
+            <input class="form-control"
+                   id="astrocoffee-search-input"
+                   type="search"
+                   placeholder="Search Astro-Coffee archive"
+                   aria-label="Search">
+
+            <div class="input-group-append">
+              <button class="btn btn-primary"
+                      type="submit">Go</button>
+            </div>
+
+          </div>
+        </form>
+
+        <div class="navbar-nav">
+          <a class="nav-item nav-link" href="{{ baseurl }}/search">
+            Search help
+          </a>
+          <a class="nav-item nav-link" href="{{ baseurl }}/local-authors">
+            Local authors
+          </a>
+
+          <form class="form-inline" action="/users/logout"
+                id="user-logout-form" method="POST" >
+            {% module xsrf_form_html() %}
+            {% module LoginBoxModule(baseurl=baseurl,current_user=current_user) %}
+          </form>
+        </div>
+
+      </div>
+
+    </nav>
+    {% end %}
+
+    <!-- this is where all the alerts go -->
+    <div class="container-fluid">
+      <div class="row mt-2">
+        <div class="col-12">
+          <div id="alert-box">
+            {% module FlashMessageModule(flash_message_list=flash_message_list,
+            alert_type=alert_type) %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% block pagecontent %}
+    {% end %}
+
+    <div class="container" >
+      <footer class="text-muted">
+
+        <div class="row" >
+          <div class="col-12" >
+            <hr>
+          </div>
+        </div>
+
+        <div class="row justify-content-between">
+
+          <div class="col-sm-12 col-md-6" >
+            <ul class="list-unstyled" >
+              <li>
+                Article listings generated from the <a href="http://www.arxiv.org">
+                arXiv.org e-Print archive</a>
+              </li>
+              <li>
+                astro-coffee v2 &mdash;
+                <a href="{{ baseurl }}/about">
+                  about
+                </a> &mdash;
+                <a href="https://github.com/waqasbhatti/astroph-coffee" >
+                  code
+                </a> &mdash;
+                <a href="https://github.com/waqasbhatti/astroph-coffee/issues" >
+                  bugs
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="col-sm-12 col-md-6 text-right" >
+            <ul class="list-unstyled" >
+              <li>
+                <a href="{{ conf.department_url }}">
+                  {{ conf.department }}
+                </a>
+              </li>
+              <li>
+                <a href="{{ conf.institution_url }}">
+                  <img src="{{ baseurl }}/static/{{ conf.institution_logo_file }}"
+                       alt="link to {{ conf.institution_full_name }} website">
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </footer>
+    </div>
+
+    <!-- bootstrap scripts -->
+    <script src="{{ static_url('js/jquery.min.js') }}"></script>
+    <script src="{{ static_url('js/popper.min.js') }}"></script>
+    <script src="{{ static_url('js/bootstrap.min.js') }}"></script>
+
+    <!-- cookie handling for prefs -->
+    <script src="{{ static_url('js/js.cookie.js') }}"></script>
+
+    <!-- time utilities -->
+    <script src="{{ static_url('js/moment.min.js') }}"></script>
+
+    <!-- our own js modules -->
+    <script src="{{ static_url('js/astrocoffee.js') }}"></script>
+
+    {% block pagejs_modules %}
+    {% end %}
+
+    {% block pagejs %}
+    <script>
+      $(document).ready(function() {
+
+      });
+    </script>
+    {% end %}
+
+  </body>
+
+</html>

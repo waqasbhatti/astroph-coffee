@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block pagecontent %}
+
+<div class="container-fluid" >
+
+  <div class="row mt-2 justify-content-center" id="alert-box">
+    <div class="col-sm-12 col-md-9" >
+      {% raw flash_messages %}
+    </div>
+  </div>
+
+  <div class="row mt-2" >
+
+    <div class="col-sm-12 col-md-6">
+      <h3>User account</h3>
+
+      <ul class="list-unstyled">
+        <li><a href="/users/password-change">Change your password</a></li>
+        <li><a href="/users/delete"><span class="text-danger">Delete your account</span></a></li>
+      </ul>
+
+    </div>
+
+    <div class="col-sm-12 col-md-6">
+      <h3>Preferences</h3>
+
+      <form class="form" id="user-prefs-form">
+        <div class="row">
+          <div class="col-12" >
+
+
+            <button type="button" class="mt-2 btn btn-outline-secondary" id="prefs-save">Update preferences</button>
+
+          </div>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+</div>
+
+{% end %}
+
+{% block pagejs %}
+
+<script>
+  $(document).ready(function() {
+
+    // UI action setup
+    ui.action_setup();
+
+    // UI cookie settings
+    ui.prefs_cookie_expires_days = {{ cookie_expires_days }};
+    ui.prefs_cookie_secure = {{ cookie_secure }};
+
+    // load the current settings
+    ui.load_cookie_prefs('prefs-page');
+
+  });
+</script>
+
+{% end %}

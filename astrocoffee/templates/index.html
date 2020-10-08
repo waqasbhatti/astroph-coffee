@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block pagecss %}
+{% end %}
+
+
+{% block pagecontent %}
+<div class="container" >
+
+  <div class="row" >
+    <div class="col-12" >
+
+      <h1>Welcome to Astro-Coffee@{{ conf.institution_short_name }}!</h1>
+
+      <p>Every weekday, the {{ conf.department }} at {{ conf.institution_full_name }}
+        gathers in <strong>{{ conf.building }}'s {{ conf.room }}</strong> to
+        discuss the latest <a href="{{ baseurl }}/papers/today">arXiv
+        astro-ph</a> posting at <strong>{{ conf.coffee_at_localtime }}</strong>
+        over coffee. Visitors to the department are always welcome to join these
+        discussions.</p>
+
+      <p>This <a href="{{ baseurl }}/about">astro-coffee server</a> is meant to
+        help organize the discussion. It automatically finds and highlights papers
+        from local authors, and allows the community to vote for articles they
+        want to talk about. New paper listings are fetched from the arXiv between
+        00:30 and 00:50 UTC Monday through Friday during the week.</p>
+
+      <p>Currently, voting on papers is open between
+        <strong>{{ conf.voting_start_localtime }}</strong>
+        the night before and <strong>{{ conf.voting_end_localtime }}</strong>
+        the morning of Astro-Coffee. Everyone gets five votes (one per paper) to
+        use as they please.</p>
+    </div>
+  </div>
+
+</div>
+{% end %}
+<!-- end of page content -->
+
+{% block pagejs_modules %}
+{% end %}
+
+
+{% block pagejs %}
+<script>
+  $(document).ready(function() {
+
+  });
+</script>
+{% end %}
